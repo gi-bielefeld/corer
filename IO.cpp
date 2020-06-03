@@ -24,7 +24,7 @@ const bool prsArgs(int& nb_args, char** argList, string& filePref, uint32_t& qrm
 		//Assign parameter values
 		switch(a){
 			case 'g':
-				// Save file prefix
+				//Save file prefix
 				filePref = optarg;
 				//A file prefix is all we need to continue
 				success = true;
