@@ -1,7 +1,6 @@
 #ifndef IO_HPP
 #define IO_HPP
 
-// #define OPTIONS "g:q:d:h"
 #define OPTIONS "g:q:d:h"
 #define MIN_PARAM_NB 2
 
