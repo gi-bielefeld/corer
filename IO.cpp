@@ -11,8 +11,8 @@ const bool prsArgs(int& nb_args, char** argList, string& filePref, uint32_t& qrm
 
 	static struct option long_options[] = {
         {"graph",   required_argument,  0, 'g'},
-        {"quorum",  optional_argument,  0, 'q'},
-        {"delta",   optional_argument,  0, 'd'},
+        {"quorum",  required_argument,  0, 'q'},
+        {"delta",   required_argument,  0, 'd'},
         {"help",    no_argument,        0, 'h'},
         {0,         0,                  0,  0 }
     };
@@ -32,7 +32,7 @@ const bool prsArgs(int& nb_args, char** argList, string& filePref, uint32_t& qrm
 			case 'q':
 				//Testing
 				// b = atoi(optarg);
-				cout << "optarg: " << *optarg << endl;
+				// cout << "optarg: " << *optarg << endl;
 
 				//A quorum has to be positive
 				if(atoi(optarg) <= 0 || atoi(optarg) > UINT32_MAX){
@@ -41,7 +41,7 @@ const bool prsArgs(int& nb_args, char** argList, string& filePref, uint32_t& qrm
 				}
 
 				//Testing
-				cout << "Do we get here as well?" << endl;
+				// cout << "Do we get here as well?" << endl;
 				
 				qrm = atoi(optarg);
 				break;
