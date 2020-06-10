@@ -1,11 +1,16 @@
 #ifndef IO_HPP
 #define IO_HPP
 
+#include <bifrost/CompactedDBG.hpp>
+#include <bifrost/ColoredCDBG.hpp>
+
 #define OPTIONS "g:q:d:h"
 #define MIN_PARAM_NB 2
+#define GFA_FILE_ENDING ".gfa"
+#define COLOR_FILE_ENDING ".bfg_colors"
 
 //This function parses the program parameters. Returns false if given arguments are not valid
-const bool prsArgs(int& nb_args, char** argList, string& filePref, uint32_t& qrm, uint32_t& dlt);
+const bool prsArgs(int& nArgs, char** argList, string& filePref, uint32_t& qrm, uint32_t& dlt);
 
 //This function prints usage infos
 inline void dspHlp(){
