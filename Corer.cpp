@@ -1,7 +1,7 @@
 #include <bifrost/CompactedDBG.hpp>
 #include <bifrost/ColoredCDBG.hpp>
 
-#include "Core.h"
+#include "Core.cpp"
 #include "Traversal.h"
 #include "IO.cpp"
 #include "CoreInfo.h"
@@ -20,14 +20,27 @@ int main(int argc, char **argv){
 	}
 
 	//Testing
-	cout << "Loaded parameters" << endl;
-	cout << "Parameters are gFilePref: " << gFilePref << " qrm: " << qrm << " dlt: " << dlt << endl;
+	// cout << "Loaded parameters" << endl;
+	// cout << "Parameters are gFilePref: " << gFilePref << " qrm: " << qrm << " dlt: " << dlt << endl;
 
 	//Load graph
 	if(!cdbg.read(gFilePref + GFA_FILE_ENDING, gFilePref + COLOR_FILE_ENDING, true)){
 		cerr << "ERROR: Graph could not be loaded" << endl;
 		return EXIT_FAILURE;
 	}
+
+	//Set quorum if not already done
+	if(qrm == 0){
+		qrm = cdbg.getNbColors() * DEFAULT_CORE_RATIO;
+		cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
+	}
+
+	//Testing
+	// cout << "Colors in graph are " << cdbg.getNbColors() << endl;
+	// cout << "Quorum is " << qrm << endl;
+
+	//Walk through the graph and mark all core parts within each unitig
+	markCore(cdbg, qrm, dlt);//TODO: Implement this function!
 
 	return EXIT_SUCCESS;
 }
