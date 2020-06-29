@@ -4,7 +4,6 @@
 #include "Core.cpp"
 #include "Traversal.h"
 #include "IO.cpp"
-#include "CoreInfo.h"
 
 int main(int argc, char **argv){
 	uint32_t qrm = 0;
@@ -37,6 +36,7 @@ int main(int argc, char **argv){
 
 	//Testing
 	// cout << "Colors in graph are " << cdbg.getNbColors() << endl;
+	// cout << "First unitig is " << cdbg.begin()->mappedSequenceToString() << endl;
 	// cout << "Quorum is " << qrm << endl;
 
 	//Walk through the graph and mark all core parts within each unitig

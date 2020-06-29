@@ -3,7 +3,7 @@
 #include "../IO.h"
 #include "PrsArgsTest.h"
 
-//Tests for function const bool prsArgs(int&, char**, string&, uint32_t&, uint32_t&){//
+//Tests for function const bool prsArgs(int&, char**, string&, uint32_t&, uint32_t&)//
 //Graph prefix is (not) given DONE
 //Quorum is (not) given DONE
 //Given quorum is (not) positive DONE
