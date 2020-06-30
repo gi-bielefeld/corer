@@ -30,7 +30,7 @@ int main(int argc, char **argv){
 
 	//Set quorum if not already done
 	if(qrm == 0){
-		qrm = cdbg.getNbColors() * DEFAULT_CORE_RATIO;
+		qrm = min((uint32_t) MIN_QUORUM, (uint32_t) (cdbg.getNbColors() * DEFAULT_CORE_RATIO));
 		cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
 	}
 

@@ -24,58 +24,29 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 
 			//Check if quorum is fulfilled
 			if(chkQrm(uni, qrm)){
-				//Testing
-				cout << "Quorum is fulfilled for a k-mer" << endl;
-
-				//Check if there is no current interval yet
-				if(l < 0){
-					//Testing
-					cout << "A new interval has to be started" << endl;
-
-					//Set left border
-					l = j;
-				} else{
-					//Testing
-					cout << "A new interval has not to be started" << endl;
-				}
+				//Check if there is no current interval yet and set left border
+				if(l < 0) l = j;
 
 				//Update right border
 				r = j;
 
 				//Reset bridging path length if necessary
-				if(nBrd > 0){
-					//Testing
-					cout << "Bridging path's length has to be reseted" << endl;
-
-					nBrd = 0;
-				} else{
-					//Testing
-					cout << "Bridging path's length has not to be reseted" << endl;
-				}
+				if(nBrd > 0) nBrd = 0;
 			} else{
-				//Testing
-				cout << "Quorum is not fulfilled for a k-mer" << endl;
-
 				//Increase path length and check if delta is exceeded
 				if(++nBrd > dlt){
-					//Testing
-					cout << "Delta is exceeded" << endl;
-
-					//Update right interval border
-					r = j - nBrd;
 					//Add interval
 					uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
-					//Reset interval borders
+					//Reset left interval borders
 					l = -1;
-					r = -1;
 					//Reset path length
 					nBrd = 0;
-				} else{
-					//Testing
-					cout << "Delta is not exceeded" << endl;
 				}
 			}
 		}
+
+		//Check if there exists an open interval which was not yet added and add it
+		if(l > -1) uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
 	}
 }
 
@@ -101,7 +72,7 @@ const bool chkQrm(UnitigColorMap<CoreInfo> &u, const uint32_t& q){
 	lstID = 0;
 
 	//Iterate over unitig's colors until too many colors have already been missed
-	while(allwdToMs >= 0){
+	while(i != u.getData()->getUnitigColors(u)->end() && allwdToMs >= 0){
 		//Update current id
 		curID = i.getColorID();
 
