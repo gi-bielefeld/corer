@@ -42,7 +42,7 @@ int main(int argc, char **argv){
 	//Walk through the graph and mark all core parts within each unitig
 	markCore(cdbg, qrm, dlt);
 	//Walk through the graph and mark all bridging k-mers within each unitig
-	markBrd(cdbg, dlt);//TODO: Implement this function!
+	detectBrdg(cdbg, dlt);//TODO: Implement this function!
 
 	//Output results...
 
