@@ -25,7 +25,7 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 	//Pointer to current unitig's CoreInfo object
 	CoreInfo* cInfo;
 	//List of paths leading to reachable core k-mers on successive unitigs
-	list<list<UnitigColorMap<CoreInfo>>> sucPaths;
+	list<Path> sucPaths;
 
 	//Iterate over unitigs
 	for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
@@ -34,7 +34,7 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		//Check if last k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the left side (i.e. the distance to the closest core k-mer on this unitig or the unitig's beginning) is not already too large
 		if(!cInfo->sufBrdg && (cInfo->coreList.empty() || cInfo->coreList.back().second < i->len - 1) && !lCrTooFar(i->len, cInfo->coreList, dlt)){
 			//Clear path list
-			sucPaths = list<list<UnitigColorMap<CoreInfo>>>();
+			sucPaths = list<Path>();
 
 			//Do BFS on successive unitigs and check if we need to try a BFS on predecessors as well (which is the case only if there is a core k-mer on the current unitig or the BFS on successive unitigs was successful)
 			if(!doSucBFS(*i, (dlt + 1) / 2, sucPaths) && cInfo->coreList.empty()) continue;//TODO: Implement this function!
