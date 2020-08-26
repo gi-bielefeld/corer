@@ -4,6 +4,7 @@
 #include "Core.cpp"
 #include "Traversal.h"
 #include "IO.cpp"
+#include "Bridging.cpp"
 
 int main(int argc, char **argv){
 	uint32_t qrm = 0;

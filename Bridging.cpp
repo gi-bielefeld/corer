@@ -1,9 +1,9 @@
 #include "Bridging.h"
-#include "Traversal.h"
+#include "Traversal.cpp"
 
 //This function checks if the distance from the end of a unitig to either its closest core k-mer or its beginning is already delta or more
 const bool lCrTooFar(const size_t& ulen, const list<pair<uint32_t, uint32_t>>& coreList, const uint32_t& dlt){//TODO: Test this function!
-	if(!coreList.empty()) return ulen - (coreList.back().second + 1) >= dlt;
+	if(!coreList.empty()) return ulen - coreList.back().second > dlt;
 
 	return ulen > dlt;
 }
@@ -15,9 +15,22 @@ const bool rCrTooFar(const size_t& ulen, const list<pair<uint32_t, uint32_t>>& c
 	return ulen > dlt;
 }
 
-//This function takes successor and predecessor paths obtained by a BFS and marks all involved non-core k-mers as bridging
-void markBrdg(){
-
+//This function takes a list of paths obtained by a BFS and a flag indicating whether paths are successive, and marks all involved non-core k-mers as bridging
+void markBrdg(const list<Path>& pths, const bool& sucPths){
+	//Iterate over paths
+	for(list<Path>::const_iterator p = pths.begin(); p != pths.end(); ++p){
+		//Iterate over unitigs in path
+		for(list<UnitigColorMap<CoreInfo>>::const_iterator u = p->second.begin(); u != p->second.end(); ++u){
+			//Check which bridging flag we have to set
+			if(sucPths ^ u->strand){
+				//Mark k-mers at unitig's end (reference strand orientation) as bridging
+				u->getData()->getData(*u)->sufBrdg = true;
+			} else{
+				//Mark k-mers at unitig's beginning (reference strand orientation) as bridging
+				u->getData()->getData(*u)->preBrdg = true;
+			}
+		}
+	}
 }
 
 //This function detects and marks all bridging k-mers in the graph
@@ -59,7 +72,12 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 			}
 
 			//Do BFS on predecessive unitigs and mark all bridging k-mers if necessary
-			if(doPredBFS(*i, min((dlt + 1) / 2, dlt - i->len - exstPthLen), predPaths) || !cInfo->coreList.empty()) markBrdg();//TODO: Implement this function! //TODO: Implement this function!
+			if(doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - i->len - exstPthLen)), predPaths) || !cInfo->coreList.empty()){//TODO: Implement this function!
+				//Mark k-mers of successive result paths as bridging
+				markBrdg(sucPaths, true);//TODO: Implement this function!
+				//Mark k-mers of predecessive result paths as bridging
+				markBrdg(predPaths, false);
+			}
 		}
 	}
 }

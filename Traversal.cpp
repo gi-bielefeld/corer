@@ -1,15 +1,57 @@
 #include "Traversal.h"
-#include "CoreInfo.h"
+
+//This function iterates over all paths of the given path list and adds distance information to all unitigs involved representing the distance to the core k-mer at the end of each corresponding path
+void addDists(const list<Path>& pthLst, const bool& isSucPth){
+	uint32_t lstDst;
+	list<UnitigColorMap<CoreInfo>>::const_reverse_iterator j;
+
+	//Iterate over all paths
+	for(list<Path>::const_iterator i = pthLst.begin(); i != pthLst.end(); ++i){
+		//Get reverse iterator for path
+		j = i->second.rbegin();
+
+		//Check which distance we have to set
+		if(isSucPth ^ j->strand){
+			//Set distance
+			j->getData()->getData(*j)->predCoreDist = j->len - j->getData()->getData(*j)->coreList.back().second;
+			//Save distance for next unitig
+			lstDst = j->getData()->getData(*j)->predCoreDist;
+		} else{
+			//Set distance
+			j->getData()->getData(*j)->sucCoreDist = j->getData()->getData(*j)->coreList.front().first + 1;
+			//Save distance for next unitig
+			lstDst = j->getData()->getData(*j)->sucCoreDist;
+		}
+
+		//Go to next unitig
+		++j;
+
+		//Iterate over all remaining unitigs in current path except for the last one
+		while(j->getData()->getData(*j)->coreList.empty()){
+			//Update saved distance for next unitig
+			lstDst += j->len;
+
+			//Check which distance we have to set
+			if(isSucPth ^ j->strand){
+				//Set distance
+				j->getData()->getData(*j)->predCoreDist = lstDst;
+			} else{
+				//Set distance
+				j->getData()->getData(*j)->sucCoreDist = lstDst;
+			}
+
+			//Go to next unitig
+			++j;
+		}
+	}
+}
 
 //This function extends the top priority path of the given priority queue on successive unitigs. If it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Otherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
-void expSucPths(priority_queue<Path>& queue, const uint32_t& dpth, list<Path>& res){
-	//Iterator to iterate over successors
-	ForwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it;
-	//Variable to store an extended path
-	Path extPth;	
-
+void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(Path, Path)>& queue, const uint32_t& dpth, list<Path>& res){
 	//Get iterator of last unitig in top priority path
-	it = queue.top().second.back().getSuccessors();
+	ForwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it = queue.top().second.back().getSuccessors();;
+	//Variable to store an extended path
+	Path extPth;
 
 	//Make sure there are successors to iterate over
 	if(it.hasSuccessors()){
@@ -22,18 +64,18 @@ void expSucPths(priority_queue<Path>& queue, const uint32_t& dpth, list<Path>& r
 			}
 
 			//Check if there is a core k-mer on this successor and if it is close enough
-			if(!suc->getData()->getData(*suc)->coreList.empty() && getCoreDist(suc, true) <= dpth - queue.top().first){
+			if(!suc->getData()->getData(*suc)->coreList.empty() && getCoreDist(suc, true) <= dpth - queue.top().first){//TODO Implement this function!
 				//Add path to results
 				res.push_back(queue.top());
 				//Add successor to path
-				res.back.second.push_back(*suc);
+				res.back().second.push_back(*suc);
 				//Update path length
-				res.back.first += getCoreDist(suc, true);
+				res.back().first += getCoreDist(suc, true);
 				//Move on with next successor
 				continue;
 			}
 
-			//Check if adding all k-mers on successive unitig to path does not make it too long
+			//Check if adding all k-mers of successive unitig to path does not make it too long
 			if(queue.top().first + suc->len < dpth){
 				//Get path
 				extPth = queue.top();
@@ -55,14 +97,11 @@ void expSucPths(priority_queue<Path>& queue, const uint32_t& dpth, list<Path>& r
 }
 
 //This function extends the top priority path of the given priority queue on predecessive unitigs. It it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Qtherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
-void expPredPths(priority_queue<Path>& queue, const uint32_t& dpth, list<Path>& res){
-	//Iterator to iterate over predecessors
-	BackwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it;
+void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(Path, Path)>& queue, const uint32_t& dpth, list<Path>& res){
+	//Get iterator of last unitig in top priority path
+	BackwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it = queue.top().second.back().getPredecessors();;
 	//Variable to store an extended path
 	Path extPth;
-
-	//Get iterator of last unitig in top priority path
-	it = queue.top().second.back().getPredecessors();
 
 	//Make sure there are predecessors to iterate over
 	if(it.hasPredecessors()){
@@ -79,12 +118,32 @@ void expPredPths(priority_queue<Path>& queue, const uint32_t& dpth, list<Path>& 
 				//Add path to results
 				res.push_back(queue.top());
 				//Add predecessor to path
-				res.back.second.push_back(*pred);
+				res.back().second.push_back(*pred);
 				//Update path length
-				res.back.first += getCoreDist(pred, false);<-
+				res.back().first += getCoreDist(pred, false);
+				//Move on with next predecessor
+				continue;
+			}
+
+			//Check if adding all k-mers of predecessive unitig to path does not make it too long
+			if(queue.top().first + pred->len < dpth){
+				//Get path
+				extPth = queue.top();
+				//Add current predecessor to path
+				extPth.second.push_back(*pred);
+				//Update path length
+				extPth.first += pred->len;
+				//Insert path to queue
+				queue.push(extPth);
 			}
 		}
 	}
+
+	//Remove top priority path from queue
+	queue.pop();
+
+	//Call function again if queue is not empty
+	if(!queue.empty()) expPredPths(queue, dpth, res);
 }
 
 //This function performs a BFS of the given depths on all successors of the given unitig. It returns true if a core k-mer could be reached by any path.
@@ -97,7 +156,7 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 	//Add first unitig to list
 	uniLst.push_back(orig);
 	//Add initial path to priority queue
-	queue.push(pair(0, uniLst));
+	queue.push(Path(0, uniLst));
 	//Explore paths
 	expSucPths(queue, dpth, resPths);//TODO Implement this function!
 
@@ -122,7 +181,7 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 	//Add first unitig to list
 	uniLst.push_back(orig);
 	//Add initial path to priority queue
-	queue.push(pair(0, uniLst));
+	queue.push(Path(0, uniLst));
 	//Explore paths
 	expPredPths(queue, dpth, resPths);//TODO Implement this function!
 

@@ -27,7 +27,4 @@ class CoreInfo : public CCDBG_Data_t<CoreInfo> {
 
 };
 
-//This function iterates over all paths of the given path list and adds distance information to all unitigs involved representing the distance to the core k-mer at the end of each corresponding path
-void addDists(const list<Path>& pthLst, const bool& isSucPth);
-
 #endif

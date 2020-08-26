@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../IO.h"
+#include "../IO.cpp"
 #include "PrsArgsTest.h"
 
 //Tests for function const bool prsArgs(int&, char**, string&, uint32_t&, uint32_t&)//
