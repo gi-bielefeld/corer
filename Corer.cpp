@@ -9,11 +9,12 @@
 int main(int argc, char **argv){
 	uint32_t qrm = 0;
 	uint32_t dlt = DEFAULT_DELTA;
+	size_t thrds = DEFAULT_NB_THREADS;
 	string gFilePref;
 	ColoredCDBG<CoreInfo> cdbg = ColoredCDBG<CoreInfo>();
 
 	//Parse arguments
-	if(!prsArgs(argc, argv, gFilePref, qrm, dlt)){
+	if(!prsArgs(argc, argv, gFilePref, qrm, dlt, thrds)){
 		//Display help message
 		dspHlp();
 		return EXIT_FAILURE;
@@ -24,7 +25,7 @@ int main(int argc, char **argv){
 	// cout << "Parameters are gFilePref: " << gFilePref << " qrm: " << qrm << " dlt: " << dlt << endl;
 
 	//Load graph
-	if(!cdbg.read(gFilePref + GFA_FILE_ENDING, gFilePref + COLOR_FILE_ENDING, true)){
+	if(!cdbg.read(gFilePref + GFA_FILE_ENDING, gFilePref + COLOR_FILE_ENDING, thrds, true)){
 		cerr << "ERROR: Graph could not be loaded" << endl;
 		return EXIT_FAILURE;
 	}

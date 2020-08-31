@@ -11,6 +11,8 @@
 //Delta is (not) given DONE
 //Given delta is (not) negative DONE 
 //Given delta is (not) larger than INT32_MAX DONE
+//Number of threads is (not) given DONE
+//Number of threads is (not) positive DONE
 //Help flag is (not) set DONE
 
 //Tests the function prsArgs with no parameters
@@ -19,11 +21,12 @@ TEST_F(PrsArgsTest, NoParams){
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[0] = strdup("Corer");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
 	EXPECT_EQ(nbArgs, 1);
 	EXPECT_EQ(filePref, "");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -34,7 +37,8 @@ TEST_F(PrsArgsTest, NoParams){
 //	5. Delta is given
 //	6. Given delta is positive
 //	7. Given delta is not larger than INT32_MAX
-//	8. Help flag is not set
+//	8. Number of threads is not given
+//	9. Help flag is not set
 TEST_F(PrsArgsTest, NegQrm){
 	nbArgs = 7;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -46,11 +50,12 @@ TEST_F(PrsArgsTest, NegQrm){
 	argv[5] = strdup("-d");
 	argv[6] = strdup("1");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
 	EXPECT_EQ(nbArgs, 7);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -59,7 +64,8 @@ TEST_F(PrsArgsTest, NegQrm){
 //	3. Given quorum is not negative
 //	4. Given quorum is larger than INT32_MAX
 //	5. Delta is not given
-//	6. Help flag is not set
+//	6. Number of threads is not given
+//	7. Help flag is not set
 TEST_F(PrsArgsTest, TooLrgQrm){
 	nbArgs = 11;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -69,11 +75,12 @@ TEST_F(PrsArgsTest, TooLrgQrm){
 	argv[9] = strdup("-q");
 	argv[10] = strdup("2147483648");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
 	EXPECT_EQ(nbArgs, 11);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -81,7 +88,8 @@ TEST_F(PrsArgsTest, TooLrgQrm){
 //	2. Quorum is not given
 //	3. Delta is given
 //	4. Given delta is not positive
-//	5. Help flag is not set
+//	5. Number of threads is not given
+//	6. Help flag is not set
 TEST_F(PrsArgsTest, NonPosDlt){
 	nbArgs = 15;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -90,11 +98,12 @@ TEST_F(PrsArgsTest, NonPosDlt){
 	argv[13] = strdup("-d");
 	argv[14] = strdup("-1");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
 	EXPECT_EQ(nbArgs, 15);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -102,7 +111,8 @@ TEST_F(PrsArgsTest, NonPosDlt){
 //	2. Quorum is not given
 //	3. Delta is given
 //	4. Given delta is larger than INT32_MAX
-//	5. Help flag is not set
+//	5. Number of threads is not given
+//	6. Help flag is not set
 TEST_F(PrsArgsTest, TooLrgDlt){
 	nbArgs = 19;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -111,18 +121,20 @@ TEST_F(PrsArgsTest, TooLrgDlt){
 	argv[17] = strdup("-d");
 	argv[18] = strdup("2147483648");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
 	EXPECT_EQ(nbArgs, 19);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 }
 
 //Tests the function prsArgs under the following conditions
 //	1. Graph prefix is given
 //	2. Quorum is not given
 //	3. Delta is not given
-//	4. Help flag is set
+//	4. Number of threads is not given
+//	5. Help flag is set
 TEST_F(PrsArgsTest, HlpFlgSet){
 	nbArgs = 22;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -130,9 +142,56 @@ TEST_F(PrsArgsTest, HlpFlgSet){
 	argv[20] = strdup("G");
 	argv[21] = strdup("-h");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
 	EXPECT_EQ(nbArgs, 22);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+}
+
+//Tests the function prsArgs under the following conditions
+//	1. Graph prefix is given
+//	2. Quorum is not given
+//	3. Delta is not given
+//	4. Number of threads is given
+//	5. Number of threads is positive
+//	6. Help flag is not set
+TEST_F(PrsArgsTest, PosNbThrds){
+	nbArgs = 26;
+	argv = (char**) malloc(nbArgs * sizeof(char*));
+	argv[22] = strdup("-g");
+	argv[23] = strdup("G");
+	argv[24] = strdup("-t");
+	argv[25] = strdup("2");
+
+	EXPECT_TRUE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
+	EXPECT_EQ(nbArgs, 26);
+	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(qrm, 0);
+	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, 2);
+}
+
+//Tests the function prsArgs under the following conditions
+//	1. Graph prefix is given
+//	2. Quorum is not given
+//	3. Delta is not given
+//	4. Number of threads is given
+//	5. Number of threads is not positive
+//	6. Help flag is not set
+TEST_F(PrsArgsTest, NonPosNbThrds){
+	nbArgs = 30;
+	argv = (char**) malloc(nbArgs * sizeof(char*));
+	argv[24] = strdup("-g");
+	argv[25] = strdup("G");
+	argv[26] = strdup("-t");
+	argv[27] = strdup("0");
+
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
+	EXPECT_EQ(nbArgs, 30);
+	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(qrm, 0);
+	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 }

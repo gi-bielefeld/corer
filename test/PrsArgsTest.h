@@ -7,7 +7,7 @@ class PrsArgsTest : public ::testing::Test {
 
 	protected:
 
-		PrsArgsTest(): nbArgs(0), qrm(0), dlt(DEFAULT_DELTA) {}
+		PrsArgsTest(): nbArgs(0), qrm(0), dlt(DEFAULT_DELTA), thrds(DEFAULT_NB_THREADS) {}
 
 		// void TearDown() override {
 		// 	for(uint16_t i = 0; i < nbArgs; ++i) free(&argv[i]);
@@ -23,6 +23,8 @@ class PrsArgsTest : public ::testing::Test {
 		uint32_t qrm;
 		//Maximum path length
 		uint32_t dlt;
+		//Number of threads
+		size_t thrds;
 };
 
 #endif

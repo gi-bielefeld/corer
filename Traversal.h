@@ -12,7 +12,7 @@
 using Path = pair<uint32_t, list<UnitigColorMap<CoreInfo>>>;
 
 //A compare function to prioritize shortest paths
-inline const bool prioShrtst(Path left, Path right){ return left.first > right.first; }
+inline const bool prioShrtst(const Path& left, const Path& right){ return left.first > right.first; }
 
 //This function returns the distance from the unitig border to the closest core k-mer depending on border and strand
 inline const uint32_t getCoreDist(const neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false>& n, const bool& isSuc){
@@ -33,10 +33,10 @@ inline const uint32_t findMinPthLen(const list<Path>& pths){
 void addDists(const list<Path>& pthLst, const bool& isSucPth);
 
 //This function extends the top priority path of the given priority queue on successive unitigs. If it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Otherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
-void expSucPths(priority_queue<Path>& queue, const uint32_t& dpth, list<Path>& res);
+void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, list<Path>& res);
 
 //This function extends the top priority path of the given priority queue on predecessive unitigs. It it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Qtherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
-void expPredPths(priority_queue<Path>& queue, const uint32_t& dpth, list<Path>& res);
+void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, list<Path>& res);
 
 //This function performs a BFS of the given depths on all successors of the given unitig. It returns true if a core k-mer could be reached.
 const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, list<Path>& resPths);

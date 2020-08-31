@@ -1,6 +1,8 @@
 #ifndef CORE_TEST_HPP
 #define CORE_TEST_HPP
 
+#include "../Core.h"
+
 #define DEFAULT_TEST_K 9
 #define DEFAULT_TEST_G 4
 

@@ -2,7 +2,7 @@
 
 #include "IO.h"
 
-const bool prsArgs(int& nArgs, char** argList, string& filePref, uint32_t& qrm, uint32_t& dlt){
+const bool prsArgs(int& nArgs, char** argList, string& filePref, uint32_t& qrm, uint32_t& dlt, size_t& nThrds){
 	bool success = false;
 	int option_index = 0, a;
 
@@ -13,6 +13,7 @@ const bool prsArgs(int& nArgs, char** argList, string& filePref, uint32_t& qrm, 
         {"graph",   required_argument,  0, 'g'},
         {"quorum",  required_argument,  0, 'q'},
         {"delta",   required_argument,  0, 'd'},
+        {"threads", required_argument,  0, 't'},
         {"help",    no_argument,        0, 'h'},
         {0,         0,                  0,  0 }
     };
@@ -44,6 +45,15 @@ const bool prsArgs(int& nArgs, char** argList, string& filePref, uint32_t& qrm, 
 				}
 
 				dlt = atoi(optarg);
+				break;
+			case 't':
+				//Number of threads needs to be a positive number
+				if(atoi(optarg) < 1){
+					cerr << "ERROR: Number of threads not applicable" << endl;
+					return false;
+				}
+
+				nThrds = atoi(optarg);
 				break;
 			case 'h':
 				return false;
