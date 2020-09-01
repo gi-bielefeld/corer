@@ -53,47 +53,86 @@ void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, c
 	//Variable to store an extended path
 	Path extPth;
 
-	//Make sure there are successors to iterate over
-	if(it.hasSuccessors()){
-		//Iterate over successors
-		for(neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> suc = it.begin(); suc != it.end(); ++suc){
-			//Check if distance to next core k-mer (if known) is too large
-			if((suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist) > dpth - queue.top().first){
-				//Extending the path on this successor does not make sense
-				continue;
+	//Iterate over successors
+	for(neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> suc = it.begin(); suc != it.end(); ++suc){
+		//Check if distance to next core k-mer (if known) is too large
+		if((suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist) > dpth - queue.top().first){
+			//Testing
+			if(suc->strand){
+				cout << "3 Option 1" << endl;
+			} else{
+				cout << "3 Option 2" << endl;
 			}
 
-			//Check if there is a core k-mer on this successor and if it is close enough
-			if(!suc->getData()->getData(*suc)->coreList.empty() && getCoreDist(suc, true) <= dpth - queue.top().first){
-				//Add path to results
-				res.push_back(queue.top());
-				//Add successor to path
-				res.back().second.push_back(*suc);
-				//Update path length
-				res.back().first += getCoreDist(suc, true);
-				//Move on with next successor
-				continue;
-			}
-
-			//Check if adding all k-mers of successive unitig to path does not make it too long
-			if(queue.top().first + suc->len < dpth){
-				//Get path
-				extPth = queue.top();
-				//Add current successor to path
-				extPth.second.push_back(*suc);
-				//Update path length
-				extPth.first += suc->len;
-				//Insert path to queue
-				queue.push(extPth);
-			}
+			//Extending the path on this successor does not make sense
+			continue;
 		}
+
+		//Testing
+		if(suc->strand){
+			cout << "4 Option 1" << endl;
+		} else{
+			cout << "4 Option 2" << endl;
+		}
+		bool wasCloseEnough = false;
+
+		//Check if there is a core k-mer on this successor and if it is close enough
+		if(!suc->getData()->getData(*suc)->coreList.empty() && getCoreDist(suc, true) <= dpth - queue.top().first){
+			//Testing
+			cout << "6 Option 1" << endl;
+			wasCloseEnough = true;
+
+			//Add path to results
+			res.push_back(queue.top());
+			//Add successor to path
+			res.back().second.push_back(*suc);
+			//Update path length
+			res.back().first += getCoreDist(suc, true);
+			//Move on with next successor
+			continue;
+		}
+
+		//Testing
+		if(suc->getData()->getData(*suc)->coreList.empty()){
+			cout << "5 Option 2" << endl;
+		} else{
+			cout << "5 Option 1" << endl;
+
+			if(!wasCloseEnough) cout << "6 Option 2" << endl;
+		}
+
+		//Check if adding all k-mers of successive unitig to path does not make it too long
+		if(queue.top().first + suc->len < dpth){
+			//Testing
+			cout << "7 Option 2" << endl;
+
+			//Get path
+			extPth = queue.top();
+			//Add current successor to path
+			extPth.second.push_back(*suc);
+			//Update path length
+			extPth.first += suc->len;
+			//Insert path to queue
+			queue.push(extPth);
+		}
+		
+		//Testing
+		cout << "7 Option 1" << endl;
 	}
 
 	//Remove top priority path from queue
 	queue.pop();
 
 	//Call function again if queue is not empty
-	if(!queue.empty()) expSucPths(queue, dpth, res);
+	if(!queue.empty()){
+		//Testing
+		cout << "8 Option 2" << endl;
+
+		expSucPths(queue, dpth, res);
+	} else{
+		//Testing
+		cout << "8 Option 1" << endl;
+	}
 }
 
 //This function extends the top priority path of the given priority queue on predecessive unitigs. It it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Qtherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
