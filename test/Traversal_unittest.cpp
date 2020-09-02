@@ -119,3 +119,6 @@ TEST_F(ExpSucPthsTest, PthTooLng){
 		}
 	}
 }
+
+//Tests the function expSucPths under the following conditions
+//	1. The last unitig in the top priority path does not have successors
