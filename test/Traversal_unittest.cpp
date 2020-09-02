@@ -78,7 +78,7 @@ TEST_F(GetCoreDistTest, PredRev){
 //The last unitig in the top priority path has one/many successors 0/1
 //The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is already known to be too large 0/0
 //The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large 1/0
-//The last unitig in the top priority path has a successor on which a/no core k-mer lies 0/1
+//The last unitig in the top priority path has a successor on which a/no core k-mer lies DONE
 //The last unitig in the top priority path has a successor on which a core k-mer lies that is (not) close enough 1/0
 //The last unitig in the top priority path has a successor for which adding it to the path does (not) make the path too long 1/0
 //After processing the top priority path the queue is (not) empty 1/0
@@ -86,7 +86,7 @@ TEST_F(GetCoreDistTest, PredRev){
 //Tests the function expSucPths under the following conditions
 //	1. The last unitig in the top priority path does have successors
 //	2. The last unitig in the top priority path has many successors
-//	3. The last unitig in the top priority path has a successor on which no core k-mer lies
+//	3. The last unitig in the top priority path has a successor on which a/no core k-mer lies
 //	4. The last unitig in the top priority path has a successor on which a core k-mer lies that is close enough
 //	5. The last unitig in the top priority path has a successor for which adding it to the path does make the path too long
 //	6. After processing the top priority path the queue is empty
@@ -121,4 +121,10 @@ TEST_F(ExpSucPthsTest, PthTooLng){
 }
 
 //Tests the function expSucPths under the following conditions
-//	1. The last unitig in the top priority path does not have successors
+//	1. The last unitig in the top priority path does (not) have successors
+//	2. The last unitig in the top priority path has many successors
+//	3. The last unitig in the top priority path at which we are on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large
+//	4. The last unitig in the top priority path has a successor on which no core k-mer lies
+//	5. The last unitig in the top priority path has a successor for which adding it to the path does not make the path too long
+//	6. After processing the top priority path the queue is (not) empty
+TEST_F()

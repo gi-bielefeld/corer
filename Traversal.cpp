@@ -81,6 +81,7 @@ void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, c
 			//Testing
 			cout << "6 Option 1" << endl;
 			wasCloseEnough = true;
+			cout << "5 Option 1" << endl;
 
 			//Add path to results
 			res.push_back(queue.top());
