@@ -71,6 +71,7 @@ protected:
 		cdbg.build(cdbgOpt);
 		cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 		cdbg.buildColors(cdbgOpt);
+		i = cdbg.begin();
 	};
 
 	//Some unitig iterator
@@ -79,6 +80,8 @@ protected:
 	CCDBG_Build_opt cdbgOpt;
 	//Compacted, colored de Bruijn graph with linked CoreInfo objects
 	ColoredCDBG<CoreInfo> cdbg;
+	//A unitig list
+	list<UnitigColorMap<CoreInfo>> l;
 	//A path list to save all results
 	list<Path> res;
 	//Priority queue of paths to explore

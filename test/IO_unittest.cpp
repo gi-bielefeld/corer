@@ -67,16 +67,15 @@ TEST_F(PrsArgsTest, NegQrm){
 //	6. Number of threads is not given
 //	7. Help flag is not set
 TEST_F(PrsArgsTest, TooLrgQrm){
-	nbArgs = 11;
+	nbArgs = 9;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[0] = strdup("Corer");
-	argv[7] = strdup("-g");
-	argv[8] = strdup("G");
-	argv[9] = strdup("-q");
-	argv[10] = strdup("2147483648");
+	argv[5] = strdup("-g");
+	argv[6] = strdup("G");
+	argv[7] = strdup("-q");
+	argv[8] = strdup("2147483648");
 
 	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 11);
+	EXPECT_EQ(nbArgs, 9);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
@@ -91,15 +90,15 @@ TEST_F(PrsArgsTest, TooLrgQrm){
 //	5. Number of threads is not given
 //	6. Help flag is not set
 TEST_F(PrsArgsTest, NonPosDlt){
-	nbArgs = 15;
+	nbArgs = 13;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[11] = strdup("-g");
-	argv[12] = strdup("G");
-	argv[13] = strdup("-d");
-	argv[14] = strdup("-1");
+	argv[9] = strdup("-g");
+	argv[10] = strdup("G");
+	argv[11] = strdup("-d");
+	argv[12] = strdup("-1");
 
 	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 15);
+	EXPECT_EQ(nbArgs, 13);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
@@ -114,15 +113,15 @@ TEST_F(PrsArgsTest, NonPosDlt){
 //	5. Number of threads is not given
 //	6. Help flag is not set
 TEST_F(PrsArgsTest, TooLrgDlt){
-	nbArgs = 19;
+	nbArgs = 17;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[15] = strdup("-g");
-	argv[16] = strdup("G");
-	argv[17] = strdup("-d");
-	argv[18] = strdup("2147483648");
+	argv[13] = strdup("-g");
+	argv[14] = strdup("G");
+	argv[15] = strdup("-d");
+	argv[16] = strdup("2147483648");
 
 	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 19);
+	EXPECT_EQ(nbArgs, 17);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
@@ -136,14 +135,14 @@ TEST_F(PrsArgsTest, TooLrgDlt){
 //	4. Number of threads is not given
 //	5. Help flag is set
 TEST_F(PrsArgsTest, HlpFlgSet){
-	nbArgs = 22;
+	nbArgs = 20;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[19] = strdup("-g");
-	argv[20] = strdup("G");
-	argv[21] = strdup("-h");
+	argv[17] = strdup("-g");
+	argv[18] = strdup("G");
+	argv[19] = strdup("-h");
 
 	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 22);
+	EXPECT_EQ(nbArgs, 20);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
@@ -158,15 +157,15 @@ TEST_F(PrsArgsTest, HlpFlgSet){
 //	5. Number of threads is positive
 //	6. Help flag is not set
 TEST_F(PrsArgsTest, PosNbThrds){
-	nbArgs = 26;
+	nbArgs = 24;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[22] = strdup("-g");
-	argv[23] = strdup("G");
-	argv[24] = strdup("-t");
-	argv[25] = strdup("2");
+	argv[20] = strdup("-g");
+	argv[21] = strdup("G");
+	argv[22] = strdup("-t");
+	argv[23] = strdup("2");
 
 	EXPECT_TRUE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 26);
+	EXPECT_EQ(nbArgs, 24);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
@@ -181,7 +180,7 @@ TEST_F(PrsArgsTest, PosNbThrds){
 //	5. Number of threads is not positive
 //	6. Help flag is not set
 TEST_F(PrsArgsTest, NonPosNbThrds){
-	nbArgs = 30;
+	nbArgs = 28;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[24] = strdup("-g");
 	argv[25] = strdup("G");
@@ -189,7 +188,7 @@ TEST_F(PrsArgsTest, NonPosNbThrds){
 	argv[27] = strdup("0");
 
 	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 30);
+	EXPECT_EQ(nbArgs, 28);
 	EXPECT_EQ(filePref, "G");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
