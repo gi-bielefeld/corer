@@ -11,8 +11,17 @@
 //A path through the graph is a list of unitigs
 using Path = pair<uint32_t, list<UnitigColorMap<CoreInfo>>>;
 
+//Testing
+// void addPth(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue);
+
 //A compare function to prioritize shortest paths
 inline const bool prioShrtst(const Path& left, const Path& right){ return left.first > right.first; }
+
+//Testing
+// auto cmp = [](pair<uint32_t, Path> left, pair<uint32_t, Path> right) { return left.first > right.first; };
+
+//This function calculates an offset on a unitig depending on the given strand
+inline const uint32_t calcOff(const uint32_t& refOff, const size_t& uLen, const bool& strand){ return (strand ? refOff : uLen - (refOff + 1)); }
 
 //This function returns the distance from the unitig border to the closest core k-mer depending on border and strand
 inline const uint32_t getCoreDist(const neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false>& n, const bool& isSuc){

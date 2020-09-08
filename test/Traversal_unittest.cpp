@@ -74,14 +74,14 @@ TEST_F(GetCoreDistTest, PredRev){
 }
 
 //Tests for function void expSucPths(priority_queue<Path>&, const uint32_t&, list<Path>&)//
-//The last unitig in the top priority path does (not) have successors 1/0
+//The last unitig in the top priority path does (not) have successors DONE
 //The last unitig in the top priority path has one/many successors 0/1
 //The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is already known to be too large 0/0
 //The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large 1/0
 //The last unitig in the top priority path has a successor on which a/no core k-mer lies DONE
 //The last unitig in the top priority path has a successor on which a core k-mer lies that is (not) close enough 1/0
-//The last unitig in the top priority path has a successor for which adding it to the path does (not) make the path too long 1/0
-//After processing the top priority path the queue is (not) empty 1/0
+//The last unitig in the top priority path has a successor for which adding it to the path does (not) make the path too long DONE
+//After processing the top priority path the queue is (not) empty DONE
 
 //Tests the function expSucPths under the following conditions
 //	1. The last unitig in the top priority path does have successors
@@ -136,3 +136,6 @@ TEST_F(ExpSucPthsTest, NoSuc){
 	EXPECT_TRUE(queue.empty());
 	EXPECT_TRUE(res.empty());
 }
+
+//Tests the function expSucPths under the following conditions
+//	1. 

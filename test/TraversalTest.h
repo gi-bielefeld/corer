@@ -72,6 +72,7 @@ protected:
 		cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 		cdbg.buildColors(cdbgOpt);
 		i = cdbg.begin();
+		queue = priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>(prioShrtst);
 	};
 
 	//Some unitig iterator
