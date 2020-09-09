@@ -25,7 +25,7 @@ inline const uint32_t calcOff(const uint32_t& refOff, const size_t& uLen, const 
 
 //This function returns the distance from the unitig border to the closest core k-mer depending on border and strand
 inline const uint32_t getCoreDist(const neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false>& n, const bool& isSuc){
-	return (isSuc ^ n->strand ? n->len - n->getData()->getData(*n)->coreList.back().second : n->getData()->getData(*n)->coreList.front().first + 1);
+	return (isSuc ? n->getData()->getData(*n)->coreList.front().first + 1 : n->len - n->getData()->getData(*n)->coreList.back().second);
 }
 
 //This function returns the minium path length from a given list of paths. If list is empty UINT32_MAX is returned.

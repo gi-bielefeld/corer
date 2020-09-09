@@ -139,3 +139,18 @@ TEST_F(ExpSucPthsTest, NoSuc){
 
 //Tests the function expSucPths under the following conditions
 //	1. 
+
+//Tests for function inline const uint32_t calcOff(const uint32_t&, const size_t&, const bool&)//
+//An offset on the reference/reverse complementary strand has to be calculated DONE
+
+//Tests the function calcOff under the following conditions
+//	1. An offset on the reference strand has to be calculated
+TEST(CalcOffTest, refStnd){
+	EXPECT_EQ(42, calcOff(42, 50, true));
+}
+
+//Tests the function calcOff under the following conditions
+//	1. An offset on the reverse complementary strand has to be calculated
+TEST(CalcOffTest, revStnd){
+	EXPECT_EQ(4, calcOff(2, 7, false));
+}
