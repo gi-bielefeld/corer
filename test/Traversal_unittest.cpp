@@ -27,10 +27,12 @@ TEST_F(PrioShrtstTest, SndLng){ EXPECT_FALSE(prioShrtst(q, p)); }
 //	1. The function is called in the context of a successive traversal
 //	2. The function is called for a unitig's reference strand
 TEST_F(GetCoreDistTest, SucRef){
-	uni = *cdbg.begin()->getSuccessors().begin();
-	uni.getData()->getData(uni)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	++i;
 
-	EXPECT_EQ(1 ,getCoreDist(cdbg.begin()->getSuccessors().begin(), true));
+	EXPECT_EQ(1 ,getCoreDist(i->getSuccessors().begin(), true));
 }
 
 //Tests the function getCoreDist under the following conditions
@@ -38,14 +40,14 @@ TEST_F(GetCoreDistTest, SucRef){
 //	2. The function is called for a unitig's reverse complementary strand
 TEST_F(GetCoreDistTest, SucRev){
 	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
 	++i;
 	++i;
 	uni = *i;
-	uni.getData()->getData(uni)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
-	uni = *cdbg.begin();
 	uni.strand = false;
 
-	EXPECT_EQ(1, getCoreDist(uni.getSuccessors().begin(), true));
+	EXPECT_EQ(3, getCoreDist(uni.getSuccessors().begin(), true));
 }
 
 //Tests the function getCoreDist under the following conditions
@@ -53,21 +55,23 @@ TEST_F(GetCoreDistTest, SucRev){
 //	2. The function is called for a unitig's reference strand
 TEST_F(GetCoreDistTest, PredRef){
 	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,1));
 	++i;
 	++i;
-	uni = *i;
-	uni.getData()->getData(uni)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
 
-	EXPECT_EQ(1, getCoreDist(cdbg.begin()->getPredecessors().begin(), true));
+	EXPECT_EQ(2, getCoreDist(i->getPredecessors().begin(), false));
 }
 
 //Tests the function getCoreDist under the following conditions
 //	1. The function is not called in the context of a successive traversal
 //	2. The function is called for a unitig's reverse complementary strand
 TEST_F(GetCoreDistTest, PredRev){
-	uni = *cdbg.begin()->getSuccessors().begin();
-	uni.getData()->getData(uni)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
-	uni = *cdbg.begin();
+	i = cdbg.begin();
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,1));
+	++i;
+	uni = *i;
 	uni.strand = false;
 
 	EXPECT_EQ(1, getCoreDist(uni.getPredecessors().begin(), false));
