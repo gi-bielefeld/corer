@@ -4,16 +4,16 @@
 #include "PrsArgsTest.h"
 
 //Tests for function const bool prsArgs(int&, char**, string&, uint32_t&, uint32_t&)//
-//Graph prefix is (not) given DONE
-//Quorum is (not) given DONE
-//Given quorum is (not) positive DONE
-//Given quorum is (not) larger than INT32_MAX DONE
-//Delta is (not) given DONE
-//Given delta is (not) negative DONE 
-//Given delta is (not) larger than INT32_MAX DONE
-//Number of threads is (not) given DONE
-//Number of threads is (not) positive DONE
-//Help flag is (not) set DONE
+//	1. Graph prefix is (not) given DONE
+//	2. Quorum is (not) given DONE
+//	3. Given quorum is (not) positive DONE
+//	4. Given quorum is (not) larger than INT32_MAX DONE
+//	5. Delta is (not) given DONE
+//	6. Given delta is (not) negative DONE 
+//	7. Given delta is (not) larger than INT32_MAX DONE
+//	8. Number of threads is (not) given DONE
+//	9. Number of threads is (not) positive DONE
+//	10. Help flag is (not) set DONE
 
 //Tests the function prsArgs with no parameters
 TEST_F(PrsArgsTest, NoParams){
@@ -38,7 +38,7 @@ TEST_F(PrsArgsTest, NoParams){
 //	6. Given delta is positive
 //	7. Given delta is not larger than INT32_MAX
 //	8. Number of threads is not given
-//	9. Help flag is not set
+//	10. Help flag is not set
 TEST_F(PrsArgsTest, NegQrm){
 	nbArgs = 7;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -64,8 +64,8 @@ TEST_F(PrsArgsTest, NegQrm){
 //	3. Given quorum is not negative
 //	4. Given quorum is larger than INT32_MAX
 //	5. Delta is not given
-//	6. Number of threads is not given
-//	7. Help flag is not set
+//	8. Number of threads is not given
+//	10. Help flag is not set
 TEST_F(PrsArgsTest, TooLrgQrm){
 	nbArgs = 9;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -85,10 +85,10 @@ TEST_F(PrsArgsTest, TooLrgQrm){
 //Tests the function prsArgs under the following conditions
 //	1. Graph prefix is given
 //	2. Quorum is not given
-//	3. Delta is given
-//	4. Given delta is not positive
-//	5. Number of threads is not given
-//	6. Help flag is not set
+//	5. Delta is given
+//	6. Given delta is not positive
+//	8. Number of threads is not given
+//	10. Help flag is not set
 TEST_F(PrsArgsTest, NonPosDlt){
 	nbArgs = 13;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -108,10 +108,10 @@ TEST_F(PrsArgsTest, NonPosDlt){
 //Tests the function prsArgs under the following conditions
 //	1. Graph prefix is given
 //	2. Quorum is not given
-//	3. Delta is given
-//	4. Given delta is larger than INT32_MAX
-//	5. Number of threads is not given
-//	6. Help flag is not set
+//	5. Delta is given
+//	7. Given delta is larger than INT32_MAX
+//	8. Number of threads is not given
+//	10. Help flag is not set
 TEST_F(PrsArgsTest, TooLrgDlt){
 	nbArgs = 17;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -131,9 +131,9 @@ TEST_F(PrsArgsTest, TooLrgDlt){
 //Tests the function prsArgs under the following conditions
 //	1. Graph prefix is given
 //	2. Quorum is not given
-//	3. Delta is not given
-//	4. Number of threads is not given
-//	5. Help flag is set
+//	5. Delta is not given
+//	8. Number of threads is not given
+//	10. Help flag is set
 TEST_F(PrsArgsTest, HlpFlgSet){
 	nbArgs = 20;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -152,10 +152,10 @@ TEST_F(PrsArgsTest, HlpFlgSet){
 //Tests the function prsArgs under the following conditions
 //	1. Graph prefix is given
 //	2. Quorum is not given
-//	3. Delta is not given
-//	4. Number of threads is given
-//	5. Number of threads is positive
-//	6. Help flag is not set
+//	5. Delta is not given
+//	8. Number of threads is given
+//	9. Number of threads is positive
+//	10. Help flag is not set
 TEST_F(PrsArgsTest, PosNbThrds){
 	nbArgs = 24;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -175,10 +175,10 @@ TEST_F(PrsArgsTest, PosNbThrds){
 //Tests the function prsArgs under the following conditions
 //	1. Graph prefix is given
 //	2. Quorum is not given
-//	3. Delta is not given
-//	4. Number of threads is given
-//	5. Number of threads is not positive
-//	6. Help flag is not set
+//	5. Delta is not given
+//	8. Number of threads is given
+//	9. Number of threads is not positive
+//	10. Help flag is not set
 TEST_F(PrsArgsTest, NonPosNbThrds){
 	nbArgs = 28;
 	argv = (char**) malloc(nbArgs * sizeof(char*));

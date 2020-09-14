@@ -6,8 +6,8 @@
 #include "TraversalTest.h"
 
 //Tests for function const bool prioShrtst(const Path&, const Path&)//
-//The first path is (not) longer than the second one DONE
-//The second path is (not) longer than the first one DONE
+//	1. The first path is (not) longer than the second one DONE
+//	2. The second path is (not) longer than the first one DONE
 
 //Tests the function prioShrtst under the following conditions
 //	1. The first path is longer than the second
@@ -20,8 +20,8 @@ TEST_F(PrioShrtstTest, FstLng){ EXPECT_TRUE(prioShrtst(p, q)); }
 TEST_F(PrioShrtstTest, SndLng){ EXPECT_FALSE(prioShrtst(q, p)); }
 
 //Tests for function const uint32_t getCoreDist(const neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false>&, const bool&)//
-//The function is (not) called in the context of a successive traversal DONE
-//The function is called for a unitig's reference/reverse complementary strand DONE
+//	1. The function is (not) called in the context of a successive traversal DONE
+//	2. The function is called for a unitig's reference/reverse complementary strand DONE
 
 //Tests the function getCoreDist under the following conditions
 //	1. The function is called in the context of a successive traversal
@@ -78,23 +78,28 @@ TEST_F(GetCoreDistTest, PredRev){
 }
 
 //Tests for function void expSucPths(priority_queue<Path>&, const uint32_t&, list<Path>&)//
-//The last unitig in the top priority path does (not) have successors DONE
-//The last unitig in the top priority path has one/many successors 0/1
-//The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is already known to be too large 0/0
-//The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large 1/0
-//The last unitig in the top priority path has a successor on which a/no core k-mer lies DONE
-//The last unitig in the top priority path has a successor on which a core k-mer lies that is (not) close enough 1/0
-//The last unitig in the top priority path has a successor for which adding it to the path does (not) make the path too long DONE
-//After processing the top priority path the queue is (not) empty DONE
+//	1. The last unitig in the top priority path does (not) have successors DONE
+//	2. The last unitig in the top priority path has one/many successors DONE
+//	3. The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is already known to be too large 1/0
+//	4. The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large DONE
+//	5. The last unitig in the top priority path has a successor on which a/no core k-mer lies DONE
+//	6. The last unitig in the top priority path has a successor on which a core k-mer lies that is (not) close enough DONE
+//	7. The last unitig in the top priority path has a successor for which adding it to the path does (not) make the path too long DONE
+//	8. After processing the top priority path the queue is (not) empty DONE
 
 //Tests the function expSucPths under the following conditions
 //	1. The last unitig in the top priority path does have successors
 //	2. The last unitig in the top priority path has many successors
-//	3. The last unitig in the top priority path has a successor on which a/no core k-mer lies
-//	4. The last unitig in the top priority path has a successor on which a core k-mer lies that is close enough
-//	5. The last unitig in the top priority path has a successor for which adding it to the path does make the path too long
-//	6. After processing the top priority path the queue is empty
+//	5. The last unitig in the top priority path has a successor on which a/no core k-mer lies
+//	6. The last unitig in the top priority path has a successor on which a core k-mer lies that is close enough
+//	7. The last unitig in the top priority path has a successor for which adding it to the path does make the path too long
+//	8. After processing the top priority path the queue is empty
 TEST_F(ExpSucPthsTest, PthTooLng){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	++i;
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(2,2));
 	++i;
@@ -125,11 +130,15 @@ TEST_F(ExpSucPthsTest, PthTooLng){
 //Tests the function expSucPths under the following conditions
 //	1. The last unitig in the top priority path does (not) have successors
 //	2. The last unitig in the top priority path has many successors
-//	3. The last unitig in the top priority path at which we are on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large
-//	4. The last unitig in the top priority path has a successor on which no core k-mer lies
-//	5. The last unitig in the top priority path has a successor for which adding it to the path does not make the path too long
-//	6. After processing the top priority path the queue is (not) empty
+//	4. The last unitig in the top priority path at which we are on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large
+//	5. The last unitig in the top priority path has a successor on which no core k-mer lies
+//	7. The last unitig in the top priority path has a successor for which adding it to the path does not make the path too long
+//	8. After processing the top priority path the queue is (not) empty
 TEST_F(ExpSucPthsTest, NoSuc){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
 	i = cdbg.begin();
 	++i;
 	++i;
@@ -142,10 +151,66 @@ TEST_F(ExpSucPthsTest, NoSuc){
 }
 
 //Tests the function expSucPths under the following conditions
-//	1. 
+//	1. The last unitig in the top priority path does have successors
+//	2. The last unitig in the top priority path has one successor
+//	4. The last unitig in the top priority path at which we are not on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large
+//	5. The last unitig in the top priority path has a successor on which a core k-mer lies
+//	6. The last unitig in the top priority path has a successor on which a core k-mer lies that is not close enough
+//	7. The last unitig in the top priority path has a successor for which adding it to the path does make the path too long
+//	8. After processing the top priority path the queue is empty
+TEST_F(ExpSucPthsTest, OneSuc){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	++i;
+	++i;
+	l.push_back(*i);
+	l.front().strand = false;
+	queue.push(Path(0, l));
+
+	expSucPths(queue, 2, res);
+	EXPECT_TRUE(queue.empty());
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests the function expSucPths under the following conditions
+//	1. The last unitig in the top priority path does have successors
+//	2. The last unitig in the top priority path has one successor
+//	3. The last unitig in the top priority path at which we are on the reference strand has a successor for which the distance to the next core k-mer is already known to be too large
+//	4. The last unitig in the top priority path at which we are on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large
+//	5. The last unitig in the top priority path has a successor on which a/no core k-mer lies
+//	6. The last unitig in the top priority path has a successor on which a core k-mer lies that is not close enough
+//	7. The last unitig in the top priority path has a successor for which adding it to the path does neighborIterator make the path too long
+//	8. After processing the top priority path the queue is (not) empty
+TEST_F(ExpSucPthsTest, SndVis){
+	cdbgOpt.filename_ref_in.push_back("Test17_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(1,1));
+	i->getData()->getData(*i)->sucCoreDist = 2;
+	++i;
+	++i;
+	l.push_back(*i);
+	queue.push(Path(0, l));
+
+	expSucPths(queue, 3, res);
+	EXPECT_TRUE(queue.empty());
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests the function expSucPths under the following conditions
+//	
 
 //Tests for function inline const uint32_t calcOff(const uint32_t&, const size_t&, const bool&)//
-//An offset on the reference/reverse complementary strand has to be calculated DONE
+//	1. An offset on the reference/reverse complementary strand has to be calculated DONE
 
 //Tests the function calcOff under the following conditions
 //	1. An offset on the reference strand has to be calculated

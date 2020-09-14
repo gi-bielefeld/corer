@@ -4,8 +4,8 @@
 #include "../Bridging.cpp"
 
 //Tests for function const bool lCrTooFar(const size_t&, const list<pair<uint32_t, uint32_t>>&, const uint32_t&)//
-//The core list is empty and the unitig is (not) too long DONE
-//The core list is not empty and the rightmost core k-mer (i.e. the k-mer with the highest start offset) is (not) too far DONE
+//	1. The core list is empty and the unitig is (not) too long DONE
+//	2. The core list is not empty and the rightmost core k-mer (i.e. the k-mer with the highest start offset) is (not) too far DONE
 
 //Tests the function lCrTooFar under the following conditions
 //	1.The core list is empty
@@ -43,8 +43,8 @@ TEST_F(CrTooFarTest, NearKmer){
 }
 
 //Tests for function const bool rCrTooFar(const size_t&, const list<pair<uint32_t, uint32_t>>&, const uint32_t&)
-//The core list is empty and the unitig is (not) too long DONE
-//The core list is not empty and the leftmost core k-mer (i.e. the k-mer with lowest start offset) is (not) too far DONE
+//	1. The core list is empty and the unitig is (not) too long DONE
+//	2. The core list is not empty and the leftmost core k-mer (i.e. the k-mer with lowest start offset) is (not) too far DONE
 
 //Tests the function rCrTooFar under the following conditions
 //	1.The core list is empty

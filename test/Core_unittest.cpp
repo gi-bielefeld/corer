@@ -6,10 +6,10 @@
 #include "CoreTest.h"
 
 //Tests for function const bool chkQrm(UnitigColorMap<CoreInfo>&, const uint32_t&)//
-//The maximum color id is (not) already smaller than the quorum DONE
-//We are (not) dealing with the first color when the number of colors allowed to miss has to be decremented by the number of skipped colors DONE
-//A color is (not) found for the given unitig DONE
-//The quorum is (not) reached DONE
+//	1. The maximum color id is (not) already smaller than the quorum DONE
+//	2. We are (not) dealing with the first color when the number of colors allowed to miss has to be decremented by the number of skipped colors DONE
+//	3. A color is (not) found for the given unitig DONE
+//	4. The quorum is (not) reached DONE
 
 //Tests the function chkQrm under the following conditions
 //	1. The maximum color id is already smaller than the quorum
@@ -33,9 +33,9 @@ TEST_F(ChkQrmTest, FewClrs){
 
 //Tests the function chkQrm under the following conditions
 //	1. The maximum color id is not already smaller than the quorum
-//	3. We are dealing with the first color when the number of colors allowed to miss has to be decremented by the number of skipped colors
-//	4. A color is found for the given unitig
-//	5. The quorum is reached
+//	2. We are dealing with the first color when the number of colors allowed to miss has to be decremented by the number of skipped colors
+//	3. A color is found for the given unitig
+//	4. The quorum is reached
 TEST_F(ChkQrmTest, IterAllClrs){
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
@@ -108,10 +108,10 @@ TEST_F(ChkQrmTest, NtFstKmer){
 }
 
 //Tests for function void markCore(ColoredCDBG<CoreInfo>&, const uint32_t&, const uint32_t&)//
-//The quorum is (not) fulfilled for a k-mer DONE
-//A new interval has (not) to be started DONE
-//The bridging path's length has (not) to be reseted DONE
-//Delta is (not) exceeded DONE
+//	1. The quorum is (not) fulfilled for a k-mer DONE
+//	2. A new interval has (not) to be started DONE
+//	3. The bridging path's length has (not) to be reseted DONE
+//	4. Delta is (not) exceeded DONE
 
 //Tests the function markCore under the following conditions
 //	1. The quorum is (not) fulfilled for a k-mer
