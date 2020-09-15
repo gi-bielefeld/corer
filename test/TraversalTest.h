@@ -85,4 +85,27 @@ protected:
 	
 };
 
+class AddDistsTest : public ::testing::Test {
+
+protected:
+
+	AddDistsTest(): cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
+		cdbgOpt.k = DEFAULT_TEST_K;
+		cdbgOpt.g = DEFAULT_TEST_G;
+	}
+
+	//Some unitig iterator
+	ColoredCDBG<CoreInfo>::iterator i;
+	//Some unitig
+	UnitigColorMap<CoreInfo> u;
+	//Colored de Bruijn graph build options
+	CCDBG_Build_opt cdbgOpt;
+	//Compacted, colored de Bruijn graph with linked CoreInfo objects
+	ColoredCDBG<CoreInfo> cdbg;
+	//A list of unitigs
+	list<UnitigColorMap<CoreInfo>> uList;
+	//A list of paths
+	list<Path> pList;
+};
+
 #endif

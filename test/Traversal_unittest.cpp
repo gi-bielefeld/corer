@@ -80,7 +80,7 @@ TEST_F(GetCoreDistTest, PredRev){
 //Tests for function void expSucPths(priority_queue<Path>&, const uint32_t&, list<Path>&)//
 //	1. The last unitig in the top priority path does (not) have successors DONE
 //	2. The last unitig in the top priority path has one/many successors DONE
-//	3. The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is already known to be too large 1/0
+//	3. The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is already known to be too large DONE
 //	4. The last unitig in the top priority path at which we are (not) on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large DONE
 //	5. The last unitig in the top priority path has a successor on which a/no core k-mer lies DONE
 //	6. The last unitig in the top priority path has a successor on which a core k-mer lies that is (not) close enough DONE
@@ -207,7 +207,32 @@ TEST_F(ExpSucPthsTest, SndVis){
 }
 
 //Tests the function expSucPths under the following conditions
-//	
+//	1. The last unitig in the top priority path does (not) have successors
+//	2. The last unitig in the top priority path has one successor
+//	3. The last unitig in the top priority path at which we are not on the reference strand has a successor for which the distance to the next core k-mer is already known to be too large
+//	4. The last unitig in the top priority path at which we are on the reference strand has a successor for which the distance to the next core k-mer is not already known to be too large
+//	5. The last unitig in the top priority path has a successor on which a/no core k-mer lies
+//	7. The last unitig in the top priority path has a successor for which adding it to the path does not make the path too long
+//	8. After processing the top priority path the queue is (not) empty
+TEST_F(ExpSucPthsTest, RevVis){
+	cdbgOpt.filename_ref_in.push_back("Test18_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	i->getData()->getData(*i)->predCoreDist = 2;
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	++i;
+	l.push_back(*i);
+	queue.push(Path(0, l));
+
+	expSucPths(queue, 3, res);
+	EXPECT_TRUE(queue.empty());
+	EXPECT_TRUE(res.empty());
+}
 
 //Tests for function inline const uint32_t calcOff(const uint32_t&, const size_t&, const bool&)//
 //	1. An offset on the reference/reverse complementary strand has to be calculated DONE
@@ -222,4 +247,247 @@ TEST(CalcOffTest, refStnd){
 //	1. An offset on the reverse complementary strand has to be calculated
 TEST(CalcOffTest, revStnd){
 	EXPECT_EQ(4, calcOff(2, 7, false));
+}
+
+//Tests for function void addDists(const list<Path>&, const bool&)//
+//	1. The path list is (not) empty DONE
+//	2. A path's length is (not) larger than 2 DONE
+//	3. We are dealing with a successive path that does (not) end on the reverse complementary strand DONE
+//	4. We are dealing with a predecessive path that does (not) end on the reverse complementary strand DONE
+//	5. We are dealing with a successive path and on some unitig not at the path's end we are (not) on the reverse complementary strand DONE
+//	6. We are dealing with a predecessive path and on some unitig not at the path's end we are (not) on the reverse complementary strand DONE
+
+//Tests the function addDists under the following conditions
+//	1. The path list is empty
+TEST_F(AddDistsTest, NoPth){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	addDists(pList, true);
+
+	for( ; i != cdbg.end(); ++i){
+		EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+		EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	}
+}
+
+//Tests the function addDists under the following conditions
+//	1. The path list is not empty
+//	2. A path's length is (not) larger than 2
+//	3. We are dealing with a successive path that does not end on the reverse complementary strand
+//	5. We are dealing with a successive path and on some unitig not at the path's end we are not on the reverse complementary strand
+TEST_F(AddDistsTest, SucPths){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	uList.push_back(*i);
+	pList.push_back(Path(4, uList));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(1,2));
+	uList = list<UnitigColorMap<CoreInfo>>();
+	uList.push_back(*i);
+	pList.push_back(Path(2, uList));
+	++i;
+	pList.front().second.push_front(*i);
+	pList.back().second.push_front(*i);
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	i->getData()->getData(*i)->sucCoreDist = 1;
+	pList.front().second.push_back(*i);
+	addDists(pList, true);
+
+	i = cdbg.begin();
+	EXPECT_EQ(4, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+}
+
+//Tests the function addDists under the following conditions
+//	1. The path list is not empty
+//	2. A path's length is not larger than 2
+//	4. We are dealing with a predecessive path that does not end on the reverse complementary strand
+TEST_F(AddDistsTest, PredPth){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	uList.push_back(*i);
+	pList.push_back(Path(1, uList));
+	++i;
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	pList.front().second.push_back(*i);
+	addDists(pList, false);
+
+	i = cdbg.begin();
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+}
+
+//Tests the function addDists under the following conditions
+//	1. The path list is not empty
+//	2. A path's length is (not) larger than 2
+//	4. We are dealing with a predecessive path that does not end on the reverse complementary strand
+//	6. We are dealing with a predecessive path and on some unitig not at the path's end we are not on the reverse complementary strand
+TEST_F(AddDistsTest, LpredP){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	uList.push_back(*i);
+	pList.push_back(Path(4, uList));
+	++i;
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	i->getData()->getData(*i)->predCoreDist = 1;
+	pList.front().second.push_back(*i);
+	++i;
+	pList.front().second.push_front(*i);
+	addDists(pList, false);
+
+	i = cdbg.begin();
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(4, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+}
+
+//Tests the function addDists under the following conditions
+//	1. The path list is not empty
+//	2. A path's length is not larger than 2
+//	3. We are dealing with a successive path that does end on the reverse complementary strand
+TEST_F(AddDistsTest, SucRev){
+	cdbgOpt.filename_seq_in.push_back("Test8.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	uList.push_back(*i);
+	pList.push_back(Path(1, uList));
+	++i;
+	++i;
+	u = *i;
+	u.strand = false;
+	u.getData()->getData(u)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	pList.front().second.push_back(u);
+	addDists(pList, true);
+
+	i = cdbg.begin();
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+}
+
+//Tests the function addDists under the following conditions
+//	1. The path list is not empty
+//	2. A path's length is larger than 2
+//	4. We are dealing with a predecessive path that does end on the reverse complementary strand
+//	6. We are dealing with a predecessive path and on some unitig not at the path's end we are (not) on the reverse complementary strand
+TEST_F(AddDistsTest, LpRev){
+	cdbgOpt.filename_seq_in.push_back("Test11_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	++i;
+	i->getData()->getData(*i)->sucCoreDist = 6;
+	i->getData()->getData(*i)->predCoreDist = 4;
+	u = *i;
+	u.strand = false;
+	uList.push_back(u);
+	uList.push_back(*i);
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(1,2));
+	i->getData()->getData(*i)->sucCoreDist = 2;
+	uList.push_front(*i);
+	u = *i;
+	u.strand = false;
+	uList.push_back(u);
+	pList.push_back(Path(6, uList));
+	addDists(pList, false);
+
+	i = cdbg.begin();
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(6, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(4, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+}
+
+//Tests the function addDists under the following conditions
+//	1. The path list is not empty
+//	2. A path's length is larger than 2
+//	3. We are dealing with a successive path that does not end on the reverse complementary strand
+//	5. We are dealing with a successive path and on some unitig not at the path's end we are (not) on the reverse complementary strand
+TEST_F(AddDistsTest, InterRev){
+	cdbgOpt.filename_seq_in.push_back("Test11_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	uList.push_back(*i);
+	++i;
+	uList.push_back(*i);
+	u = *i;
+	u.strand = false;
+	uList.push_back(u);
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(1,2));
+	uList.push_back(*i);
+	pList.push_back(Path(6, uList));
+	addDists(pList, true);
+
+	i = cdbg.begin();
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(6, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(4, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
 }
