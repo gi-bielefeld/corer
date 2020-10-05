@@ -97,55 +97,12 @@ void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, 
 	//Variable to store an extended path
 	Path extPth;
 
-	//Testing
-	if(it.hasPredecessors()){
-		cout << "1 Option 1" << endl;
-	} else{
-		cout << "1 Option 2" << endl;
-	}
-	uint32_t nPred = 0;
-
 	//Iterate over predecessors
 	for(neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> pred = it.begin(); pred != it.end(); ++pred){
-		//Testing
-		++nPred;
-		cout << "Current unitig is " << pred->mappedSequenceToString() << endl;
-		// if(!pred->mappedSequenceToString().compare("GGTTGATCAA")){
-		// 	cout << "Predecessors are" << endl;
-		// 	for(neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> p = pred->getPredecessors().begin(); p != pred->getPredecessors().end(); ++p){
-		// 		cout << p->mappedSequenceToString() << endl;
-		// 	}
-		// }
-
 		//Check if distance to next core k-mer (if known) is too large
 		if((pred->strand ? pred->getData()->getData(*pred)->predCoreDist : pred->getData()->getData(*pred)->sucCoreDist) > dpth - queue.top().first){
-			//Testing
-			if(pred->strand){
-				cout << "3 Option 1" << endl;
-			} else{
-				cout << "3 Option 2" << endl;
-			}
-
 			//Extending the path on this predecessor does not make sense
 			continue;
-		}
-
-		//Testing
-		if(pred->strand){
-			cout << "4 Option 1" << endl;
-		} else{
-			cout << "4 Option 2" << endl;
-		}
-		if(!pred->getData()->getData(*pred)->coreList.empty()){
-			cout << "5 Option 1" << endl;
-
-			if(getCoreDist(pred, false) <= dpth - queue.top().first){
-				cout << "6 Option 1" << endl;
-			} else{
-				cout << "6 Option 2" << endl;
-			}
-		} else{
-			cout << "5 Option 2" << endl;
 		}
 
 		//Check if there is a core k-mer on this predecessor and if it is close enough
@@ -162,9 +119,6 @@ void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, 
 
 		//Check if adding all k-mers of predecessive unitig to path does not make it too long
 		if(queue.top().first + pred->len < dpth){
-			//Testing
-			cout << "7 Option 2" << endl;
-
 			//Get path
 			extPth = queue.top();
 			//Add current predecessor to path
@@ -173,35 +127,14 @@ void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, 
 			extPth.first += pred->len;
 			//Insert path to queue
 			queue.push(extPth);
-		} else{
-			//Testing
-			cout << "7 Option 1" << endl;
 		}
-
-		//Testing
-		// cout << "nPred: " << nPred << endl;
-	}
-
-	//Testing
-	if(nPred == 1){
-		cout << "2 Option 1" << endl;
-	} else if(nPred > 1){
-		cout << "2 Option 2" << endl;
 	}
 
 	//Remove top priority path from queue
 	queue.pop();
 
 	//Call function again if queue is not empty
-	if(!queue.empty()){
-		//Testing
-		cout << "8 Option 2" << endl;
-
-		expPredPths(queue, dpth, res);
-	} else{
-		//Testing
-		cout << "8 Option 1" << endl;
-	}
+	if(!queue.empty()) expPredPths(queue, dpth, res);
 }
 
 //This function performs a BFS of the given depths on all successors of the given unitig. It returns true if a core k-mer could be reached by any path.
@@ -241,7 +174,7 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 	//Add initial path to priority queue
 	queue.push(Path(0, uniLst));
 	//Explore paths
-	expPredPths(queue, dpth, resPths);//TODO Implement this function!
+	expPredPths(queue, dpth, resPths);
 
 	//Check if we could find valid paths
 	if(!resPths.empty()){

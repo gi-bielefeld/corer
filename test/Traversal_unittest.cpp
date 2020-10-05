@@ -568,7 +568,7 @@ TEST_F(FindMinPthLenTest, SomePths){
 //Tests for function void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>&, const uint32_t&, list<Path>&)//
 //	1. The last unitig in the top priority path does (not) have predecessors DONE
 //	2. The last unitig in the top priority path has one/many predecessor(s) DONE
-//	3. The last unitig in the top priority path has a predecessor at which we are (not) on the reference strand and for which the distance to the next core k-mer is already known to be too large 1/0
+//	3. The last unitig in the top priority path has a predecessor at which we are (not) on the reference strand and for which the distance to the next core k-mer is already known to be too large DONE
 //	4. The last unitig in the top priority path has a predecessor at which we are (not) on the reference strand and for which the distance to the next core k-mer is not already known to be too large DONE
 //	5. The last unitig in the top priority path has a predecessor on which a/no core k-mer lies DONE
 //	6. The last unitig in the top priority path has a predecessor on which a core k-mer lies that is (not) close enough DONE
@@ -678,4 +678,69 @@ TEST_F(ExpPredPthsTest, FltdRef){
 	EXPECT_TRUE(res.empty());
 }
 
-//Tests the function 
+//Tests the function  expPredPths under the following conditions
+//	1. The last unitig in the top priority path does have predecessors
+//	2. The last unitig in the top priority path has one predecessor
+//	3. The last unitig in the top priority path has a predecessor at which we are not on the reference strand and for which the distance to the next core k-mer is already known to be too large
+//	4. The last unitig in the top priority path has a predecessor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	5. The last unitig in the top priority path has a predecessor on which no core k-mer lies
+//	7. The last unitig in the top priority path has a predecessor for which adding it to the path does not make the path too long
+//	8. After processing the top priority path the queue is (not) empty
+TEST_F(ExpPredPthsTest, FltdRev){
+	cdbgOpt.filename_ref_in.push_back("Test19_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,1));
+	++i;
+	++i;
+	++i;
+	l.push_back(*i);
+	queue.push(Path(0, l));
+	++i;
+	++i;
+	i->getData()->getData(*i)->sucCoreDist = 2;
+
+	expPredPths(queue, 3, res);
+	EXPECT_TRUE(queue.empty());
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests for function const bool doPredBFS(const UnitigColorMap<CoreInfo>, const uint32_t, list<Path>&)//
+//	1. The result path is (not) empty DONE
+
+//Tests the function doPredBFS under the following conditions
+//	1. The result path is empty
+TEST_F(DoPredBFStest, NoRes){
+	++i;
+	++i;
+	++i;
+
+	EXPECT_FALSE(doPredBFS(*i, 42, res));
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests the function doPredBFS under the following conditions
+//	1. The result path is not empty
+TEST_F(DoPredBFStest, SomeRes){
+	++i;
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+
+	EXPECT_TRUE(doPredBFS(*i, 4, res));
+	EXPECT_EQ(1, res.size());
+	EXPECT_EQ(4, res.front().first);
+	EXPECT_EQ(3, res.front().second.size());
+	list<UnitigColorMap<CoreInfo>>::const_iterator ui = res.front().second.begin();
+	EXPECT_EQ("GCAAACACA", ui->mappedSequenceToString());
+	++ui;
+	EXPECT_EQ("AAGGCAAACAC", ui->mappedSequenceToString());
+	EXPECT_EQ(4, ui->getData()->getData(*ui)->predCoreDist);
+	++ui;
+	EXPECT_EQ("AAAGGCAAA", ui->mappedSequenceToString());
+	EXPECT_EQ(1, ui->getData()->getData(*ui)->predCoreDist);
+}

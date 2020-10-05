@@ -72,7 +72,7 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 			}
 
 			//Do BFS on predecessive unitigs and mark all bridging k-mers if necessary
-			if(doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - i->len - exstPthLen)), predPaths) || !cInfo->coreList.empty()){//TODO: Implement this function!
+			if(doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - i->len - exstPthLen)), predPaths) || !cInfo->coreList.empty()){
 				//Mark k-mers of successive result paths as bridging
 				markBrdg(sucPaths, true);//TODO: Implement this function!
 				//Mark k-mers of predecessive result paths as bridging
