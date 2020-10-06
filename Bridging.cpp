@@ -21,6 +21,21 @@ void markBrdg(const list<Path>& pths, const bool& sucPths){
 	for(list<Path>::const_iterator p = pths.begin(); p != pths.end(); ++p){
 		//Iterate over unitigs in path
 		for(list<UnitigColorMap<CoreInfo>>::const_iterator u = p->second.begin(); u != p->second.end(); ++u){
+			//Testing
+			if(sucPths){
+				if(u->strand){
+					cout << "4 Option 1" << endl;
+				} else{
+					cout << "4 Option 2" << endl;
+				}
+			} else{
+				if(u->strand){
+					cout << "5 Option 1" << endl;
+				} else{
+					cout << "5 Option 2" << endl;
+				}
+			}
+
 			//Check which bridging flag we have to set
 			if(sucPths ^ u->strand){
 				//Mark k-mers at unitig's end (reference strand orientation) as bridging
@@ -30,6 +45,23 @@ void markBrdg(const list<Path>& pths, const bool& sucPths){
 				u->getData()->getData(*u)->preBrdg = true;
 			}
 		}
+	}
+
+	//Testing
+	if(pths.empty()){
+		cout << "1 Option 1" << endl;
+	} else{
+		cout << "1 Option 2" << endl;
+	}
+	if(pths.size() == 1){
+		cout << "2 Option 1" << endl;
+	} else if(pths.size() > 1){
+		cout << "2 Option 2" << endl;
+	}
+	if(sucPths){
+		cout << "3 Option 1" << endl;
+	} else{
+		cout << "3 Option 2" << endl;
 	}
 }
 

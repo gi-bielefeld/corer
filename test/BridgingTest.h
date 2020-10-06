@@ -3,6 +3,8 @@
 
 #include <list>
 
+#include "Traversal.h"
+
 using namespace std;
 
 class CrTooFarTest : public ::testing::Test {
@@ -17,6 +19,16 @@ class CrTooFarTest : public ::testing::Test {
 		size_t len;
 		//List of core k-mer intervals
 		list<pair<uint32_t, uint32_t>> ints;
+};
+
+class MarkBrdgTest : public ::testing::Test {
+
+	protected:
+
+		MarkBrdgTest(){}
+
+		//A list of paths
+		list<Path> l;
 };
 
 #endif

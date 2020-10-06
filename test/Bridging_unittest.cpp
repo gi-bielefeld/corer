@@ -80,3 +80,31 @@ TEST_F(CrTooFarTest, NKmer){
 
 	EXPECT_FALSE(rCrTooFar(len, ints, d));
 }
+
+//Tests for function void markBrdg(const list<Path>&, const bool&)//
+//	1. Our list of paths is (not) empty 1/0
+//	2. Our list consists of one/many path(s) 0/0
+//	3. We are (not) dealing with a list of successive paths 1/0
+//	4. We are dealing with a list of successive paths and are (not) on the unitigs' reference strand 0/0
+//	5. We are dealing with a list of predecessive paths and are (not) on the unitigs' reference strand 0/0
+
+//Tests the function markBrdg under the following conditions
+//	1. Our list of paths is empty
+//	3. We are dealing with a list of successive paths
+TEST_F(MarkBrdgTest, NoPths){
+	markBrdg(l, true);
+	EXPECT_TRUE(l.empty());
+}
+
+//Tests for function markBrdg under the following conditions
+//	1. Our list of paths is not empty
+//	2. Our list consists of one path
+//	3. We are not dealing with a list of successive paths
+//	5. We are dealing with a list of predecessive paths and are on the unitigs' reference strand
+TEST_F(MarkBrdgTest, SnglPth){
+	
+	CCDBG_Build_opt cdbgOpt;
+	cdbgOpt.k = DEFAULT_TEST_K;
+	cdbgOpt.g = DEFAULT_TEST_G;
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+}
