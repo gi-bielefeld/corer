@@ -20,6 +20,7 @@ TEST_F(CrTooFarTest, LUni){
 //	1.The core list is empty
 //	2.The unitig is not too long
 TEST_F(CrTooFarTest, SUni){
+	len = 41;
 	EXPECT_FALSE(lCrTooFar(len, ints, d));
 }
 
@@ -59,6 +60,7 @@ TEST_F(CrTooFarTest, LongU){
 //	1.The core list is empty
 //	2.The unitig is not too long
 TEST_F(CrTooFarTest, ShrtU){
+	len = 41;
 	EXPECT_FALSE(rCrTooFar(len, ints, d));
 }
 
@@ -121,8 +123,11 @@ TEST_F(MarkBrdgTest, SnglPth){
 
 	markBrdg(l, false);
 	EXPECT_EQ(1, l.size());
+	list<UnitigColorMap<CoreInfo>>::const_iterator u = l.front().second.begin();
+	EXPECT_TRUE(u->getData()->getData(*u)->preBrdg);
+	++u;
 
-	for(list<UnitigColorMap<CoreInfo>>::const_iterator u = l.front().second.begin(); u != l.front().second.end(); ++u) EXPECT_TRUE(u->getData()->getData(*u)->preBrdg);
+	for(; u != l.front().second.end(); ++u) EXPECT_TRUE(u->getData()->getData(*u)->sufBrdg);
 }
 
 //Tests for function markBrdg under the following conditions
@@ -156,7 +161,11 @@ TEST_F(MarkBrdgTest, MnyPths){
 	EXPECT_EQ(2, l.back().second.size());
 
 	for(list<Path>::const_iterator p = l.begin(); p != l.end(); ++p){
-		for(list<UnitigColorMap<CoreInfo>>::const_iterator u = l.front().second.begin(); u != l.front().second.end(); ++u) EXPECT_TRUE(u->getData()->getData(*u)->sufBrdg);
+		list<UnitigColorMap<CoreInfo>>::const_iterator u = l.front().second.begin();
+		EXPECT_TRUE(u->getData()->getData(*u)->sufBrdg);
+		++u;
+
+		for(; u != l.front().second.end(); ++u) EXPECT_TRUE(u->getData()->getData(*u)->preBrdg);
 	}
 }
 
@@ -188,7 +197,7 @@ TEST_F(MarkBrdgTest, SucRev){
 	uni = l.front().second.front();
 	EXPECT_TRUE(uni.getData()->getData(uni)->sufBrdg);
 	uni = l.front().second.back();
-	EXPECT_TRUE(uni.getData()->getData(uni)->preBrdg);
+	EXPECT_TRUE(uni.getData()->getData(uni)->sufBrdg);
 }
 
 //Tests for function markBrdg under the following conditions
@@ -219,43 +228,118 @@ TEST_F(MarkBrdgTest, PredRev){
 	uni = l.front().second.front();
 	EXPECT_TRUE(uni.getData()->getData(uni)->preBrdg);
 	uni = l.front().second.back();
-	EXPECT_TRUE(uni.getData()->getData(uni)->sufBrdg);
+	EXPECT_TRUE(uni.getData()->getData(uni)->preBrdg);
 }
 
 //Tests for function void detectBrdg(ColoredCDBG<CoreInfo>&, const uint32_t&)//
-//	1. A unitig's core list is (not) empty 0/0
-//	2. The last k-mer on a unitig is (not) marked as core 0/0
-//	3. A unitig's core list is empty, the unitig's suffix is already marked as bridging and the distance to bridge to the left side is (not) already too large 0/0
-//	4. A unitig's core list is not empty, the unitig's suffix is already marked as bridging and the distance to bridge to the left side is (not) already too large 0/0
-//	5. The last k-mer on a unitig is marked as core, the unitig's suffix is already marked as bridging and the distance to bridge to the left side is (not) already too large 0/0
-//	6. The last k-mer on a unitig is not marked as core, the unitig's suffix is already marked as bridging and the distance to bridge to the left side is (not) already too large 0/0
-//	7. A BFS on successive unitigs has to be done, is successful and there is a/no core k-mer on this unitig 0/0
-//	8. A BFS on successive unitigs has to be done, fails and there is a/no core k-mer on this unitig 0/0
-//	9. A unitig's suffix is (not) already marked as bridging 0/0
-//	10. A unitig's core list is empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large 0/0
-//	11. A unitig's core list is not empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large 0/0
-//	12. The last k-mer on a unitig is marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large 0/0
-//	13. The last k-mer on a unitig is not marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large 0/0
-//	14. A unitig's prefix is (not) already marked as bridging 0/0
-//	15. A unitig's core list is empty, the unitig's prefix is already marked as bridging and the distance to bridge to the right side is (not) already too large 0/0
-//	16. A unitig's core list is empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large 0/0
-//	17. A unitig's core list is not empty, the unitig's prefix is already marked as bridging and the distance to bridge to the right side is (not) already too large 0/0
-//	18. A unitig's core list is not empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large 0/0
-//	19. The first k-mer on a unitig is marked as core, the unitig's prefix is already marked as bridging and the distance to bridge to the right side is (not) already too large 0/0
-//	20. The first k-mer on a unitig is marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large 0/0
-//	21. The first k-mer on a unitig is not marked as core, the unitig's prefix is already marked as bridging and the distance to bridge to the right side is (not) already too large 0/0
-//	22. The first k-mer on a unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large 0/0
-//	23. A BFS on predecessive unitigs has to be done and there is (no) core k-mer on the current unitig 0/0
-//	24. A BFS on predecessive unitigs has to be done, is successful and there is a/no core k-mer on this unitig 0/0
-//	25. A BFS on predecessive unitigs has to be done, fails and there is a/no core k-mer on this unitig 0/0
+//	1. A unitig's core list is (not) empty DONE
+//	2. The last k-mer on a unitig is (not) marked as core DONE
+//	3. A BFS on successive unitigs has to be done, is successful and there is a/no core k-mer on this unitig 0/1
+//	4. A BFS on successive unitigs has to be done, fails and there is a/no core k-mer on this unitig DONE
+//	5. A unitig's suffix is (not) already marked as bridging 0/1
+//	6. A unitig's core list is empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large DONE
+//	7. A unitig's core list is not empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large 0/1
+//	8. The last k-mer on a unitig is marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large 0/1
+//	9. The last k-mer on a unitig is not marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large DONE
+//	10. We have to continue with the current unitig after a potential BFS on successive unitigs and the current unitig's prefix is (not) already marked as bridging 0/1
+//	11. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large DONE
+//	12. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is not empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large DONE
+//	13. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large 0/1
+//	14. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large DONE
+//	15. A BFS on predecessive unitigs has to be done and there is a/no core k-mer on the current unitig 0/1
+//	16. A BFS on predecessive unitigs has to be done, is successful and there is a/no core k-mer on this unitig 0/1
+//	17. A BFS on predecessive unitigs has to be done, fails and there is a/no core k-mer on this unitig 0/0
 
 //Tests for function detectBrdg under the following conditions
 //	1. A unitig's core list is (not) empty
 //	2. The last k-mer on a unitig is (not) marked as core
+//	4. A BFS on successive unitigs has to be done, fails and there is no core k-mer on this unitig
+//	5. A unitig's suffix is not already marked as bridging
+//	6. A unitig's core list is empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large
+//	7. A unitig's core list is not empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	8. The last k-mer on a unitig is marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	9. The last k-mer on a unitig is not marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large
+//	10. We have to continue with the current unitig after a potential BFS on successive unitigs and the current unitig's prefix is (not) already marked as bridging
+//	11. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large
+//	12. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is not empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large
+//	13. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large
+//	14. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large
 TEST_F(DetectBrdgTest, NoCore){
 	cdbgOpt.filename_seq_in.push_back("Test.fa");
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
 	i = cdbg.begin();
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(2,2));
+	++i;
+	++i;
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	detectBrdg(cdbg, 2);
+
+	for(i = cdbg.begin(); i != cdbg.end(); ++i){
+		EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+		EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+		EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+		EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	}
+}
+
+//Tests for function detectBrdg under the following conditions
+//	1. A unitig's core list is (not) empty
+//	2. The last k-mer on a unitig is (not) marked as core
+//	3. A BFS on successive unitigs has to be done, is successful and there is no core k-mer on this unitig
+//	4. A BFS on successive unitigs has to be done, fails and there is a/no core k-mer on this unitig
+//	5. A unitig's suffix is (not) already marked as bridging
+//	6. A unitig's core list is empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	7. A unitig's core list is not empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	8. The last k-mer on a unitig is marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	9. The last k-mer on a unitig is not marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	10. We have to continue with the current unitig after a potential BFS on successive unitigs and the current unitig's prefix is (not) already marked as bridging
+//	11. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	12. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is not empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	13. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	14. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	15. A BFS on predecessive unitigs has to be done and there is a/no core k-mer on the current unitig
+//	16. A BFS on predecessive unitigs has to be done, is successful and there is a/no core k-mer on this unitig
+TEST_F(DetectBrdgTest, SucBFS){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	detectBrdg(cdbg, 4);
+
+	i = cdbg.begin();
+	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
 }
