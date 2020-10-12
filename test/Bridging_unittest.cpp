@@ -234,20 +234,20 @@ TEST_F(MarkBrdgTest, PredRev){
 //Tests for function void detectBrdg(ColoredCDBG<CoreInfo>&, const uint32_t&)//
 //	1. A unitig's core list is (not) empty DONE
 //	2. The last k-mer on a unitig is (not) marked as core DONE
-//	3. A BFS on successive unitigs has to be done, is successful and there is a/no core k-mer on this unitig 0/1
+//	3. A BFS on successive unitigs has to be done, is successful and there is a/no core k-mer on this unitig DONE
 //	4. A BFS on successive unitigs has to be done, fails and there is a/no core k-mer on this unitig DONE
-//	5. A unitig's suffix is (not) already marked as bridging 0/1
+//	5. A unitig's suffix is (not) already marked as bridging DONE
 //	6. A unitig's core list is empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large DONE
-//	7. A unitig's core list is not empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large 0/1
+//	7. A unitig's core list is not empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large DONE
 //	8. The last k-mer on a unitig is marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large 0/1
 //	9. The last k-mer on a unitig is not marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large DONE
-//	10. We have to continue with the current unitig after a potential BFS on successive unitigs and the current unitig's prefix is (not) already marked as bridging 0/1
+//	10. We have to continue with the current unitig after a potential BFS on successive unitigs and the current unitig's prefix is (not) already marked as bridging DONE
 //	11. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large DONE
 //	12. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is not empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large DONE
 //	13. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large 0/1
 //	14. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large DONE
-//	15. A BFS on predecessive unitigs has to be done and there is a/no core k-mer on the current unitig 0/1
-//	16. A BFS on predecessive unitigs has to be done, is successful and there is a/no core k-mer on this unitig 0/1
+//	15. A BFS on predecessive unitigs has to be done and there is a/no core k-mer on the current unitig DONE
+//	16. A BFS on predecessive unitigs has to be done, is successful and there is a/no core k-mer on this unitig DONE
 //	17. A BFS on predecessive unitigs has to be done, fails and there is a/no core k-mer on this unitig 0/0
 
 //Tests for function detectBrdg under the following conditions
@@ -301,8 +301,8 @@ TEST_F(DetectBrdgTest, NoCore){
 //	12. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is not empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
 //	13. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
 //	14. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
-//	15. A BFS on predecessive unitigs has to be done and there is a/no core k-mer on the current unitig
-//	16. A BFS on predecessive unitigs has to be done, is successful and there is a/no core k-mer on this unitig
+//	15. A BFS on predecessive unitigs has to be done and there is no core k-mer on the current unitig
+//	16. A BFS on predecessive unitigs has to be done, is successful and there is no core k-mer on this unitig
 TEST_F(DetectBrdgTest, SucBFS){
 	cdbgOpt.filename_seq_in.push_back("Test.fa");
 	cdbg.build(cdbgOpt);
@@ -316,6 +316,64 @@ TEST_F(DetectBrdgTest, SucBFS){
 	++i;
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
 	detectBrdg(cdbg, 4);
+
+	i = cdbg.begin();
+	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+}
+
+//Tests for function detectBrdg under the following conditions
+//	1. A unitig's core list is (not) empty
+//	2. The last k-mer on a unitig is (not) marked as core
+//	3. A BFS on successive unitigs has to be done, is successful and there is a core k-mer on this unitig
+//	4. A BFS on successive unitigs has to be done, fails and there is no core k-mer on this unitig
+//	5. A unitig's suffix is (not) already marked as bridging
+//	6. A unitig's core list is empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	7. A unitig's core list is not empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large
+//	8. The last k-mer on a unitig is marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	9. The last k-mer on a unitig is not marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is (not) already too large
+//	10. We have to continue with the current unitig after a potential BFS on successive unitigs and the current unitig's prefix is (not) already marked as bridging
+//	12. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is not empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	13. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	14. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	15. A BFS on predecessive unitigs has to be done and there is a core k-mer on the current unitig
+//	16. A BFS on predecessive unitigs has to be done, is successful and there is a core k-mer on this unitig
+TEST_F(DetectBrdgTest, SucSucBFSCore){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(1,1));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	detectBrdg(cdbg, 2);
 
 	i = cdbg.begin();
 	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);

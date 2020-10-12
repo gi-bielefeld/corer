@@ -150,6 +150,9 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 				if(sucPaths.empty()){
 					cout << "4 Option 1" << endl;
 				} else{
+					// cout << "sucPaths consists of " << sucPaths.size() << " paths" << endl;
+					// cout << "It is: " << (sucPaths.front().second.empty() ? "" : "not ") << "empty and involves " << sucPaths.front().second.size() << " unitigs:" << endl;
+					// for(list<UnitigColorMap<CoreInfo>>::iterator u = sucPaths.front().second.begin(); u != sucPaths.front().second.end(); ++u) cout << u->mappedSequenceToString() << endl;
 					if(cInfo->coreList.empty()){
 						cout << "3 Option 2" << endl;
 					} else{
@@ -252,9 +255,12 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 				//Testing
 				if(cInfo->coreList.empty()){
 					cout << "16 Option 2" << endl;
+				} else{
+					if(!predPaths.empty()){
+						cout << "16 Option 1" << endl;
+					}
 				}
 				if(predPaths.empty()){
-					cout << "16 Option 1" << endl;
 					cout << "17 Option 1" << endl;
 				}
 
