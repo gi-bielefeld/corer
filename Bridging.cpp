@@ -60,171 +60,13 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		//Get CoreInfo object
 		cInfo = i->getData()->getData(*i);
 
-		//Testing
-		cout << "Current unitig: " << i->mappedSequenceToString() << endl;
-		if(cInfo->coreList.empty()){
-			cout << "1 Option 1" << endl;
-		} else{
-			cout << "1 Option 2" << endl;
-		}
-		if(cInfo->coreList.empty() || cInfo->coreList.back().second < i->len - 1){
-			cout << "2 Option 2" << endl;
-		} else{
-			cout << "2 Option 1" << endl;
-		}
-		// if(cInfo->coreList.empty() && cInfo->sufBrdg){
-		// 	if(lCrTooFar(i->len, cInfo->coreList, dlt)){
-		// 		cout << "3 Option 1" << endl;
-		// 	} else{
-		// 		cout << "3 Option 2" << endl;
-		// 	}
-		// }
-		if(cInfo->coreList.empty() && !cInfo->sufBrdg){
-			if(lCrTooFar(i->len, cInfo->coreList, dlt)){
-				cout << "6 Option 1" << endl;
-			} else{
-				cout << "6 Option 2" << endl;
-			}
-		}
-		// if(!cInfo->coreList.empty() && cInfo->sufBrdg){
-		// 	if(lCrTooFar(i->len, cInfo->coreList, dlt)){
-		// 		cout << "4 Option 1" << endl;
-		// 	} else{
-		// 		cout << "4 Option 2" << endl;
-		// 	}
-		// }
-		if(!cInfo->coreList.empty() && !cInfo->sufBrdg){
-			if(lCrTooFar(i->len, cInfo->coreList, dlt)){
-				cout << "7 Option 1" << endl;
-			} else{
-				cout << "7 Option 2" << endl;
-			}
-		}
-		// if(!cInfo->coreList.empty() && cInfo->coreList.back().second == i->len - 1 && cInfo->sufBrdg){
-		// 	if(lCrTooFar(i->len, cInfo->coreList, dlt)){
-		// 		cout << "5 Option 1" << endl;
-		// 	} else{
-		// 		cout << "5 Option 2" << endl;
-		// 	}
-		// }
-		if(!cInfo->coreList.empty() && cInfo->coreList.back().second == i->len - 1 && !cInfo->sufBrdg){
-			if(lCrTooFar(i->len, cInfo->coreList, dlt)){
-				cout << "8 Option 1" << endl;
-			} else{
-				cout << "8 Option 2" << endl;
-			}
-		}
-		// if((cInfo->coreList.empty() || cInfo->coreList.back().second < i->len - 1) && cInfo->sufBrdg){
-		// 	if(lCrTooFar(i->len, cInfo->coreList, dlt)){
-		// 		cout << "6 Option 1" << endl;
-		// 	} else{
-		// 		cout << "6 Option 2" << endl;
-		// 	}
-		// }
-		if((cInfo->coreList.empty() || cInfo->coreList.back().second < i->len - 1) && !cInfo->sufBrdg){
-			if(lCrTooFar(i->len, cInfo->coreList, dlt)){
-				cout << "9 Option 1" << endl;
-			} else{
-				cout << "9 Option 2" << endl;
-			}
-		}
-		if(cInfo->sufBrdg){
-			cout << "5 Option 1" << endl;
-		} else{
-			cout << "5 Option 2" << endl;
-		}
-
 		//Check if last k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the left side (i.e. the distance to the closest core k-mer on this unitig or the unitig's beginning) is not already too large
 		if((cInfo->coreList.empty() || cInfo->coreList.back().second < i->len - 1) && !cInfo->sufBrdg && !lCrTooFar(i->len, cInfo->coreList, dlt)){
 			//Clear path list
 			sucPaths = list<Path>();
 
 			//Do BFS on successive unitigs and check if we need to try a BFS on predecessors as well (which is the case only if there is a core k-mer on the current unitig or the BFS on successive unitigs was successful)
-			if(!doSucBFS(*i, (dlt + 1) / 2, sucPaths) && cInfo->coreList.empty()){
-				//Testing
-				cout << "4 Option 2" << endl;
-
-				continue;
-			} else{
-				//Testing
-				if(sucPaths.empty()){
-					cout << "4 Option 1" << endl;
-				} else{
-					// cout << "sucPaths consists of " << sucPaths.size() << " paths" << endl;
-					// cout << "It is: " << (sucPaths.front().second.empty() ? "" : "not ") << "empty and involves " << sucPaths.front().second.size() << " unitigs:" << endl;
-					// for(list<UnitigColorMap<CoreInfo>>::iterator u = sucPaths.front().second.begin(); u != sucPaths.front().second.end(); ++u) cout << u->mappedSequenceToString() << endl;
-					if(cInfo->coreList.empty()){
-						cout << "3 Option 2" << endl;
-					} else{
-						cout << "3 Option 1" << endl;
-					}
-				}
-			}
-		}
-
-		//Testing
-		if(cInfo->preBrdg){
-			cout << "10 Option 1" << endl;
-		} else{
-			cout << "10 Option 2" << endl;
-		}
-		// if(cInfo->coreList.empty() && cInfo->preBrdg){
-		// 	if(rCrTooFar(i->len, cInfo->coreList, dlt)){
-		// 		cout << "15 Option 1" << endl;
-		// 	} else{
-		// 		cout << "15 Option 2" << endl;
-		// 	}
-		// }
-		// cout << "Core list is " << (cInfo->coreList.empty() ? "" : "not ") << "empty" << endl;
-		// cout << "Prefix bridging flag is " << (cInfo->preBrdg ? "" : "not ") << "set" << endl;
-		if(cInfo->coreList.empty() && !cInfo->preBrdg){
-			if(rCrTooFar(i->len, cInfo->coreList, dlt)){
-				cout << "11 Option 1" << endl;
-			} else{
-				cout << "11 Option 2" << endl;
-			}
-		}
-		// if(!cInfo->coreList.empty() && cInfo->preBrdg){
-		// 	if(rCrTooFar(i->len, cInfo->coreList, dlt)){
-		// 		cout << "17 Option 1" << endl;
-		// 	} else{
-		// 		cout << "17 Option 2" << endl;
-		// 	}
-		// }
-		if(!cInfo->coreList.empty() && !cInfo->preBrdg){
-			if(rCrTooFar(i->len, cInfo->coreList, dlt)){
-				cout << "12 Option 1" << endl;
-			} else{
-				cout << "12 Option 2" << endl;
-			}
-		}
-		// if(!cInfo->coreList.empty() && cInfo->coreList.front().first == 0 && cInfo->preBrdg){
-		// 	if(rCrTooFar(i->len, cInfo->coreList, dlt)){
-		// 		cout << "19 Option 1" << endl;
-		// 	} else{
-		// 		cout << "19 Option 2" << endl;
-		// 	}
-		// }
-		if(!cInfo->coreList.empty() && cInfo->coreList.front().first == 0 && !cInfo->preBrdg){
-			if(rCrTooFar(i->len, cInfo->coreList, dlt)){
-				cout << "13 Option 1" << endl;
-			} else{
-				cout << "13 Option 2" << endl;
-			}
-		}
-		// if((cInfo->coreList.empty() || cInfo->coreList.front().first > 0) && cInfo->preBrdg){
-		// 	if(rCrTooFar(i->len, cInfo->coreList, dlt)){
-		// 		cout << "21 Option 1" << endl;
-		// 	} else{
-		// 		cout << "21 Option 2" << endl;
-		// 	}
-		// }
-		if((cInfo->coreList.empty() || cInfo->coreList.front().first > 0) && !cInfo->preBrdg){
-			if(rCrTooFar(i->len, cInfo->coreList, dlt)){
-				cout << "14 Option 1" << endl;
-			} else{
-				cout << "14 Option 2" << endl;
-			}
+			if(!doSucBFS(*i, (dlt + 1) / 2, sucPaths) && cInfo->coreList.empty()) continue;
 		}
 
 		//Check if first k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the right side (i.e. the distance to the closest core kmer on this unitig or the unitig's end) is not already too large
@@ -236,41 +78,17 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 			if(cInfo->coreList.empty()){
 				//Find path to core k-mer on successive unitigs with minimum length
 				exstPthLen = findMinPthLen(sucPaths);
-
-				//Testing
-				cout << "15 Option 2" << endl;
 			} else{
 				//A path has to reach the leftmost core k-mer on this unitig only
 				exstPthLen = cInfo->coreList.front().first;
-
-				//Testing
-				cout << "15 Option 1" << endl;
 			}
-
-			//Testing
-			// cout << "Delta for BFS on predecessors is " << min((dlt + 1) / 2, (uint32_t) (dlt - i->len - exstPthLen)) << endl;
 
 			//Do BFS on predecessive unitigs and mark all bridging k-mers if necessary (+1, because otherwise we count in the k-mer we start at)
 			if(doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - i->len - exstPthLen + 1)), predPaths) || !cInfo->coreList.empty()){
-				//Testing
-				if(cInfo->coreList.empty()){
-					cout << "16 Option 2" << endl;
-				} else{
-					if(!predPaths.empty()){
-						cout << "16 Option 1" << endl;
-					}
-				}
-				if(predPaths.empty()){
-					cout << "17 Option 1" << endl;
-				}
-
 				//Mark k-mers of successive result paths as bridging
 				markBrdg(sucPaths, true);
 				//Mark k-mers of predecessive result paths as bridging
 				markBrdg(predPaths, false);
-			} else{
-				//Testing
-				cout << "17 Option 2" << endl;
 			}
 		}
 	}
