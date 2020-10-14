@@ -18,7 +18,7 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 		nBrd = 0;
 
 		//Iterate over unitig's k-mers
-		for(uint32_t j = 0; j <= uni.size - cdbg.getK(); ++j){
+		for(uint32_t j = 0; j < uni.len; ++j){
 			//Update k-mer's position
 			uni.dist = j;
 
@@ -33,8 +33,8 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 				//Reset bridging path length if necessary
 				if(nBrd > 0) nBrd = 0;
 			} else{
-				//Increase path length and check if delta is exceeded
-				if(++nBrd > dlt){
+				//Check if increased path length exceeds delta and an interval has already started
+				if(++nBrd >= dlt && l > -1){
 					//Add interval
 					uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
 					//Reset left interval borders

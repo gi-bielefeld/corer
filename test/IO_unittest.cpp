@@ -194,3 +194,73 @@ TEST_F(PrsArgsTest, NonPosNbThrds){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 }
+
+//Tests for function void outputSnippets(const ColoredCDBG<CoreInfo>&)//
+//	1. A unitig in the graph has (no) core k-mers DONE
+//	2. A unitig has no core k-mers and is (not) marked as bridging DONE
+//	3. A unitig has at least one core k-mer and its prefix is (not) marked as bridging DONE
+//	4. A unitig has one/many core k-mer(s) 1/0
+//	5. A unitig has at least one core k-mer and its suffix is (not) marked as bridging DONE
+
+//Tests the function outputSnippets under the following conditions
+//	1. A unitig in the graph has (no) core k-mers
+//	2. A unitig has no core k-mers and is (not) marked as bridging
+//	3. A unitig has at least one core k-mer and its prefix is (not) marked as bridging
+//	4. A unitig has one core k-mer
+//	5. A unitig has at least one core k-mer and its suffix is (not) marked as bridging
+//Program calls:
+//	Bifrost:
+//		>Bifrost build -r OutputSnippetsTestGraphSources1.txt -o OutputSnippetsTestGraph1 -k 9 -m 4 -c -v
+//	Corer:
+//		>../Corer -q 2 -g OutputSnippetsTestGraph1
+//Expected output:
+//AAGGCAAACAC
+//AAAGGCAAA
+//GCAAACACA
+
+//Tests the function outputSnippets under the following conditions
+//	1. A unitig in the graph has (no) core k-mers
+//	2. A unitig has no core k-mers and is not marked as bridging
+//	3. A unitig has at least one core k-mer and its prefix is (not) marked as bridging
+//	4. A unitig has one core k-mer
+//	5. A unitig has at least one core k-mer and its suffix is (not) marked as bridging
+//Program calls:
+//	Bifrost:
+//		>Bifrost build -r OutputSnippetsTestGraphSources2.txt -o OutputSnippetsTestGraph2 -k 9 -m 4 -c -v
+//	Corer:
+//		>../Corer -q 2 -g OutputSnippetsTestGraph2
+//Expected output:
+//AAGGCAAACAC
+//AAGGCAAAG
+//AAAGGCAAA
+//GCAAACACA
+
+//Tests the function outputSnippets under the following conditions
+//	1. A unitig in the graph has (no) core k-mers
+//	2. A unitig has no core k-mers and is not marked as bridging
+//	3. A unitig has at least one core k-mer and its prefix is not marked as bridging
+//	4. A unitig has one core k-mer
+//	5. A unitig has at least one core k-mer and its suffix is not marked as bridging
+//Program calls:
+//	Bifrost:
+//		>Bifrost build -r OutputSnippetsTestGraphSources3.txt -o OutputSnippetsTestGraph3 -k 9 -m 4 -c -v
+//	Corer:
+//		>../Corer -q 2 -g OutputSnippetsTestGraph3
+//Expected output:
+//GGCAAACAC
+//GCAAACACA
+
+//Tests the function outputSnippets under the following conditions
+//	1. A unitig in the graph has (no) core k-mers
+//	2. A unitig has no core k-mers and is not marked as bridging
+//	3. A unitig has at least one core k-mer and its prefix is not marked as bridging
+//	4. A unitig has many core k-mers
+//	5. A unitig has at least one core k-mer and its suffix is not marked as bridging
+//Program calls:
+//	Bifrost:
+//		>Bifrost build -r OutputSnippetsTestGraphSources4.txt -o OutputSnippetsTestGraph4 -k 9 -m 4 -c -v
+//	Corer:
+//		>../Corer -q 2 -d 1 -g OutputSnippetsTestGraph4
+//Expected output:
+//AAGGCAAAC
+//GGCAAACAC

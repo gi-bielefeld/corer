@@ -1,0 +1,2 @@
+Test.fa
+Test_color8.fa

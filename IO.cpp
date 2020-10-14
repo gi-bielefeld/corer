@@ -64,3 +64,92 @@ const bool prsArgs(int& nArgs, char** argList, string& filePref, uint32_t& qrm, 
 
 	return success;
 }
+
+//This function iterates over the given graph and outputs all core and bridging parts as snippets
+void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
+	//Start and end positions of intervals to extract
+	size_t start, end;
+	//Core interval list iterator
+	list<pair<uint32_t, uint32_t>>::const_iterator intvl;
+
+	//Iterate over all unitigs
+	for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
+		//Check if unitig has no core k-mers
+		if(i->getData()->getData(*i)->coreList.empty()){
+			//Testing
+			cout << "1 Option 2" << endl;
+
+			//Check if unitig's sequence is marked as bridging
+			if(i->getData()->getData(*i)->preBrdg || i->getData()->getData(*i)->sufBrdg){
+				//Testing
+				cout << "2 Option 1" << endl;
+
+				//Output the complete sequence
+				cout << i->mappedSequenceToString() << endl;
+			} else{
+				//Testing
+				cout << "2 Option 2" << endl;
+			}
+		} else{
+			//Testing
+			cout << "1 Option 1" << endl;
+
+			//Get interval list iterator
+			intvl = i->getData()->getData(*i)->coreList.begin();
+
+			//Check if unitig's beginning is marked as bridging
+			if(i->getData()->getData(*i)->preBrdg){
+				//Testing
+				cout << "3 Option 1" << endl;
+
+				//The first substring we have to output starts at the sequence's beginning
+				start = 0;
+			} else{
+				//Testing
+				cout << "3 Option 2" << endl;
+
+				//The first substring we have to output starts at the first core interval's beginning
+				start = intvl->first;
+			}
+
+			//We assume that our substring will end at the first core interval's end
+			end = intvl->second;
+			//Move to next interval
+			++intvl;
+
+			//Testing
+			if(i->getData()->getData(*i)->coreList.size() < 2){
+				cout << "4 Option 1" << endl;
+			} else{
+				cout << "4 Option 2" << endl;
+			}
+
+			//Keep outputting substings as long as intervals are left
+			while(intvl != i->getData()->getData(*i)->coreList.end()){
+				//Output last substring
+				cout << i->mappedSequenceToString().substr(start, end - start + cdbg.getK()) << endl;
+				//The next substring starts at the current interval
+				start = intvl->first;
+				//We assume it ends with the current interval
+				end = intvl->second;
+				//Move to next interval
+				++intvl;
+			}
+
+			//Check if unitig's suffix is marked as bridging
+			if(i->getData()->getData(*i)->sufBrdg){
+				//Testing
+				cout << "5 Option 1" << endl;
+
+				//Output last substring reaching to sequence's end
+				cout << i->mappedSequenceToString().substr(start) << endl;
+			} else{
+				//Testing
+				cout << "5 Option 2" << endl;
+
+				//Output last substring reaching to interval's end
+				cout << i->mappedSequenceToString().substr(start, end - start + cdbg.getK()) << endl;
+			}
+		}
+	}
+}
