@@ -310,3 +310,90 @@ TEST_F(MarkCoreTest, snglClr){
 	++i;
 	EXPECT_EQ(i, cdbg.end());
 }
+
+//Tests the function markCore under the following conditions
+//	1. The quorum is (not) fulfilled for a k-mer
+//	2. A new interval has to be started
+//	3. The bridging path's length has (not) to be reseted
+//	4. Delta is exceeded
+TEST_F(MarkCoreTest, TwoInts){
+	cdbgOpt.filename_seq_in.push_back("Test_color8.fa");
+
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+
+	qrm = 2;
+
+	markCore(cdbg, qrm, dlt);
+
+	i = cdbg.begin();
+
+	EXPECT_EQ("AAGGCAAACAC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(1, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(1, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(1, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(0, inter->second);
+	++inter;
+	EXPECT_EQ(2, inter->first);
+	EXPECT_EQ(2, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("AAGGCAAAGAC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(1, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_EQ("AAAGGCAAA", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_EQ("GCAAACACA", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_EQ("GCAAACACC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_EQ(i, cdbg.end());
+}

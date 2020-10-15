@@ -18,7 +18,7 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 		nBrd = 0;
 
 		//Iterate over unitig's k-mers
-		for(uint32_t j = 0; j < uni.len; ++j){
+		for(uint32_t j = 0; j <= uni.size - cdbg.getK(); ++j){
 			//Update k-mer's position
 			uni.dist = j;
 

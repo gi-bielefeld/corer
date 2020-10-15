@@ -45,15 +45,15 @@ int main(int argc, char **argv){
 	markCore(cdbg, qrm, dlt);
 
 	//Testing
-	cout << "Our graph is:" << endl;
-	for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
-		cout << i->referenceUnitigToString() << " Colors are:" << endl;
+	// cout << "Our graph is:" << endl;
+	// for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
+	// 	cout << i->referenceUnitigToString() << " Colors are:" << endl;
 
-		for(UnitigColors::const_iterator j = i->getData()->getUnitigColors(*i)->begin(*i); j != i->getData()->getUnitigColors(*i)->end(); ++j) cout << "Pos:" << j.getKmerPosition() << " ID:" << j.getColorID() << endl;
+	// 	for(UnitigColors::const_iterator j = i->getData()->getUnitigColors(*i)->begin(*i); j != i->getData()->getUnitigColors(*i)->end(); ++j) cout << "Pos:" << j.getKmerPosition() << " ID:" << j.getColorID() << endl;
 
-		cout << "coreList:" << endl;
-		for(list<pair<uint32_t, uint32_t>>::const_iterator k = i->getData()->getData(*i)->coreList.begin(); k != i->getData()->getData(*i)->coreList.end(); ++k) cout << "[" << k->first << "," << k->second << "]" << endl;
-	}
+	// 	cout << "coreList:" << endl;
+	// 	for(list<pair<uint32_t, uint32_t>>::const_iterator k = i->getData()->getData(*i)->coreList.begin(); k != i->getData()->getData(*i)->coreList.end(); ++k) cout << "[" << k->first << "," << k->second << "]" << endl;
+	// }
 
 	//Walk through the graph and mark all bridging k-mers within each unitig
 	detectBrdg(cdbg, dlt);
@@ -61,7 +61,7 @@ int main(int argc, char **argv){
 	//Output results...
 
 	//For a first sanity check it should be fine to output the core simply as unitig snippets
-	outputSnippets(cdbg);//TODO: Implement this function!
+	outputSnippets(cdbg);
 
 	return EXIT_SUCCESS;
 }

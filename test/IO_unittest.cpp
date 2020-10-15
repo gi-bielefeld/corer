@@ -199,7 +199,7 @@ TEST_F(PrsArgsTest, NonPosNbThrds){
 //	1. A unitig in the graph has (no) core k-mers DONE
 //	2. A unitig has no core k-mers and is (not) marked as bridging DONE
 //	3. A unitig has at least one core k-mer and its prefix is (not) marked as bridging DONE
-//	4. A unitig has one/many core k-mer(s) 1/0
+//	4. A unitig has one/many core k-mer(s) DONE
 //	5. A unitig has at least one core k-mer and its suffix is (not) marked as bridging DONE
 
 //Tests the function outputSnippets under the following conditions
