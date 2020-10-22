@@ -249,6 +249,7 @@ TEST_F(MarkBrdgTest, PredRev){
 //	15. A BFS on predecessive unitigs has to be done and there is a/no core k-mer on the current unitig DONE
 //	16. A BFS on predecessive unitigs has to be done, is successful and there is a/no core k-mer on this unitig DONE
 //	17. A BFS on predecessive unitigs has to be done, fails and there is a/no core k-mer on this unitig DONE
+//	18. A successive path list of an earlier processed unitig still exists when a BFS on predecessive unitigs is successful for the next unitig DONE
 
 //Tests for function detectBrdg under the following conditions
 //	1. A unitig's core list is (not) empty
@@ -265,6 +266,11 @@ TEST_F(MarkBrdgTest, PredRev){
 //	13. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large
 //	14. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is (not) already too large
 TEST_F(DetectBrdgTest, NoCore){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	++i;
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(2,2));
 	++i;
@@ -299,6 +305,11 @@ TEST_F(DetectBrdgTest, NoCore){
 //	15. A BFS on predecessive unitigs has to be done and there is no core k-mer on the current unitig
 //	16. A BFS on predecessive unitigs has to be done, is successful and there is no core k-mer on this unitig
 TEST_F(DetectBrdgTest, SucBFS){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	++i;
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
 	++i;
@@ -351,6 +362,11 @@ TEST_F(DetectBrdgTest, SucBFS){
 //	15. A BFS on predecessive unitigs has to be done and there is a core k-mer on the current unitig
 //	16. A BFS on predecessive unitigs has to be done, is successful and there is a core k-mer on this unitig
 TEST_F(DetectBrdgTest, SucSucBFSCore){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(1,1));
 	++i;
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
@@ -401,6 +417,11 @@ TEST_F(DetectBrdgTest, SucSucBFSCore){
 //	13. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is already too large
 //	14. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is already too large
 TEST_F(DetectBrdgTest, NoDlt){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,2));
 	detectBrdg(cdbg, 0);
 
@@ -427,6 +448,11 @@ TEST_F(DetectBrdgTest, NoDlt){
 //	15. A BFS on predecessive unitigs has to be done and there is a core k-mer on the current unitig
 //	17. A BFS on predecessive unitigs has to be done, fails and there is a core k-mer on this unitig
 TEST_F(DetectBrdgTest, PredBFS){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(1,1));
 	detectBrdg(cdbg, 2);
 
@@ -456,6 +482,11 @@ TEST_F(DetectBrdgTest, PredBFS){
 //	15. A BFS on predecessive unitigs has to be done and there is no core k-mer on the current unitig
 //	17. A BFS on predecessive unitigs has to be done, fails and there is no core k-mer on this unitig
 TEST_F(DetectBrdgTest, PredBFSNoCore){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	++i;
 	++i;
 	++i;
@@ -474,4 +505,59 @@ TEST_F(DetectBrdgTest, PredBFSNoCore){
 		
 		EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
 	}
+}
+
+//Tests for function detectBrdg under the following conditions
+//	1. A unitig's core list is (not) empty
+//	2. The last k-mer on a unitig is (not) marked as core
+//	3. A BFS on successive unitigs has to be done, is successful and there is no core k-mer on this unitig
+//	5. A unitig's suffix is (not) already marked as bridging
+//	6. A unitig's core list is empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	7. A unitig's core list is not empty, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	8. The last k-mer on a unitig is marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	9. The last k-mer on a unitig is not marked as core, the unitig's suffix is not already marked as bridging and the distance to bridge to the left side is not already too large
+//	10. We have to continue with the current unitig after a potential BFS on successive unitigs and the current unitig's prefix is (not) already marked as bridging
+//	11. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	12. We have to continue with the current unitig after a potential BFS on successive unitigs, the current unitig's core list is not empty, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	14. We have to continue with the current unitig after a potential BFS on successive unitigs, the first k-mer on the unitig is not marked as core, the unitig's prefix is not already marked as bridging and the distance to bridge to the right side is not already too large
+//	15. A BFS on predecessive unitigs has to be done and there is a/no core k-mer on the current unitig
+//	16. A BFS on predecessive unitigs has to be done, is successful and there is a/no core k-mer on this unitig
+//	17. A BFS on predecessive unitigs has to be done, fails and there is a/no core k-mer on this unitig
+//	18. A successive path list of an earlier processed unitig still exists when a BFS on predecessive unitigs is successful for the next unitig
+TEST_F(DetectBrdgTest, OldSucPth){
+	cdbgOpt.filename_ref_in.push_back("Test20_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(1,1));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	detectBrdg(cdbg, 3);
+
+	i = cdbg.begin();
+	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
+	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(2, i->getData()->getData(*i)->predCoreDist);
 }

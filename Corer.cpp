@@ -7,25 +7,23 @@
 #include "Bridging.cpp"
 
 int main(int argc, char **argv){
+	bool oSnps = OUTPUT_CORE_SNIPPETS_DEFAULT;
 	uint32_t qrm = 0;
 	uint32_t dlt = DEFAULT_DELTA;
 	size_t thrds = DEFAULT_NB_THREADS;
-	string gFilePref;
+	string iFilePref;
+	string oFilePref;
 	ColoredCDBG<CoreInfo> cdbg = ColoredCDBG<CoreInfo>();
 
 	//Parse arguments
-	if(!prsArgs(argc, argv, gFilePref, qrm, dlt, thrds)){
+	if(!prsArgs(argc, argv, iFilePref, oFilePref, qrm, dlt, thrds, oSnps)){
 		//Display help message
 		dspHlp();
 		return EXIT_FAILURE;
 	}
 
-	//Testing
-	// cout << "Loaded parameters" << endl;
-	// cout << "Parameters are gFilePref: " << gFilePref << " qrm: " << qrm << " dlt: " << dlt << endl;
-
 	//Load graph
-	if(!cdbg.read(gFilePref + GFA_FILE_ENDING, gFilePref + COLOR_FILE_ENDING, thrds, false)){
+	if(!cdbg.read(iFilePref + GFA_FILE_ENDING, iFilePref + COLOR_FILE_ENDING, thrds, false)){
 		cerr << "ERROR: Graph could not be loaded" << endl;
 		return EXIT_FAILURE;
 	}
@@ -36,32 +34,39 @@ int main(int argc, char **argv){
 		cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
 	}
 
-	//Testing
-	// cout << "Colors in graph are " << cdbg.getNbColors() << endl;
-	// cout << "First unitig is " << cdbg.begin()->mappedSequenceToString() << endl;
-	// cout << "Quorum is " << qrm << endl;
-
 	//Walk through the graph and mark all core parts within each unitig
 	markCore(cdbg, qrm, dlt);
 
 	//Testing
 	// cout << "Our graph is:" << endl;
 	// for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
-	// 	cout << i->referenceUnitigToString() << " Colors are:" << endl;
-
+	// 	cout << i->referenceUnitigToString() << endl;//" Colors are:" << endl;
+	//
 	// 	for(UnitigColors::const_iterator j = i->getData()->getUnitigColors(*i)->begin(*i); j != i->getData()->getUnitigColors(*i)->end(); ++j) cout << "Pos:" << j.getKmerPosition() << " ID:" << j.getColorID() << endl;
-
-	// 	cout << "coreList:" << endl;
-	// 	for(list<pair<uint32_t, uint32_t>>::const_iterator k = i->getData()->getData(*i)->coreList.begin(); k != i->getData()->getData(*i)->coreList.end(); ++k) cout << "[" << k->first << "," << k->second << "]" << endl;
+	//
+	// 	// cout << "coreList:" << endl;
+	// 	// for(list<pair<uint32_t, uint32_t>>::const_iterator k = i->getData()->getData(*i)->coreList.begin(); k != i->getData()->getData(*i)->coreList.end(); ++k) cout << "[" << k->first << "," << k->second << "]" << endl;
 	// }
+	// return EXIT_SUCCESS;
+	//First, only output core k-mers (important for validation script)
+	// cout << "Core k-mers:" << endl;
+	// outputSnippets(cdbg);
 
 	//Walk through the graph and mark all bridging k-mers within each unitig
 	detectBrdg(cdbg, dlt);
 
-	//Output results...
+	//Check if unitig snippet output is requested
+	if(oSnps){
+		//Testing
+		// //For a first sanity check it should be fine to output the core simply as unitig snippets
+		// cout << "Whole core:" << endl;
 
-	//For a first sanity check it should be fine to output the core simply as unitig snippets
-	outputSnippets(cdbg);
+		//Output core as unitig snippets
+		outputSnippets(cdbg);
+	}
+
+	//Construct and write core graph
+	genCoreGraph(cdbg, oFilePref);//TODO: Implement this function!
 
 	return EXIT_SUCCESS;
 }

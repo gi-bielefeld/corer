@@ -2,31 +2,39 @@
 
 #include "IO.h"
 
-const bool prsArgs(int& nArgs, char** argList, string& filePref, uint32_t& qrm, uint32_t& dlt, size_t& nThrds){
-	bool success = false;
+const bool prsArgs(int& nArgs, char** argList, string& inPref, string& outPref, uint32_t& qrm, uint32_t& dlt, size_t& nThrds, bool& oSnps){
+	bool iFlGvn = false, oFlGvn = false;
 	int option_index = 0, a;
 
 	//Check wheather arguments are given for anything at all
 	if(nArgs < MIN_PARAM_NB) return false;
 
 	static struct option long_options[] = {
-        {"graph",   required_argument,  0, 'g'},
-        {"quorum",  required_argument,  0, 'q'},
-        {"delta",   required_argument,  0, 'd'},
-        {"threads", required_argument,  0, 't'},
-        {"help",    no_argument,        0, 'h'},
-        {0,         0,                  0,  0 }
+        {"igraph",   required_argument,  0, 'i'},
+        {"ograph",   required_argument,  0, 'o'},
+        {"quorum",   required_argument,  0, 'q'},
+        {"delta",    required_argument,  0, 'd'},
+        {"threads",  required_argument,  0, 't'},
+        {"snippets", no_argument,        0, 's'},
+        {"help",     no_argument,        0, 'h'},
+        {0,          0,                  0,  0 }
     };
 
     //Parse all parameters given
 	while ((a = getopt_long(nArgs, argList, OPTIONS, long_options, &option_index)) != -1){
 		//Assign parameter values
 		switch(a){
-			case 'g':
-				//Save file prefix
-				filePref = optarg;
-				//A file prefix is all we need to continue
-				success = true;
+			case 'i':
+				//Save input file prefix
+				inPref = optarg;
+				//Note that we have a file prefix for reading the input
+				iFlGvn = true;
+				break;
+			case 'o':
+				//Save output file prefix
+				outPref = optarg;
+				//Note that we have a file prefix for writing the output
+				oFlGvn = true;
 				break;
 			case 'q':
 				//A quorum has to be positive
@@ -55,6 +63,10 @@ const bool prsArgs(int& nArgs, char** argList, string& filePref, uint32_t& qrm, 
 
 				nThrds = atoi(optarg);
 				break;
+			case 's':
+				//Note that we will have to output the core as snippets
+				oSnps = true;
+				break;
 			case 'h':
 				return false;
 			default:
@@ -62,7 +74,7 @@ const bool prsArgs(int& nArgs, char** argList, string& filePref, uint32_t& qrm, 
 		}
 	}
 
-	return success;
+	return iFlGvn && oFlGvn;
 }
 
 //This function iterates over the given graph and outputs all core and bridging parts as snippets
@@ -121,4 +133,13 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 			}
 		}
 	}
+}
+
+//This function
+void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName){
+	ColoredCDBG<> oGrph(cdbg.getK());
+
+	//Add content to the graph//
+
+	//Write graph to file//
 }

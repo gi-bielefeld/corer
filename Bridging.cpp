@@ -62,34 +62,32 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 
 		//Check if last k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the left side (i.e. the distance to the closest core k-mer on this unitig or the unitig's beginning) is not already too large
 		if((cInfo->coreList.empty() || cInfo->coreList.back().second < i->len - 1) && !cInfo->sufBrdg && !lCrTooFar(i->len, cInfo->coreList, dlt)){
-			//Clear path list
-			sucPaths = list<Path>();
-
 			//Do BFS on successive unitigs and check if we need to try a BFS on predecessors as well (which is the case only if there is a core k-mer on the current unitig or the BFS on successive unitigs was successful)
 			if(!doSucBFS(*i, (dlt + 1) / 2, sucPaths) && cInfo->coreList.empty()) continue;
 		}
 
 		//Check if first k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the right side (i.e. the distance to the closest core kmer on this unitig or the unitig's end) is not already too large
 		if((cInfo->coreList.empty() || cInfo->coreList.front().first > 0) && !cInfo->preBrdg && !rCrTooFar(i->len, cInfo->coreList, dlt)){
-			//Clear path list
-			predPaths = list<Path>();
-
 			//Check if there are no core k-mers on this unitig
 			if(cInfo->coreList.empty()){
-				//Find path to core k-mer on successive unitigs with minimum length
-				exstPthLen = findMinPthLen(sucPaths);
+				//The length of the existing path the minimum length path found during BFS on successive unitigs in addition to all k-mers on the current unitig (except for the one we start at)
+				exstPthLen = findMinPthLen(sucPaths) + i->len - 1;
 			} else{
 				//A path has to reach the leftmost core k-mer on this unitig only
 				exstPthLen = cInfo->coreList.front().first;
 			}
 
-			//Do BFS on predecessive unitigs and mark all bridging k-mers if necessary (+1, because otherwise we count in the k-mer we start at)
-			if(doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - i->len - exstPthLen + 1)), predPaths) || !cInfo->coreList.empty()){
+			//Do BFS on predecessive unitigs and mark all bridging k-mers if necessary
+			if(doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - exstPthLen)), predPaths) || !cInfo->coreList.empty()){
 				//Mark k-mers of successive result paths as bridging
 				markBrdg(sucPaths, true);
 				//Mark k-mers of predecessive result paths as bridging
 				markBrdg(predPaths, false);
 			}
 		}
+
+		//Clear path lists
+		sucPaths.clear();
+		predPaths.clear();
 	}
 }

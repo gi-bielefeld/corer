@@ -4,7 +4,7 @@
 #include "PrsArgsTest.h"
 
 //Tests for function const bool prsArgs(int&, char**, string&, uint32_t&, uint32_t&)//
-//	1. Graph prefix is (not) given DONE
+//	1. Input graph prefix is (not) given DONE
 //	2. Quorum is (not) given DONE
 //	3. Given quorum is (not) positive DONE
 //	4. Given quorum is (not) larger than INT32_MAX DONE
@@ -14,6 +14,10 @@
 //	8. Number of threads is (not) given DONE
 //	9. Number of threads is (not) positive DONE
 //	10. Help flag is (not) set DONE
+//	11. Output graph prefix is (not) given DONE
+//	12.	Unitig snippet output is (not) requested DONE
+//	13. Input graph prefix is set and output graph prefix is (not) set (as well) DONE
+//	14. Output graph prefix is set and input graph prefix is (not) set (as well) DONE
 
 //Tests the function prsArgs with no parameters
 TEST_F(PrsArgsTest, NoParams){
@@ -21,16 +25,18 @@ TEST_F(PrsArgsTest, NoParams){
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[0] = strdup("Corer");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 1);
 	EXPECT_EQ(filePref, "");
+	EXPECT_EQ(oFilePref, "");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
 }
 
 //Tests the function prsArgs under the following conditions
-//	1. Graph prefix is given
+//	1. Input graph prefix is given
 //	2. Quorum is given
 //	3. Given quorum is negative
 //	4. Given quorum is not larger than INT32_MAX
@@ -39,160 +45,267 @@ TEST_F(PrsArgsTest, NoParams){
 //	7. Given delta is not larger than INT32_MAX
 //	8. Number of threads is not given
 //	10. Help flag is not set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is not requested
+//	13. Input graph prefix is set and output graph prefix is set as well
+//	14. Output graph prefix is set and input graph prefix is set as well
 TEST_F(PrsArgsTest, NegQrm){
-	nbArgs = 7;
+	nbArgs = 9;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[0] = strdup("Corer");
-	argv[1] = strdup("-g");
+	argv[1] = strdup("-i");
 	argv[2] = strdup("G");
 	argv[3] = strdup("-q");
 	argv[4] = strdup("-1");
 	argv[5] = strdup("-d");
 	argv[6] = strdup("1");
+	argv[7] = strdup("-o");
+	argv[8] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 7);
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 9);
 	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(oFilePref, "");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
 }
 
 //Tests the function prsArgs under the following conditions
-//	1. Graph prefix is given
+//	1. Input graph prefix is given
 //	2. Quorum is given
 //	3. Given quorum is not negative
 //	4. Given quorum is larger than INT32_MAX
 //	5. Delta is not given
 //	8. Number of threads is not given
 //	10. Help flag is not set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is not requested
+//	13. Input graph prefix is set and output graph prefix is set as well
+//	14. Output graph prefix is set and input graph prefix is set as well
 TEST_F(PrsArgsTest, TooLrgQrm){
-	nbArgs = 9;
+	nbArgs = 11;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[5] = strdup("-g");
+	argv[5] = strdup("-i");
 	argv[6] = strdup("G");
 	argv[7] = strdup("-q");
 	argv[8] = strdup("2147483648");
+	argv[9] = strdup("-o");
+	argv[10] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 9);
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 11);
 	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(oFilePref, "");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
 }
 
 //Tests the function prsArgs under the following conditions
-//	1. Graph prefix is given
+//	1. Input graph prefix is given
 //	2. Quorum is not given
 //	5. Delta is given
 //	6. Given delta is not positive
 //	8. Number of threads is not given
 //	10. Help flag is not set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is not requested
+//	13. Input graph prefix is set and output graph prefix is set as well
+//	14. Output graph prefix is set and input graph prefix is set as well
 TEST_F(PrsArgsTest, NonPosDlt){
-	nbArgs = 13;
+	nbArgs = 15;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[9] = strdup("-g");
+	argv[9] = strdup("-i");
 	argv[10] = strdup("G");
 	argv[11] = strdup("-d");
 	argv[12] = strdup("-1");
+	argv[13] = strdup("-o");
+	argv[14] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 13);
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 15);
 	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(oFilePref, "");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
 }
 
 //Tests the function prsArgs under the following conditions
-//	1. Graph prefix is given
+//	1. Input graph prefix is given
 //	2. Quorum is not given
 //	5. Delta is given
 //	7. Given delta is larger than INT32_MAX
 //	8. Number of threads is not given
 //	10. Help flag is not set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is not requested
+//	13. Input graph prefix is set and output graph prefix is set as well
+//	14. Output graph prefix is set and input graph prefix is set as well
 TEST_F(PrsArgsTest, TooLrgDlt){
-	nbArgs = 17;
+	nbArgs = 19;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[13] = strdup("-g");
+	argv[13] = strdup("-i");
 	argv[14] = strdup("G");
 	argv[15] = strdup("-d");
 	argv[16] = strdup("2147483648");
+	argv[17] = strdup("-o");
+	argv[18] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 17);
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 19);
 	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(oFilePref, "");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
 }
 
 //Tests the function prsArgs under the following conditions
-//	1. Graph prefix is given
+//	1. Input graph prefix is given
 //	2. Quorum is not given
 //	5. Delta is not given
 //	8. Number of threads is not given
 //	10. Help flag is set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is not requested
+//	13. Input graph prefix is set and output graph prefix is set as well
+//	14. Output graph prefix is set and input graph prefix is set as well
 TEST_F(PrsArgsTest, HlpFlgSet){
-	nbArgs = 20;
+	nbArgs = 22;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[17] = strdup("-g");
+	argv[17] = strdup("-i");
 	argv[18] = strdup("G");
 	argv[19] = strdup("-h");
+	argv[20] = strdup("-o");
+	argv[21] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 20);
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 22);
 	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(oFilePref, "");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
 }
 
 //Tests the function prsArgs under the following conditions
-//	1. Graph prefix is given
+//	1. Input graph prefix is given
 //	2. Quorum is not given
 //	5. Delta is not given
 //	8. Number of threads is given
 //	9. Number of threads is positive
 //	10. Help flag is not set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is not requested
+//	13. Input graph prefix is set and output graph prefix is set as well
+//	14. Output graph prefix is set and input graph prefix is set as well
 TEST_F(PrsArgsTest, PosNbThrds){
-	nbArgs = 24;
+	nbArgs = 26;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[20] = strdup("-g");
+	argv[20] = strdup("-i");
 	argv[21] = strdup("G");
 	argv[22] = strdup("-t");
 	argv[23] = strdup("2");
+	argv[24] = strdup("-o");
+	argv[25] = strdup("O");
 
-	EXPECT_TRUE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 24);
+	EXPECT_TRUE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 26);
 	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(oFilePref, "O");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, 2);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
 }
 
 //Tests the function prsArgs under the following conditions
-//	1. Graph prefix is given
+//	1. Input graph prefix is given
 //	2. Quorum is not given
 //	5. Delta is not given
 //	8. Number of threads is given
 //	9. Number of threads is not positive
 //	10. Help flag is not set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is not requested
+//	13. Input graph prefix is set and output graph prefix is set as well
+//	14. Output graph prefix is set and input graph prefix is set as well
 TEST_F(PrsArgsTest, NonPosNbThrds){
-	nbArgs = 28;
+	nbArgs = 32;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
-	argv[24] = strdup("-g");
-	argv[25] = strdup("G");
-	argv[26] = strdup("-t");
-	argv[27] = strdup("0");
+	argv[26] = strdup("-i");
+	argv[27] = strdup("G");
+	argv[28] = strdup("-t");
+	argv[29] = strdup("0");
+	argv[30] = strdup("-o");
+	argv[31] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, qrm, dlt, thrds));
-	EXPECT_EQ(nbArgs, 28);
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 32);
 	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(oFilePref, "");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+}
+
+//Tests the function prsArgs under the following conditions
+//	1. Input graph prefix is (not) given
+//	2. Quorum is not given
+//	5. Delta is not given
+//	8. Number of threads is not given
+//	10. Help flag is not set
+//	11. Output graph prefix is not given
+//	12.	Unitig snippet output is requested
+//	13. Input graph prefix is set and output graph prefix is not set
+TEST_F(PrsArgsTest, NoOut){
+	nbArgs = 33;
+	argv = (char**) malloc(nbArgs * sizeof(char*));
+	argv[30] = strdup("-i");
+	argv[31] = strdup("G");
+	argv[32] = strdup("-s");
+
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 33);
+	EXPECT_EQ(filePref, "G");
+	EXPECT_EQ(oFilePref, "");
+	EXPECT_EQ(qrm, 0);
+	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(!OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+}
+
+//Tests the function prsArgs under the following conditions
+//	1. Input graph prefix is not given
+//	2. Quorum is not given
+//	5. Delta is not given
+//	8. Number of threads is not given
+//	10. Help flag is not set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is requested
+//	14. Output graph prefix is set and input graph prefix is not set
+TEST_F(PrsArgsTest, NoGph){
+	nbArgs = 35;
+	argv = (char**) malloc(nbArgs * sizeof(char*));
+	argv[33] = strdup("-o");
+	argv[34] = strdup("O");
+
+	EXPECT_FALSE(prsArgs(nbArgs, argv, filePref, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 35);
+	EXPECT_EQ(filePref, "");
+	EXPECT_EQ(oFilePref, "O");
+	EXPECT_EQ(qrm, 0);
+	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
 }
 
 //Tests for function void outputSnippets(const ColoredCDBG<CoreInfo>&)//
