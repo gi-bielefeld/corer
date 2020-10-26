@@ -137,9 +137,86 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 
 //This function
 void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName){
+	size_t start, end;
+	UnitigColorMap<CoreInfo> ogUni, igUni;
 	ColoredCDBG<> oGrph(cdbg.getK());
+	list<pair<uint32_t, uint32_t>>::const_iterator intvl;
 
-	//Add content to the graph//
+	//Add sequences to the graph//
+	
+	//Iterate over all unitigs
+	for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
+		//Check if unitig has no core k-mers
+		if(i->getData()->getData(*i)->coreList.empty()){
+			//Check if unitig's sequence is marked as bridging
+			if(i->getData()->getData(*i)->preBrdg || i->getData()->getData(*i)->sufBrdg){
+				//Add complete sequence to output graph
+				oGrph.add(i->referenceUnitigToString());
+			}
+		} else{
+			//Get interval list iterator
+			intvl = i->getData()->getData(*i)->coreList.begin();
+
+			//Check if unitig's beginning is marked as bridging
+			if(i->getData()->getData(*i)->preBrdg){
+				//The first substring we have to output starts at the sequence's beginning
+				start = 0;
+			} else{
+				//The first substring we have to output starts at the first core interval's beginning
+				start = intvl->first;
+			}
+
+			//We assume that our substring will end at the first core interval's end
+			end = intvl->second;
+			//Move to next interval
+			++intvl;
+
+			//Keep outputting substings as long as intervals are left
+			while(intvl != i->getData()->getData(*i)->coreList.end()){
+				//Add substring to output graph
+				oGrph.add(i->referenceUnitigToString().substr(start, end - start + cdbg.getK()));
+				//The next substring starts at the current interval
+				start = intvl->first;
+				//We assume it ends with the current interval
+				end = intvl->second;
+				//Move to next interval
+				++intvl;
+			}
+
+			//Check if unitig's suffix is marked as bridging
+			if(i->getData()->getData(*i)->sufBrdg){
+				//Add last substring reaching to sequence's end
+				oGrph.add(i->mappedSequenceToString().substr(start));
+			} else{
+				//Add last substring reaching to interval's end
+				oGrph.add(i->mappedSequenceToString().substr(start, end - start + cdbg.getK()));
+			}
+		}
+	}
+
+	//Copy colors from old graph//
+
+	//Iterate over unitigs of output graph
+	for(ColoredCDBG<CoreInfo>::iterator i = oGrph.begin(); i != oGrph.end(); ++i){
+		//Get current unitig
+		ogUni = *i;
+		//Set length to 1 k-mer
+		ogUni.len = 1;
+
+		//Iterate over unitig's k-mers
+		for(uint32_t j = 0; j <= ogUni.size - oGrph.getK(); ++j){
+			//Update k-mer's position
+			ogUni.dist = j;
+			//Search for corresponding k-mer in input graph
+			igUni = cdbg.find(Kmer(ogUni.mappedSequenceToString().c_str()));
+
+			//Make sure we could find the demanded k-mer
+			if(!igUni.empty()){
+				//Copy k-mer's colors
+				igUni->getData()<-Is that possible?!
+			}
+		}
+	}
 
 	//Write graph to file//
 }
