@@ -66,7 +66,7 @@ int main(int argc, char **argv){
 	}
 
 	//Construct and write core graph
-	genCoreGraph(cdbg, oFilePref);//TODO: Implement this function!
+	genCoreGraph(cdbg, oFilePref, thrds);//TODO: Implement this function!
 
 	return EXIT_SUCCESS;
 }

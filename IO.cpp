@@ -135,10 +135,12 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 	}
 }
 
-//This function
-void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName){
+//This function constructs a graph only consisting of a detected core and writes it to the specified output file
+void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t& thrds){
 	size_t start, end;
-	UnitigColorMap<CoreInfo> ogUni, igUni;
+	UnitigColorMap<> ogUni;
+	UnitigColorMap<CoreInfo> igUni;
+	CCDBG_Build_opt oGBO;
 	ColoredCDBG<> oGrph(cdbg.getK());
 	list<pair<uint32_t, uint32_t>>::const_iterator intvl;
 
@@ -196,8 +198,17 @@ void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName){
 
 	//Copy colors from old graph//
 
+	//Copy color names
+	oGBO.filename_seq_in = cdbg.getColorNames();
+
+	//Try to initialize color matrices and throw an error if neccessary
+	if(!oGrph.buildColors(oGBO)){
+		cerr << "ERROR: Color matrices of output graph could not be initialized!" << endl;
+		exit(EXIT_FAILURE);
+	}
+
 	//Iterate over unitigs of output graph
-	for(ColoredCDBG<CoreInfo>::iterator i = oGrph.begin(); i != oGrph.end(); ++i){
+	for(ColoredCDBG<>::iterator i = oGrph.begin(); i != oGrph.end(); ++i){
 		//Get current unitig
 		ogUni = *i;
 		//Set length to 1 k-mer
@@ -210,13 +221,24 @@ void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName){
 			//Search for corresponding k-mer in input graph
 			igUni = cdbg.find(Kmer(ogUni.mappedSequenceToString().c_str()));
 
-			//Make sure we could find the demanded k-mer
-			if(!igUni.empty()){
-				//Copy k-mer's colors
-				igUni->getData()<-Is that possible?!
+			//Check if we could not find the k-mer
+			if(igUni.isEmpty){
+				cerr << "ERROR: K-mer " << ogUni.mappedSequenceToString() << " not found in input graph!" << endl;
+				exit(EXIT_FAILURE);
 			}
+
+			//Iterate over k-mer's colors
+			for(UnitigColors::const_iterator k = igUni.getData()->getUnitigColors(igUni)->begin(igUni); k != igUni.getData()->getUnitigColors(igUni)->end(); ++k)
+				//Add color to output graph's k-mer
+				ogUni.getData()->getUnitigColors(ogUni)->add(ogUni, k.getColorID());
 		}
 	}
 
 	//Write graph to file//
+
+	//Try to write graph and throw an error if neccessary
+	if(!oGrph.write(oName, thrds)){
+		cerr << "ERROR: Output graph could not be written to file!" << endl;
+		exit(EXIT_FAILURE);
+	}
 }

@@ -35,4 +35,7 @@ const bool prsArgs(int& nArgs, char** argList, string& inPref, string& outPref, 
 //This function iterates over the given graph and outputs all core and bridging parts as snippets
 void outputSnippets(const ColoredCDBG<CoreInfo>& cdbg);
 
+//This function constructs a graph only consisting of a detected core and writes it to the specified output file
+void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t& thrds);
+
 #endif
