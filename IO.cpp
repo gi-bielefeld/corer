@@ -141,7 +141,7 @@ void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t
 	UnitigColorMap<> ogUni;
 	UnitigColorMap<CoreInfo> igUni;
 	CCDBG_Build_opt oGBO;
-	ColoredCDBG<> oGrph(cdbg.getK());
+	ColoredCDBG<> oGrph(cdbg.getK(), cdbg.getG());
 	list<pair<uint32_t, uint32_t>>::const_iterator intvl;
 
 	//Add sequences to the graph//

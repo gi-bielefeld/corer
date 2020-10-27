@@ -327,15 +327,6 @@ TEST_F(GenCoreGraphTest, HsCr){
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
-
-	//Testing
-	cout << "Input graph is:" << endl;
-	for(ColoredCDBG<CoreInfo>::iterator j = cdbg.begin(); j != cdbg.end(); ++j) cout << j->mappedSequenceToString() << endl;
-	UnitigColorMap<CoreInfo> uni = cdbg.find(Kmer("TGTGTTTGC"));
-	cout << "K-mer: TGTGTTTGC could " << (uni.isEmpty ? "" : "not ") << "be found" << endl;
-	uni = cdbg.find(Kmer("GCAAACACA"));
-	cout << "K-mer: GCAAACACA could " << (uni.isEmpty ? "" : "not ") << "be found" << endl;
-
 	markCore(cdbg, qrm, DEFAULT_DELTA);
 	detectBrdg(cdbg, DEFAULT_DELTA);
 	genCoreGraph(cdbg, oName, thrds);
@@ -349,13 +340,10 @@ TEST_F(GenCoreGraphTest, HsCr){
 	EXPECT_EQ("Test_color7.fa", *n);
 	EXPECT_EQ(1, crGrph.size());
 	i = crGrph.begin();
-	EXPECT_EQ("AAAGGCAAACACA", i->mappedSequenceToString());
+	EXPECT_EQ("TGTGTTTGCCTTT", i->mappedSequenceToString());
 	c = i->getData()->getUnitigColors(*i)->begin(*i);
 	EXPECT_EQ(0, c.getKmerPosition());
 	EXPECT_EQ(0, c.getColorID());
-	++c;
-	EXPECT_EQ(0, c.getKmerPosition());
-	EXPECT_EQ(1, c.getColorID());
 	++c;
 	EXPECT_EQ(1, c.getKmerPosition());
 	EXPECT_EQ(0, c.getColorID());
@@ -369,7 +357,166 @@ TEST_F(GenCoreGraphTest, HsCr){
 	EXPECT_EQ(4, c.getKmerPosition());
 	EXPECT_EQ(0, c.getColorID());
 	++c;
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(1, c.getColorID());
+	++c;
 	EXPECT_EQ(4, c.getKmerPosition());
+	EXPECT_EQ(1, c.getColorID());
+	++c;
+	EXPECT_EQ(i->getData()->getUnitigColors(*i)->end(), c);
+}
+
+//Tests the function genCoreGraph under the following conditions
+//	1. A unitig in the graph has (no) core k-mers
+//	2. A unitig has no core k-mers and is not marked as bridging
+//	3. A unitig has at least one core k-mer and its prefix is (not) marked as bridging
+//	4. A unitig has one core k-mer
+//	5. A unitig has at least one core k-mer and its suffix is (not) marked as bridging
+TEST_F(GenCoreGraphTest, TwPths){
+	cdbgOpt.filename_ref_in.push_back("Test_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	markCore(cdbg, qrm, DEFAULT_DELTA);
+	detectBrdg(cdbg, DEFAULT_DELTA);
+	genCoreGraph(cdbg, oName, thrds);
+
+	ASSERT_TRUE(crGrph.read(oName + GFA_FILE_ENDING, oName + COLOR_FILE_ENDING, thrds));
+	EXPECT_EQ(2, crGrph.getNbColors());
+	cNms = crGrph.getColorNames();
+	n = cNms.begin();
+	EXPECT_EQ("Test.fa", *n);
+	++n;
+	EXPECT_EQ("Test_color1.fa", *n);
+	EXPECT_EQ(3, crGrph.size());
+	i = crGrph.begin();
+	EXPECT_EQ("TGTGTTTGCCTT", i->mappedSequenceToString());
+	c = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(1, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(2, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(3, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(1, c.getColorID());
+	++c;
+	EXPECT_EQ(2, c.getKmerPosition());
+	EXPECT_EQ(1, c.getColorID());
+	++c;
+	EXPECT_EQ(i->getData()->getUnitigColors(*i)->end(), c);
+	++i;
+	EXPECT_EQ("AAGGCAAAG", i->mappedSequenceToString());
+	c = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(1, c.getColorID());
+	++c;
+	EXPECT_EQ(i->getData()->getUnitigColors(*i)->end(), c);
+	++i;
+	EXPECT_EQ("AAAGGCAAA", i->mappedSequenceToString());
+	c = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(1, c.getColorID());
+	++c;
+	EXPECT_EQ(i->getData()->getUnitigColors(*i)->end(), c);
+}
+
+//Tests the function genCoreGraph under the following conditions
+//	1. A unitig in the graph has (no) core k-mers
+//	2. A unitig has no core k-mers and is not marked as bridging
+//	3. A unitig has at least one core k-mer and its prefix is not marked as bridging
+//	4. A unitig has one core k-mer
+//	5. A unitig has at least one core k-mer and its suffix is not marked as bridging
+TEST_F(GenCoreGraphTest, NoPrefSufBrdg){
+	cdbgOpt.filename_ref_in.push_back("Test_color9.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	markCore(cdbg, qrm, DEFAULT_DELTA);
+	detectBrdg(cdbg, DEFAULT_DELTA);
+	genCoreGraph(cdbg, oName, thrds);
+
+	ASSERT_TRUE(crGrph.read(oName + GFA_FILE_ENDING, oName + COLOR_FILE_ENDING, thrds));
+	EXPECT_EQ(2, crGrph.getNbColors());
+	cNms = crGrph.getColorNames();
+	n = cNms.begin();
+	EXPECT_EQ("Test.fa", *n);
+	++n;
+	EXPECT_EQ("Test_color9.fa", *n);
+	EXPECT_EQ(1, crGrph.size());
+	i = crGrph.begin();
+	EXPECT_EQ("TGTGTTTGCCT", i->mappedSequenceToString());
+	c = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(1, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(2, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(1, c.getColorID());
+	++c;
+	EXPECT_EQ(2, c.getKmerPosition());
+	EXPECT_EQ(1, c.getColorID());
+	++c;
+	EXPECT_EQ(i->getData()->getUnitigColors(*i)->end(), c);
+}
+
+//Tests the function genCoreGraph under the following conditions
+//	1. A unitig in the graph has (no) core k-mers
+//	2. A unitig has no core k-mers and is not marked as bridging
+//	3. A unitig has at least one core k-mer and its prefix is not marked as bridging
+//	4. A unitig has many core k-mers
+//	5. A unitig has at least one core k-mer and its suffix is not marked as bridging
+TEST_F(GenCoreGraphTest, SmlDlt){
+	cdbgOpt.filename_ref_in.push_back("Test_color8.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	markCore(cdbg, qrm, 1);
+	detectBrdg(cdbg, 1);
+	genCoreGraph(cdbg, oName, thrds);
+
+	ASSERT_TRUE(crGrph.read(oName + GFA_FILE_ENDING, oName + COLOR_FILE_ENDING, thrds));
+	EXPECT_EQ(2, crGrph.getNbColors());
+	cNms = crGrph.getColorNames();
+	n = cNms.begin();
+	EXPECT_EQ("Test.fa", *n);
+	++n;
+	EXPECT_EQ("Test_color8.fa", *n);
+	EXPECT_EQ(2, crGrph.size());
+	i = crGrph.begin();
+	EXPECT_EQ("AAGGCAAAC", i->mappedSequenceToString());
+	c = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(1, c.getColorID());
+	++c;
+	EXPECT_EQ(i->getData()->getUnitigColors(*i)->end(), c);
+	++i;
+	EXPECT_EQ("GGCAAACAC", i->mappedSequenceToString());
+	c = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, c.getKmerPosition());
+	EXPECT_EQ(0, c.getColorID());
+	++c;
+	EXPECT_EQ(0, c.getKmerPosition());
 	EXPECT_EQ(1, c.getColorID());
 	++c;
 	EXPECT_EQ(i->getData()->getUnitigColors(*i)->end(), c);

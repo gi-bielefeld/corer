@@ -2,3 +2,4 @@ Corer
 makefile
 test/MyTest
 MyTest*
+test/testCoreGraph.*
