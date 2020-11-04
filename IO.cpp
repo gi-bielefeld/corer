@@ -138,7 +138,7 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 //This function constructs a graph only consisting of a detected core and writes it to the specified output file
 void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t& thrds){
 	size_t start, end;
-	UnitigColorMap<> ogUni;
+	UnitigColorMap<void> ogUni;
 	UnitigColorMap<CoreInfo> igUni;
 	CCDBG_Build_opt oGBO;
 	ColoredCDBG<> oGrph(cdbg.getK(), cdbg.getG());
