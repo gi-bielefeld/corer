@@ -34,10 +34,15 @@ int main(int argc, char **argv){
 		cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
 	}
 
+	//Testing
+	// cout << "Detecting core k-mers...";
+
 	//Walk through the graph and mark all core parts within each unitig
 	markCore(cdbg, qrm, dlt);
 
 	//Testing
+	// cout << "done" << endl;
+	// cout << "Detecting bridging k-mers..." << endl;
 	// cout << "Our graph is:" << endl;
 	// for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
 	// 	cout << i->referenceUnitigToString() << endl;//" Colors are:" << endl;
@@ -55,6 +60,9 @@ int main(int argc, char **argv){
 	//Walk through the graph and mark all bridging k-mers within each unitig
 	detectBrdg(cdbg, dlt);
 
+	//Testing
+	// cout << "done" << endl << "Construct output graph...";
+
 	//Check if unitig snippet output is requested
 	if(oSnps){
 		//Testing
@@ -67,6 +75,9 @@ int main(int argc, char **argv){
 
 	//Construct and write core graph
 	genCoreGraph(cdbg, oFilePref, thrds);
+
+	//Testing
+	// cout << "done" << endl;
 
 	return EXIT_SUCCESS;
 }

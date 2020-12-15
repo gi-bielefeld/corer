@@ -3,3 +3,8 @@ makefile
 test/MyTest
 MyTest*
 test/testCoreGraph.*
+Test*.fa
+bugRep*
+*.txt
+long*
+small*

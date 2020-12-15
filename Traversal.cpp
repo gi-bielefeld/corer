@@ -1,5 +1,9 @@
 #include "Traversal.h"
 
+//Testing
+extern bool report = false;
+uint32_t callCnt = 0;
+
 //This function iterates over all paths of the given path list and adds distance information to all unitigs involved representing the distance to the core k-mer at the end of each corresponding path
 void addDists(const list<Path>& pthLst, const bool& isSucPth){
 	uint32_t lstDst;
@@ -50,13 +54,38 @@ void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, c
 	//Variable to store an extended path
 	Path extPth;
 
+	//Testing
+	uint32_t c = 0;
+	// if(!queue.top().second.back().mappedSequenceToString().compare("GCAAGCCCGACCTTCGCCGGTCCCTGGGCATCGTGCTGCAGGATGTGAATCTGTTCACCGGAACGGTCATGGACAACATTCGCTACGGCAAGCTCGACGCCTCCGACGAGGAGTGCATCGAAGCCGCCAAGCTCACGAATGCCGA")){
+	if(report){
+		report = true;
+		cout << "expSucPths: Iterating over successors" << endl;
+		cout << "expSucPths: callCnt: " << ++callCnt << endl;
+		UnitigColorMap<CoreInfo> tmp = queue.top().second.back().getGraph()->find(Kmer("GCAAGCCCGACCTTCGCCGGTCCCTGGGCATCGTGCTGCAGGATGTGAATCTGTTCACCGGAACGGTCATGGACAACATTCGCTACGGCAAGCTCGACGCCTCCGACGAGGAGTGCATCGAAGCCGCCAAGCTCACGAATGCCGA"));
+		cout << "tmp is " << (tmp.isEmpty ? "" : "not ") << "empty" << endl;
+		cout << "tmp: " << tmp.mappedSequenceToString() << endl;
+		it = queue.top().second.back().getSuccessors();
+		cout << "expSucPths: Outgoing unitig is " << queue.top().second.back().mappedSequenceToString() << endl;
+		cout << "expSucPths: The unitig does " << (queue.top().second.back().getSuccessors().hasSuccessors() ? "" : "not ") << "have successors" << endl;
+		cout << "We do get here" << endl;
+		it = queue.top().second.back().getSuccessors();
+	}
+
 	//Iterate over successors
 	for(neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> suc = it.begin(); suc != it.end(); ++suc){
+		//Testing
+		if(report)
+			cout << "expSucPths: Check distance to next core k-mer if possible" << endl;
+
 		//Check if distance to next core k-mer (if known) is too large
 		if((suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist) > dpth - queue.top().first){
 			//Extending the path on this successor does not make sense
 			continue;
 		}
+
+		//Testing
+		if(report)
+			cout << "expSucPths: Check if core k-mer is present on current node" << endl;
 
 		//Check if there is a core k-mer on this successor and if it is close enough
 		if(!suc->getData()->getData(*suc)->coreList.empty() && getCoreDist(suc, true) <= dpth - queue.top().first){
@@ -70,21 +99,74 @@ void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, c
 			continue;
 		}
 
+		//Testing
+		if(report)
+			cout << "expSucPths: Check if adding all k-mers of this node makes path too long" << endl;
+
 		//Check if adding all k-mers of successive unitig to path does not make it too long
 		if(queue.top().first + suc->len < dpth){
 			//Get path
 			extPth = queue.top();
+
+			//Testing
+			if(report){
+				cout << "expSucPths: The top priority path is of length " << extPth.first << " and consists of " << extPth.second.size() << " nodes" << endl;
+				cout << "expSucPths: Last nodes in the path are" << endl;
+				c = 0;
+				for(list<UnitigColorMap<CoreInfo>>::const_reverse_iterator r = extPth.second.rbegin(); r != extPth.second.rend(); ++r){
+					cout << r->mappedSequenceToString() << endl;
+
+					// if(++c > 3)
+					// 	break;
+				}
+			}
+
 			//Add current successor to path
 			extPth.second.push_back(*suc);
 			//Update path length
 			extPth.first += suc->len;
+
+			//Testing
+			if(report){
+				cout << "expSucPths: The updated path is of length " << extPth.first << " and consists of " << extPth.second.size() << " nodes" << endl;
+				cout << "expSucPths: Last nodes in the path are" << endl;
+				c = 0;
+				for(list<UnitigColorMap<CoreInfo>>::const_reverse_iterator r = extPth.second.rbegin(); r != extPth.second.rend(); ++r){
+					cout << r->mappedSequenceToString() << endl;
+
+					if(++c > 3)
+						break;
+				}
+			}
+
 			//Insert path to queue
 			queue.push(extPth);
 		}
 	}
 
+	//Testing
+	if(report){
+		cout << "expSucPths: Iteration over successors done" << endl;
+		cout << "Number of paths in queue before removal: " << queue.size() << endl;
+	}
+
+
 	//Remove top priority path from queue
 	queue.pop();
+
+	//Testing
+	if(report){
+		cout << "Number of paths in queue after removal: " << queue.size() << endl;
+		cout << "expSucPths: After removal of the top priority path, the new top priority path is of length " << queue.top().first << " and consists of " << queue.top().second.size() << " nodes" << endl;
+		cout << "expSucPths: Last nodes in the path are" << endl;
+		c = 0;
+		for(list<UnitigColorMap<CoreInfo>>::const_reverse_iterator r = queue.top().second.rbegin(); r != queue.top().second.rend(); ++r){
+			cout << r->mappedSequenceToString() << endl;
+
+			// if(++c > 3)
+			// 	break;
+		}	
+	}
 
 	//Call function again if queue is not empty
 	if(!queue.empty()) expSucPths(queue, dpth, res);
@@ -93,7 +175,7 @@ void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, c
 //This function extends the top priority path of the given priority queue on predecessive unitigs. It it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Qtherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
 void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, list<Path>& res){
 	//Get iterator of last unitig in top priority path
-	BackwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it = queue.top().second.back().getPredecessors();;
+	BackwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it = queue.top().second.back().getPredecessors();
 	//Variable to store an extended path
 	Path extPth;
 
@@ -148,8 +230,15 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 	uniLst.push_back(orig);
 	//Add initial path to priority queue
 	queue.push(Path(0, uniLst));
+
+	//Testing
+	// cout << "doSucBFS: Start to explore paths" << endl;
+
 	//Explore paths
 	expSucPths(queue, dpth, resPths);
+
+	//Testing
+	// cout << "doSucBFS: Paths explored" << endl;
 
 	//Check if we could find valid paths
 	if(!resPths.empty()){
