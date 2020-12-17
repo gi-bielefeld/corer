@@ -115,11 +115,6 @@ protected:
 	DoSucBFStest(): cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
 		cdbgOpt.k = DEFAULT_TEST_K;
 		cdbgOpt.g = DEFAULT_TEST_G;
-		cdbgOpt.filename_seq_in.push_back("Test.fa");
-		cdbg.build(cdbgOpt);
-		cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
-		cdbg.buildColors(cdbgOpt);
-		i = cdbg.begin();
 	}
 
 	//Some unitig iterator
@@ -128,6 +123,8 @@ protected:
 	CCDBG_Build_opt cdbgOpt;
 	//Compacted, colored de Bruijn graph with linked CoreInfo objects
 	ColoredCDBG<CoreInfo> cdbg;
+	//A unitig to start from
+	UnitigColorMap<CoreInfo> u;
 	//A list of paths
 	list<Path> res;
 

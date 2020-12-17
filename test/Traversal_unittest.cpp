@@ -494,10 +494,30 @@ TEST_F(AddDistsTest, InterRev){
 
 //Tests for function const bool doSucBFS(const UnitigColorMap<CoreInfo>, const uint32_t, list<Path>&)//
 //	1. The result path is (not) empty DONE
+//	2. The last unitig in the top priority path does (not) have successors DONE
+//	3. The last unitig in the top priority path has one/many successors DONE
+//	4. The last unitig in the top priority path has a successor at which we are (not) on the reference strand and for which the distance to the next core k-mer is already known to be too large DONE
+//	5. The last unitig in the top priority path has a successor at which we are (not) on the reference strand and for which the distance to the next core k-mer is not already known to be too large DONE
+//	6. The last unitig in the top priority path has a successor on which a/no core k-mer lies DONE
+//	7. The last unitig in the top priority path has a successor on which a core k-mer lies that is (not) close enough DONE
+//	8. The last unitig in the top priority path has a successor for which adding it to the path does (not) make the path too long DONE
+//	9. After processing the top priority path the queue is (not) empty DONE
+
 
 //Tests the function doSucBFS under the following conditions
 //	1. The result path is empty
+//	2. The last unitig in the top priority path does have successors
+//	3. The last unitig in the top priority path has many successors
+//	5. The last unitig in the top priority path has a successor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a successor on which no core k-mer lies
+//	8. The last unitig in the top priority path has a successor for which adding it to the path does make the path too long
+//	9. After processing the top priority path the queue is empty
 TEST_F(DoSucBFStest, NoRes){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	++i;
 	++i;
 	++i;
@@ -514,7 +534,19 @@ TEST_F(DoSucBFStest, NoRes){
 
 //Tests the function doSucBFS under the following conditions
 //	1. The result path is not empty
+//	2. The last unitig in the top priority path does have successors
+//	3. The last unitig in the top priority path has many successors
+//	5. The last unitig in the top priority path has a successor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a successor on which a/no core k-mer lies
+//	7. The last unitig in the top priority path has a successor on which a core k-mer lies that is close enough
+//	8. The last unitig in the top priority path has a successor for which adding it to the path does (not) make the path too long
+//	9. After processing the top priority path the queue is (not) empty
 TEST_F(DoSucBFStest, SomeRes){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	uint32_t c = 0;
 
 	++i;
@@ -542,6 +574,142 @@ TEST_F(DoSucBFStest, SomeRes){
 
 		if(c == 2) EXPECT_EQ("GCAAACACC", u->mappedSequenceToString());
 	}
+}
+
+//Tests the function doSucBFS under the following conditions
+//	1. The result path is not empty
+//	2. The last unitig in the top priority path does have successors
+//	3. The last unitig in the top priority path has many successors
+//	5. The last unitig in the top priority path has a successor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a successor on which a/no core k-mer lies
+//	7. The last unitig in the top priority path has a successor on which a core k-mer lies that is close enough
+//	8. The last unitig in the top priority path has a successor for which adding it to the path does make the path too long
+//	9. After processing the top priority path the queue is empty
+TEST_F(DoSucBFStest, PthTooLng){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(2,2));
+	++i;
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	i = cdbg.begin();
+	++i;
+	++i;
+
+	EXPECT_TRUE(doSucBFS(*i, 3, res));
+	EXPECT_EQ(1, res.size());
+	EXPECT_EQ(3, res.front().first);
+	EXPECT_EQ(2, res.front().second.size());
+	EXPECT_EQ("AAAGGCAAA", res.front().second.front().mappedSequenceToString());
+	EXPECT_EQ("AAGGCAAAGAC", res.front().second.back().mappedSequenceToString());
+}
+
+//Tests the function doSucBFS under the following conditions
+//	1. The result path is empty
+//	2. The last unitig in the top priority path does (not) have successors
+//	3. The last unitig in the top priority path has many successors
+//	5. The last unitig in the top priority path has a successor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a successor on which no core k-mer lies
+//	8. The last unitig in the top priority path has a successor for which adding it to the path does not make the path too long
+//	9. After processing the top priority path the queue is (not) empty
+TEST_F(DoSucBFStest, NoSuc){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	++i;
+	++i;
+
+	EXPECT_FALSE(doSucBFS(*i, 5, res));
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests the function doSucBFS under the following conditions
+//	1. The result path is empty
+//	2. The last unitig in the top priority path does have successors
+//	3. The last unitig in the top priority path has one successor
+//	5. The last unitig in the top priority path has a successor at which we are not on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a successor on which a core k-mer lies
+//	7. The last unitig in the top priority path has a successor on which a core k-mer lies that is not close enough
+//	8. The last unitig in the top priority path has a successor for which adding it to the path does make the path too long
+//	9. After processing the top priority path the queue is empty
+TEST_F(DoSucBFStest, OneSuc){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	++i;
+	++i;
+	u = *i;
+	u.strand = false;
+
+	EXPECT_FALSE(doSucBFS(u, 2, res));
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests the function doSucBFS under the following conditions
+//	1. The result path is empty
+//	2. The last unitig in the top priority path does have successors
+//	3. The last unitig in the top priority path has one successor
+//	4. The last unitig in the top priority path has a successor at which we are on the reference strand and for which the distance to the next core k-mer is already known to be too large
+//	5. The last unitig in the top priority path has a successor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a successor on which a/no core k-mer lies
+//	7. The last unitig in the top priority path has a successor on which a core k-mer lies that is not close enough
+//	8. The last unitig in the top priority path has a successor for which adding it to the path does not make the path too long
+//	9. After processing the top priority path the queue is (not) empty
+TEST_F(DoSucBFStest, SndVis){
+	cdbgOpt.filename_ref_in.push_back("Test17_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+
+	//Testing
+	for(i = cdbg.begin(); i != cdbg.end(); ++i) cout << i->mappedSequenceToString() << endl;
+
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(1,1));
+	i->getData()->getData(*i)->sucCoreDist = 2;
+	++i;
+	++i;
+
+	EXPECT_FALSE(doSucBFS(*i, 3, res));
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests the function doSucBFS under the following conditions
+//	1. The result path is empty
+//	2. The last unitig in the top priority path does (not) have successors
+//	3. The last unitig in the top priority path has one successor
+//	4. The last unitig in the top priority path has a successor at which we are not on the reference strand and for which the distance to the next core k-mer is already known to be too large
+//	5. The last unitig in the top priority path has a successor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a successor on which a/no core k-mer lies
+//	8. The last unitig in the top priority path has a successor for which adding it to the path does not make the path too long
+//	9. After processing the top priority path the queue is (not) empty
+TEST_F(DoSucBFStest, RevVis){
+	cdbgOpt.filename_ref_in.push_back("Test18_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	i->getData()->getData(*i)->predCoreDist = 2;
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	++i;
+
+	EXPECT_FALSE(doSucBFS(*i, 3, res));
+	EXPECT_TRUE(res.empty());
 }
 
 //Tests for function inline const uint32_t findMinPthLen(const list<Path>&)//
