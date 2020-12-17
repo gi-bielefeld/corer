@@ -159,42 +159,13 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 		//Get iterator of last unitig in top priority path
 		ForwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it = queue.top().second.back().getSuccessors();
 
-		//Testing
-		uint32_t c = 0;
-
 		//Iterate over successors
 		for(suc = it.begin(); suc != it.end(); ++suc){
-			//Testing
-			++c;
-			if(suc->getData()->getData(*suc)->coreList.empty()){
-				cout << "6 Option 2" << endl;
-			} else{
-				cout << "6 Option 1" << endl;
-			}
-			if(!suc->getData()->getData(*suc)->coreList.empty() && getCoreDist(suc, true) <= dpth - queue.top().first){
-				cout << "7 Option 1" << endl;
-			} else if (!suc->getData()->getData(*suc)->coreList.empty()){
-				cout << "7 Option 2" << endl;
-			}
 
 			//Check if distance to next core k-mer (if known) is too large
 			if((suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist) > dpth - queue.top().first){
-				//Testing
-				if(suc->strand){
-					cout << "4 Option 1" << endl;
-				} else{
-					cout << "4 Option 2" << endl;
-				}
-
 				//Extending the path on this successor does not make sense
 				continue;
-			}
-
-			//Testing
-			if(suc->strand){
-				cout << "5 Option 1" << endl;
-			} else{
-				cout << "5 Option 2" << endl;
 			}
 
 			//Check if there is a core k-mer on this successor and if it is close enough
@@ -211,9 +182,6 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 
 			//Check if adding all k-mers of a successive unitig to path does not make it too long
 			if(queue.top().first + suc->len < dpth){
-				//Testing
-				cout << "8 Option 2" << endl;
-
 				//Get path
 				extPth = queue.top();
 				//Add current successor to path
@@ -223,50 +191,20 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 
 				//Insert path to queue
 				queue.push(extPth);
-			} else{
-				//Testing
-				cout << "8 Option 1" << endl;
 			}
-		}
-
-		//Testing
-		if(c > 0){
-			cout << "2 Option 1" << endl;
-
-			if(c > 1){
-				cout << "3 Option 2" << endl;
-			} else{
-				cout << "3 Option 1" << endl;
-			}
-		} else{
-			cout << "2 Option 2" << endl;
 		}
 
 		//Remove top priority path from queue
 		queue.pop();
-
-		//Testing
-		if(queue.empty()){
-			cout << "9 Option 1" << endl;
-		} else{
-			cout << "9 Option 2" << endl;
-		}
 	}
 
 	//Check if we could find valid paths
 	if(!resPths.empty()){
 		//Add core k-mer distance for unitigs on result paths
 		addDists(resPths, true);
-
-		//Testing
-		cout << "1 Option 2" << endl;
-
 		//Report success
 		return true;
 	} else{
-		//Testing
-		cout << "1 Option 1" << endl;
-
 		return false;
 	}
 }

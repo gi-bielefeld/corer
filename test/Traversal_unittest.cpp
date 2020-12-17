@@ -670,10 +670,6 @@ TEST_F(DoSucBFStest, SndVis){
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
-
-	//Testing
-	for(i = cdbg.begin(); i != cdbg.end(); ++i) cout << i->mappedSequenceToString() << endl;
-
 	i = cdbg.begin();
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
 	++i;
@@ -688,11 +684,12 @@ TEST_F(DoSucBFStest, SndVis){
 
 //Tests the function doSucBFS under the following conditions
 //	1. The result path is empty
-//	2. The last unitig in the top priority path does (not) have successors
+//	2. The last unitig in the top priority path does have successors
 //	3. The last unitig in the top priority path has one successor
 //	4. The last unitig in the top priority path has a successor at which we are not on the reference strand and for which the distance to the next core k-mer is already known to be too large
 //	5. The last unitig in the top priority path has a successor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
 //	6. The last unitig in the top priority path has a successor on which a/no core k-mer lies
+//	7. The last unitig in the top priority path has a successor on which a core k-mer lies that is not close enough
 //	8. The last unitig in the top priority path has a successor for which adding it to the path does not make the path too long
 //	9. After processing the top priority path the queue is (not) empty
 TEST_F(DoSucBFStest, RevVis){
@@ -879,10 +876,29 @@ TEST_F(ExpPredPthsTest, FltdRev){
 
 //Tests for function const bool doPredBFS(const UnitigColorMap<CoreInfo>, const uint32_t, list<Path>&)//
 //	1. The result path is (not) empty DONE
+//	2. The last unitig in the top priority path does (not) have predecessors DONE
+//	3. The last unitig in the top priority path has one/many predecessor(s) DONE
+//	4. The last unitig in the top priority path has a predecessor at which we are (not) on the reference strand and for which the distance to the next core k-mer is already known to be too large DONE
+//	5. The last unitig in the top priority path has a predecessor at which we are (not) on the reference strand and for which the distance to the next core k-mer is not already known to be too large DONE
+//	6. The last unitig in the top priority path has a predecessor on which a/no core k-mer lies DONE
+//	7. The last unitig in the top priority path has a predecessor on which a core k-mer lies that is (not) close enough DONE
+//	8. The last unitig in the top priority path has a predecessor for which adding it to the path does (not) make the path too long DONE
+//	9. After processing the top priority path the queue is (not) empty DONE
 
 //Tests the function doPredBFS under the following conditions
 //	1. The result path is empty
+//	2. The last unitig in the top priority path does (not) have predecessors
+//	3. The last unitig in the top priority path has one predecessor
+//	5. The last unitig in the top priority path has a predecessor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a predecessor on which no core k-mer lies
+//	8. The last unitig in the top priority path has a predecessor for which adding it to the path does not make the path too long
+//	9. After processing the top priority path the queue is (not) empty
 TEST_F(DoPredBFStest, NoRes){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	++i;
 	++i;
 	++i;
@@ -893,7 +909,19 @@ TEST_F(DoPredBFStest, NoRes){
 
 //Tests the function doPredBFS under the following conditions
 //	1. The result path is not empty
+//	2. The last unitig in the top priority path does have predecessors
+//	3. The last unitig in the top priority path has one predecessor
+//	5. The last unitig in the top priority path has a predecessor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a predecessor on which a/no core k-mer lies
+//	7. The last unitig in the top priority path has a predecessor on which a core k-mer lies that is close enough
+//	8. The last unitig in the top priority path has a predecessor for which adding it to the path does not make the path too long
+//	9. After processing the top priority path the queue is (not) empty
 TEST_F(DoPredBFStest, SomeRes){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
 	++i;
 	++i;
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
@@ -911,4 +939,133 @@ TEST_F(DoPredBFStest, SomeRes){
 	++ui;
 	EXPECT_EQ("AAAGGCAAA", ui->mappedSequenceToString());
 	EXPECT_EQ(1, ui->getData()->getData(*ui)->predCoreDist);
+}
+
+//Tests the function doPredBFS under the following conditions
+//	1. The result path is not empty
+//	2. The last unitig in the top priority path does have predecessors
+//	3. The last unitig in the top priority path has one predecessor
+//	5. The last unitig in the top priority path has a predecessor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a predecessor on which a core k-mer lies
+//	7. The last unitig in the top priority path has a predecessor on which a core k-mer lies that is close enough
+//	9. After processing the top priority path the queue is empty
+TEST_F(DoPredBFStest, HasPred){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	++i;
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+
+	EXPECT_TRUE(doPredBFS(*cdbg.begin(), 42, res));
+	EXPECT_EQ(1, res.size());
+
+	for(list<Path>::const_iterator p = res.begin(); p != res.end(); ++p){
+		EXPECT_EQ(1, p->first);
+		EXPECT_EQ(2, p->second.size());
+		
+		EXPECT_EQ("AAGGCAAACAC", p->second.front().mappedSequenceToString());
+
+		EXPECT_EQ("AAAGGCAAA", p->second.back().mappedSequenceToString());
+	}
+}
+
+//Tests the function doPredBFS under the following conditions
+//	1. The result path is empty
+//	2. The last unitig in the top priority path does not have predecessors
+//	9. After processing the top priority path the queue is empty
+TEST_F(DoPredBFStest, NoPred){
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	++i;
+	++i;
+
+	EXPECT_FALSE(doPredBFS(*i, 42, res));
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests the function doPredBFS under the following conditions
+//	1. The result path is empty
+//	2. The last unitig in the top priority path does have predecessors
+//	3. The last unitig in the top priority path has one/many predecessors
+//	5. The last unitig in the top priority path has a predecessor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a predecessor on which a/no core k-mer lies
+//	7. The last unitig in the top priority path has a predecessor on which a core k-mer lies that is not close enough
+//	8. The last unitig in the top priority path has a predecessor for which adding it to the path does (not) make the path too long
+//	9. After processing the top priority path the queue is (not) empty
+TEST_F(DoPredBFStest, MnyPred){
+	cdbgOpt.filename_seq_in.push_back("Test15_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(7,8));
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(13,14));
+
+	EXPECT_FALSE(doPredBFS(*i, 10, res));
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests the function doPredBFS under the following conditions
+//	1. The result path is empty
+//	2. The last unitig in the top priority path does have predecessors
+//	3. The last unitig in the top priority path has one/many predecessor(s)
+//	4. The last unitig in the top priority path has a predecessor at which we are on the reference strand and for which the distance to the next core k-mer is already known to be too large
+//	5. The last unitig in the top priority path has a predecessor at which we are (not) on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a predecessor on which a/no core k-mer lies
+//	7. The last unitig in the top priority path has a predecessor on which a core k-mer lies that is not close enough
+//	8. The last unitig in the top priority path has a predecessor for which adding it to the path does (not) make the path too long
+//	9. After processing the top priority path the queue is (not) empty
+TEST_F(DoPredBFStest, FltdRef){
+	cdbgOpt.filename_seq_in.push_back("Test11_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,1));
+	i->getData()->getData(*i)->predCoreDist = 2;
+	++i;
+	++i;
+
+	EXPECT_FALSE(doPredBFS(*i, 5, res));
+	EXPECT_TRUE(res.empty());
+}
+
+//Tests the function doPredBFS under the following conditions
+//	1. The result path is empty
+//	2. The last unitig in the top priority path does have predecessors
+//	3. The last unitig in the top priority path has one predecessor
+//	4. The last unitig in the top priority path has a predecessor at which we are not on the reference strand and for which the distance to the next core k-mer is already known to be too large
+//	5. The last unitig in the top priority path has a predecessor at which we are on the reference strand and for which the distance to the next core k-mer is not already known to be too large
+//	6. The last unitig in the top priority path has a predecessor on which no core k-mer lies
+//	8. The last unitig in the top priority path has a predecessor for which adding it to the path does not make the path too long
+//	9. After processing the top priority path the queue is (not) empty
+TEST_F(DoPredBFStest, FltdRev){
+	cdbgOpt.filename_ref_in.push_back("Test19_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	i = cdbg.begin();
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,1));
+	++i;
+	++i;
+	++i;
+	++i;
+	++i;
+	i->getData()->getData(*i)->sucCoreDist = 2;
+	i = cdbg.begin();
+	++i;
+	++i;
+	++i;
+	++i;
+
+	EXPECT_FALSE(doPredBFS(*i, 3, res));
+	EXPECT_TRUE(res.empty());
 }
