@@ -86,6 +86,13 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 
 	//Iterate over all unitigs
 	for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
+		//Testing
+		// if(!i->mappedSequenceToString().compare("ATGCTGTTTAA") || !i->mappedSequenceToString().compare("TTAAACAGCAT")){
+		// 	cerr << "outputSnippets: Found unitig " << i->mappedSequenceToString() << endl;
+		// 	cerr << "outputSnippets: Core list is" << endl;
+		// 	for(list<pair<uint32_t, uint32_t>>::const_iterator inter = i->getData()->getData(*i)->coreList.begin(); inter != i->getData()->getData(*i)->coreList.end(); ++inter) cerr << '[' << inter->first << ',' << inter->second << ']' << endl;
+		// }
+
 		//Check if unitig has no core k-mers
 		if(i->getData()->getData(*i)->coreList.empty()){
 			//Check if unitig's sequence is marked as bridging
@@ -123,13 +130,28 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 				++intvl;
 			}
 
+			//Testing
+			// if(!i->mappedSequenceToString().compare("CTTAAAACCCAC") || !i->mappedSequenceToString().compare("GTGGGTTTTAAG")) cerr << "outputSnippets: Next, the core k-mer should be outputted" << endl;
+
 			//Check if unitig's suffix is marked as bridging
 			if(i->getData()->getData(*i)->sufBrdg){
 				//Output last substring reaching to sequence's end
 				cout << i->mappedSequenceToString().substr(start) << endl;
+
+				//Testing
+				// if(!i->mappedSequenceToString().compare("CTTAAAACCCAC") || !i->mappedSequenceToString().compare("GTGGGTTTTAAG")){
+				// 	cerr << "outputSnippets: Suffix bridging flag IS set" << endl;
+				// 	exit(EXIT_SUCCESS);
+				// }
 			} else{
 				//Output last substring reaching to interval's end
 				cout << i->mappedSequenceToString().substr(start, end - start + cdbg.getK()) << endl;
+
+				//Testing
+				// if(!i->mappedSequenceToString().compare("CTTAAAACCCAC") || !i->mappedSequenceToString().compare("GTGGGTTTTAAG")){
+				// 	cerr << "outputSnippets: Suffix bridging flag is NOT set" << endl;
+				// 	exit(EXIT_SUCCESS);
+				// }
 			}
 		}
 	}
@@ -185,13 +207,30 @@ void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t
 				++intvl;
 			}
 
+			//Testing
+			// if(i->referenceUnitigToString().compare(i->mappedSequenceToString()) != 0){
+			// 	cout << "genCoreGraph: Reference and mapped sequence are not identical" << endl;
+			// 	cout << "genCoreGraph: Unitig: ref: " << i->referenceUnitigToString() << " mapped: " << i->mappedSequenceToString() << endl;
+			// 	cout << "genCoreGraph: start: " << start << " end: " << end << endl;
+			// }
+
 			//Check if unitig's suffix is marked as bridging
 			if(i->getData()->getData(*i)->sufBrdg){
+				//Testing
+				// if(i->referenceUnitigToString().compare(i->mappedSequenceToString()) != 0){
+				// 	cout << "genCoreGraph: Sequence added to graph: " << i->referenceUnitigToString().substr(start) << " or " << i->mappedSequenceToString().substr(start) << endl;
+				// }
+
 				//Add last substring reaching to sequence's end
-				oGrph.add(i->mappedSequenceToString().substr(start));
+				oGrph.add(i->referenceUnitigToString().substr(start));
 			} else{
+				//Testing
+				// if(i->referenceUnitigToString().compare(i->mappedSequenceToString()) != 0){
+				// 	cout << "genCoreGraph: Sequence added to graph: " << i->referenceUnitigToString().substr(start, end - start + cdbg.getK()) << " or " << i->mappedSequenceToString().substr(start, end - start + cdbg.getK()) << endl;
+				// }
+
 				//Add last substring reaching to interval's end
-				oGrph.add(i->mappedSequenceToString().substr(start, end - start + cdbg.getK()));
+				oGrph.add(i->referenceUnitigToString().substr(start, end - start + cdbg.getK()));
 			}
 		}
 	}

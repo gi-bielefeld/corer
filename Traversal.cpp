@@ -5,6 +5,9 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 	uint32_t lstDst;
 	list<UnitigColorMap<CoreInfo>>::const_reverse_iterator j;
 
+	//Testing
+	// bool appeared = false;
+
 	//Iterate over all paths
 	for(list<Path>::const_iterator i = pthLst.begin(); i != pthLst.end(); ++i){
 		//Get reverse iterator for path
@@ -13,15 +16,24 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 		//Check which distance we have to set
 		if(isSucPth ^ j->strand){
 			//Set distance
-			j->getData()->getData(*j)->predCoreDist = j->len - j->getData()->getData(*j)->coreList.back().second;
+			j->getData()->getData(*j)->predCoreDist = min(j->getData()->getData(*j)->predCoreDist, (uint32_t) j->len - j->getData()->getData(*j)->coreList.back().second);
 			//Save distance for next unitig
-			lstDst = j->getData()->getData(*j)->predCoreDist;
+			lstDst = j->len - j->getData()->getData(*j)->coreList.back().second;
 		} else{
 			//Set distance
-			j->getData()->getData(*j)->sucCoreDist = j->getData()->getData(*j)->coreList.front().first + 1;
+			j->getData()->getData(*j)->sucCoreDist = min(j->getData()->getData(*j)->sucCoreDist, j->getData()->getData(*j)->coreList.front().first + 1);
 			//Save distance for next unitig
-			lstDst = j->getData()->getData(*j)->sucCoreDist;
+			lstDst = j->getData()->getData(*j)->coreList.front().first + 1;
 		}
+
+		//Testing
+		// if(!j->mappedSequenceToString().compare("GCTGTTTAACA") || !j->mappedSequenceToString().compare("TGTTAAACAGC")){
+		// 	cerr << "addDists: Distance set for unitig " << j->mappedSequenceToString() << endl;
+		// 	cerr << "addDists: The whole path is" << endl;
+		// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator k = i->second.begin(); k != i->second.end(); ++k) cerr << k->mappedSequenceToString() << endl;
+		// 	cerr << "addDists: Distance is " << j->getData()->getData(*j)->sucCoreDist << endl;
+		// 	appeared = true;
+		// }
 
 		//Go to next unitig
 		++j;
@@ -34,17 +46,34 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 			//Check which distance we have to set
 			if(isSucPth ^ j->strand){
 				//Set distance
-				j->getData()->getData(*j)->predCoreDist = lstDst;
+				j->getData()->getData(*j)->predCoreDist = min(j->getData()->getData(*j)->predCoreDist, lstDst);
 			} else{
 				//Set distance
-				j->getData()->getData(*j)->sucCoreDist = lstDst;
+				j->getData()->getData(*j)->sucCoreDist = min(j->getData()->getData(*j)->sucCoreDist, lstDst);
 			}
+
+			//Testing
+			// if(!j->mappedSequenceToString().compare("GCTGTTTAACA") || !j->mappedSequenceToString().compare("TGTTAAACAGC")){
+			// 	cerr << "addDists: Distance set for unitig " << j->mappedSequenceToString() << endl;
+			// 	cerr << "addDists: The whole path is" << endl;
+			// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator k = i->second.begin(); k != i->second.end(); ++k) cerr << k->mappedSequenceToString() << endl;
+			// 	cerr << "addDists: Distance is " << j->getData()->getData(*j)->sucCoreDist << endl;
+			// 	appeared = true;
+			// }
 		}
 	}
+
+	//Testing
+	// if(appeared){
+	// 	cerr << "addDists: We do get here" << endl;
+	// 	exit(EXIT_SUCCESS);
+	// }
 }
 
 //This function extends the top priority path of the given priority queue on successive unitigs. If it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Otherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
 void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, list<Path>& res){
+	//Distance to next core k-mer
+	uint32_t coreDist;
 	//Get iterator of last unitig in top priority path
 	ForwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it = queue.top().second.back().getSuccessors();
 	//Variable to store an extended path
@@ -53,7 +82,9 @@ void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, c
 	//Iterate over successors
 	for(neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> suc = it.begin(); suc != it.end(); ++suc){
 		//Check if distance to next core k-mer (if known) is too large
-		if((suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist) > dpth - queue.top().first){
+		coreDist = (suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist);
+
+		if(coreDist != UINT32_MAX && coreDist > dpth - queue.top().first){
 			//Extending the path on this successor does not make sense
 			continue;
 		}
@@ -93,6 +124,8 @@ void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, c
 
 //This function extends the top priority path of the given priority queue on predecessive unitigs. It it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Qtherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
 void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, list<Path>& res){
+	//Distance to next core k-mer
+	uint32_t coreDist;
 	//Get iterator of last unitig in top priority path
 	BackwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it = queue.top().second.back().getPredecessors();
 	//Variable to store an extended path
@@ -101,7 +134,9 @@ void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, 
 	//Iterate over predecessors
 	for(neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> pred = it.begin(); pred != it.end(); ++pred){
 		//Check if distance to next core k-mer (if known) is too large
-		if((pred->strand ? pred->getData()->getData(*pred)->predCoreDist : pred->getData()->getData(*pred)->sucCoreDist) > dpth - queue.top().first){
+		coreDist = (pred->strand ? pred->getData()->getData(*pred)->predCoreDist : pred->getData()->getData(*pred)->sucCoreDist);
+
+		if(coreDist != UINT32_MAX && coreDist > dpth - queue.top().first){
 			//Extending the path on this predecessor does not make sense
 			continue;
 		}
@@ -140,6 +175,8 @@ void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, 
 
 //This function performs a BFS of the given depths on all successors of the given unitig. It returns true if a core k-mer could be reached by any path.
 const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, list<Path>& resPths){
+	//Distance to next core k-mer
+	uint32_t coreDist;
 	//Some neighbor iterator
 	neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> suc;
 	//A list to store the first path
@@ -154,6 +191,22 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 	//Add initial path to priority queue
 	queue.push(Path(0, uniLst));
 
+	//Testing
+	// string path[] = {"GATGCTGTTTA"};
+	// uint32_t counter = 0;
+	// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")){
+	// 	cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+	// 	// exit(EXIT_SUCCESS);
+	// }
+	// if(!orig.mappedSequenceToString().compare("GCTGTTTAACA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+	// if(!orig.mappedSequenceToString().compare("CTGTTTAACAGG")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+	// if(!orig.mappedSequenceToString().compare("CTGTTTAACAC")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+	// if(!orig.mappedSequenceToString().compare("TGTTTAACACACAA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+	// if(!orig.mappedSequenceToString().compare("TAACACACAAT")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+	// if(!orig.mappedSequenceToString().compare("AACACACAATAA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+	// if(!orig.mappedSequenceToString().compare("CACACAATAAA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+	// if(!orig.mappedSequenceToString().compare("ACACAATAAAA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+
 	//Explore paths
 	while(!queue.empty()){
 		//Get iterator of last unitig in top priority path
@@ -161,15 +214,32 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 
 		//Iterate over successors
 		for(suc = it.begin(); suc != it.end(); ++suc){
+			//Testing
+			// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")) cerr << "doSucBFS: We have found successor " << suc->mappedSequenceToString() << endl;
 
 			//Check if distance to next core k-mer (if known) is too large
-			if((suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist) > dpth - queue.top().first){
+			coreDist = (suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist);
+
+			if(coreDist != UINT32_MAX && coreDist > dpth - queue.top().first){
+				//Testing
+				// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")){
+				// 	cerr << "doSucBFS: Distance to next known core k-mer is too large" << endl;
+				// 	cerr << "doSucBFS: Distance is " << suc->getData()->getData(*suc)->sucCoreDist << " and allowed is only " << dpth - queue.top().first << endl;
+				// 	++counter;
+				// }
+
 				//Extending the path on this successor does not make sense
 				continue;
 			}
 
 			//Check if there is a core k-mer on this successor and if it is close enough
 			if(!suc->getData()->getData(*suc)->coreList.empty() && getCoreDist(suc, true) <= dpth - queue.top().first){
+				//Testing
+				// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")){
+				// 	cerr << "doSucBFS: There is a core k-mer on this unitig which is close enough" << endl;
+				// 	++counter;
+				// }
+
 				//Add path to results
 				resPths.push_back(queue.top());
 				//Add successor to path
@@ -192,6 +262,12 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 				//Insert path to queue
 				queue.push(extPth);
 			}
+
+			//Testing
+			// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")){
+			// 	cerr << "doSucBFS: We continue with this unitig" << endl;
+			// 	++counter;
+			// }
 		}
 
 		//Remove top priority path from queue
@@ -211,6 +287,8 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 
 //This function performs a BFS of the given depths on all predecessors of the given unitig. It returns true if a core k-mer could be reached by any path.
 const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, list<Path>& resPths){
+	//Distance to next core k-mer
+	uint32_t coreDist;
 	//Some neighbor iterator
 	neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> pred;
 	//A list to store the first path
@@ -225,6 +303,9 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 	//Add initial path to priority queue
 	queue.push(Path(0, uniLst));
 
+	//Testing
+	// if(!orig.mappedSequenceToString().compare("GTTTAACAGGTACG")) cerr << "doPredBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
+
 	//Explore paths
 	while(!queue.empty()){
 		//Get iterator of last unitig in top priority path
@@ -233,7 +314,9 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 		//Iterate over predecessors
 		for(pred = it.begin(); pred != it.end(); ++pred){
 			//Check if distance to next core k-mer (if known) is too large
-			if((pred->strand ? pred->getData()->getData(*pred)->predCoreDist : pred->getData()->getData(*pred)->sucCoreDist) > dpth - queue.top().first){
+			coreDist = (pred->strand ? pred->getData()->getData(*pred)->predCoreDist : pred->getData()->getData(*pred)->sucCoreDist);
+
+			if(coreDist != UINT32_MAX && coreDist > dpth - queue.top().first){
 				//Extending the path on this predecessor does not make sense
 				continue;
 			}

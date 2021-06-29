@@ -10,7 +10,7 @@ class CoreInfo : public CCDBG_Data_t<CoreInfo> {
 
 	public:
 
-		CoreInfo(): preBrdg(false), sufBrdg(false), sucCoreDist(0), predCoreDist(0) {}
+		CoreInfo(): preBrdg(false), sufBrdg(false), sucCoreDist(UINT32_MAX), predCoreDist(UINT32_MAX) {}
 		
 		//NOTE: Actually, methods join, serialize and sub should be overloaded here. Since the core info will only be used during run time this is not necessary here.
 

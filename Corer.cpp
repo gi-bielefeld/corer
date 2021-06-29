@@ -28,6 +28,11 @@ int main(int argc, char **argv){
 		return EXIT_FAILURE;
 	}
 
+	//Testing
+	// cout << "Loaded graph:" << endl;
+	// for(ColoredCDBG<CoreInfo>::iterator u = cdbg.begin(); u != cdbg.end(); ++u) cout << u->mappedSequenceToString() << endl;
+	// exit(EXIT_SUCCESS);
+
 	//Set quorum if not already done
 	if(qrm == 0){
 		qrm = max((uint32_t) MIN_QUORUM, (uint32_t) (cdbg.getNbColors() * DEFAULT_CORE_RATIO));
@@ -43,9 +48,10 @@ int main(int argc, char **argv){
 	//Testing
 	// cout << "done" << endl;
 	// cout << "Detecting bridging k-mers..." << endl;
-	// cout << "Our graph is:" << endl;
+	// cout "Our graph is:" << endl;
 	// for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
-	// 	cout << i->referenceUnitigToString() << endl;//" Colors are:" << endl;
+	// 	if(!i->mappedSequenceToString().compare("ATGCTGTTTAA") || !i->mappedSequenceToString().compare("TTAAACAGCAT")) cerr << "main: Found unitig " << i->mappedSequenceToString() << endl << "main: Suffix bridging flag is " << (i->getData()->getData(*i)->sufBrdg ? "" : "not ") << "set" << endl;
+	//	cout << i->referenceUnitigToString() << endl;//" Colors are:" << endl;
 	//
 	// 	for(UnitigColors::const_iterator j = i->getData()->getUnitigColors(*i)->begin(*i); j != i->getData()->getUnitigColors(*i)->end(); ++j) cout << "Pos:" << j.getKmerPosition() << " ID:" << j.getColorID() << endl;
 	//
@@ -61,7 +67,16 @@ int main(int argc, char **argv){
 	detectBrdg(cdbg, dlt);
 
 	//Testing
+	// cerr << "main: sucCoreDist of unitig TGTTAAACAGC: " << cdbg.find(Kmer("TGTTAAACAGC")).getData()->getData(cdbg.find(Kmer("TGTTAAACAGC")))->sucCoreDist << endl;
+	// cerr << "main: predCoreDist of unitig TGTTAAACAGC: " << cdbg.find(Kmer("TGTTAAACAGC")).getData()->getData(cdbg.find(Kmer("TGTTAAACAGC")))->predCoreDist << endl;
 	// cout << "done" << endl << "Construct output graph...";
+	// for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
+	// 	cout << "Unitig: " << i->mappedSequenceToString() << " CoreInfo: preBrdg: " << (i->getData()->getData(*i)->preBrdg ? "true" : "false") << " sufBrdg: " << (i->getData()->getData(*i)->sufBrdg ? "true" : "false") << " sucCoreDist: " << i->getData()->getData(*i)->sucCoreDist << " predCoreDist: " << i->getData()->getData(*i)->predCoreDist << " coreList:" << endl;
+	// 	for(list<pair<uint32_t, uint32_t>>::const_iterator interval = i->getData()->getData(*i)->coreList.begin(); interval != i->getData()->getData(*i)->coreList.end(); ++interval){
+	// 		cout << "[" << interval->first << "," << interval->second << "]" << endl;
+	// 	}
+	// }
+	// return EXIT_SUCCESS;
 
 	//Check if unitig snippet output is requested
 	if(oSnps){
