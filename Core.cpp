@@ -92,12 +92,7 @@ const bool chkQrm(UnitigColorMap<CoreInfo> &u, const uint32_t& q){
 	int32_t allwdToMs;
 
 	//If the maximum color id (+1, since ids start at 0) is already smaller than our quorum it can never be fulfilled
-	if(q > u.getData()->getUnitigColors(u)->colorMax(u) + 1){
-		//Testing
-		// if(!u.mappedSequenceToString().compare("GTGGGTTTTAA") || !u.mappedSequenceToString().compare("TGGGTTTTAAG") || !u.mappedSequenceToString().compare("CTTAAAACCCA") || !u.mappedSequenceToString().compare("TTAAAACCCAC")) cerr << "chkQrm: Maximum color id too small" << endl;
-
-		return false;
-	}
+	if(q > u.getData()->getUnitigColors(u)->colorMax(u) + 1) return false;
 
 	//Calculate how many colors we are allowed to miss before it is clear that we cannot fulfill the quorum anymore
 	allwdToMs = u.getData()->getUnitigColors(u)->colorMax(u) + 1 - q;
@@ -124,21 +119,10 @@ const bool chkQrm(UnitigColorMap<CoreInfo> &u, const uint32_t& q){
 			allwdToMs -= curID;
 		}
 
-		//Testing
-		// if(!u.mappedSequenceToString().compare("GTGGGTTTTAA") || !u.mappedSequenceToString().compare("TGGGTTTTAAG") || !u.mappedSequenceToString().compare("CTTAAAACCCA") || !u.mappedSequenceToString().compare("TTAAAACCCAC")) cerr << "chkQrm: Current colorID: " << curID << endl;
-
 		//Check if the current color is present at this unitig
 		if(u.getData()->getUnitigColors(u)->contains(u, curID)){
-			//Testing
-			// if(!u.mappedSequenceToString().compare("GTGGGTTTTAA") || !u.mappedSequenceToString().compare("TGGGTTTTAAG") || !u.mappedSequenceToString().compare("CTTAAAACCCA") || !u.mappedSequenceToString().compare("TTAAAACCCAC")) cerr << "chkQrm: Id is present" << endl;
-
 			//Increment counter and check if we are done
-			if(++cnt == q){
-				//Testing
-				// if(!u.mappedSequenceToString().compare("GTGGGTTTTAA") || !u.mappedSequenceToString().compare("TGGGTTTTAAG") || !u.mappedSequenceToString().compare("CTTAAAACCCA") || !u.mappedSequenceToString().compare("TTAAAACCCAC")) cerr << "chkQrm: Quorum fulfilled" << endl;
-
-				return true;
-			}
+			if(++cnt == q) return true;
 		} else{
 			//Decrement number of colors we are still allowed to miss
 			--allwdToMs;
@@ -147,12 +131,8 @@ const bool chkQrm(UnitigColorMap<CoreInfo> &u, const uint32_t& q){
 		//Update last id
 		lstID = curID;
 		//Move to the next color
-		// i.nextColor();
 		++i;
 	}
-
-	//Testing
-	// if(!u.mappedSequenceToString().compare("GTGGGTTTTAA") || !u.mappedSequenceToString().compare("TGGGTTTTAAG") || !u.mappedSequenceToString().compare("CTTAAAACCCA") || !u.mappedSequenceToString().compare("TTAAAACCCAC")) cerr << "chkQrm: End of function reached" << endl;
 
 	return false;
 }

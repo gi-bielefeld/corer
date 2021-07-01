@@ -282,8 +282,8 @@ TEST_F(DetectBrdgTest, NoCore){
 	for(i = cdbg.begin(); i != cdbg.end(); ++i){
 		EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 		EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
-		EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-		EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	}
 }
 
@@ -321,28 +321,28 @@ TEST_F(DetectBrdgTest, SucBFS){
 	i = cdbg.begin();
 	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
 	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 }
 
 //Tests for function detectBrdg under the following conditions
@@ -379,28 +379,28 @@ TEST_F(DetectBrdgTest, SucSucBFSCore){
 	i = cdbg.begin();
 	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
 	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 }
 
 //Tests for function detectBrdg under the following conditions
@@ -428,8 +428,8 @@ TEST_F(DetectBrdgTest, NoDlt){
 	for(i = cdbg.begin(); i != cdbg.end(); ++i){
 		EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 		EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
-		EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-		EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	}
 }
 
@@ -459,8 +459,8 @@ TEST_F(DetectBrdgTest, PredBFS){
 	for(i = cdbg.begin(); i != cdbg.end(); ++i){
 		EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 		EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
-		EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-		EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	}
 }
 
@@ -500,10 +500,10 @@ TEST_F(DetectBrdgTest, PredBFSNoCore){
 		if(i->mappedSequenceToString() == "GCAAACACA"){
 			EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
 		} else{
-			EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+			EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 		}
 		
-		EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	}
 }
 
@@ -539,25 +539,25 @@ TEST_F(DetectBrdgTest, OldSucPth){
 	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
 	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
 	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
 	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 	EXPECT_EQ(2, i->getData()->getData(*i)->predCoreDist);
 }

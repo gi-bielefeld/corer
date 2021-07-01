@@ -10,11 +10,7 @@ class ChkQrmTest : public ::testing::Test {
 
 	protected:
 
-		ChkQrmTest(): cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G), qrm(2) {
-			cdbgOpt.k = DEFAULT_TEST_K;
-			cdbgOpt.g = DEFAULT_TEST_G;
-			cdbgOpt.filename_seq_in.push_back("Test.fa");
-		}
+		ChkQrmTest(): qrm(2) {}
 
 		//Colored de Bruijn graph build options
 		CCDBG_Build_opt cdbgOpt;

@@ -7,6 +7,7 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 
 	//Testing
 	// bool appeared = false;
+	cout << "1 Option " << (pthLst.empty() ? "1" : "2") << endl;
 
 	//Iterate over all paths
 	for(list<Path>::const_iterator i = pthLst.begin(); i != pthLst.end(); ++i){
@@ -15,18 +16,24 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 
 		//Check which distance we have to set
 		if(isSucPth ^ j->strand){
-			//Set distance
-			j->getData()->getData(*j)->predCoreDist = min(j->getData()->getData(*j)->predCoreDist, (uint32_t) j->len - j->getData()->getData(*j)->coreList.back().second);
 			//Save distance for next unitig
 			lstDst = j->len - j->getData()->getData(*j)->coreList.back().second;
-		} else{
 			//Set distance
-			j->getData()->getData(*j)->sucCoreDist = min(j->getData()->getData(*j)->sucCoreDist, j->getData()->getData(*j)->coreList.front().first + 1);
+			j->getData()->getData(*j)->predCoreDist = lstDst;
+		} else{
 			//Save distance for next unitig
 			lstDst = j->getData()->getData(*j)->coreList.front().first + 1;
+			//Set distance
+			j->getData()->getData(*j)->sucCoreDist = lstDst;
 		}
 
 		//Testing
+		cout << "2 Option " << (i->first > 2 ? "1" : "2") << endl;
+		if(isSucPth){
+			cout << "3 Option " << (!j->strand ? "1" : "2") << endl;
+		} else{
+			cout << "4 Option " << (!j->strand ? "1" : "2") << endl;
+		}
 		// if(!j->mappedSequenceToString().compare("GCTGTTTAACA") || !j->mappedSequenceToString().compare("TGTTAAACAGC")){
 		// 	cerr << "addDists: Distance set for unitig " << j->mappedSequenceToString() << endl;
 		// 	cerr << "addDists: The whole path is" << endl;
@@ -42,6 +49,25 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 		for(uint32_t c = 2; c < i->second.size(); ++c, ++j){
 			//Update saved distance for next unitig
 			lstDst += j->len;
+
+			//Testing
+			if(isSucPth){
+				cout << "5 Option " << (!j->strand ? "1" : "2") << endl;
+
+				if(!j->strand){
+					if(j->getData()->getData(*j)->predCoreDist != UINT32_MAX && j->getData()->getData(*j)->predCoreDist != lstDst) cout << "7 Option 1" << endl;
+				} else{
+					if(j->getData()->getData(*j)->sucCoreDist != UINT32_MAX && j->getData()->getData(*j)->sucCoreDist != lstDst) cout << "7 Option 2" << endl;
+				}
+			} else{
+				cout << "6 Option " << (!j->strand ? "1" : "2") << endl;
+
+				if(!j->strand){
+					if(j->getData()->getData(*j)->sucCoreDist != UINT32_MAX && j->getData()->getData(*j)->sucCoreDist != lstDst) cout << "8 Option 2" << endl;
+				} else{
+					if(j->getData()->getData(*j)->predCoreDist != UINT32_MAX && j->getData()->getData(*j)->predCoreDist != lstDst) cout << "8 Option 1" << endl;
+				}
+			}
 
 			//Check which distance we have to set
 			if(isSucPth ^ j->strand){

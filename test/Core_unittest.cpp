@@ -14,6 +14,11 @@
 //Tests the function chkQrm under the following conditions
 //	1. The maximum color id is already smaller than the quorum
 TEST_F(ChkQrmTest, FewClrs){
+	cdbg = ColoredCDBG<CoreInfo>(DEFAULT_TEST_K, DEFAULT_TEST_G);
+	cdbgOpt.k = DEFAULT_TEST_K;
+	cdbgOpt.g = DEFAULT_TEST_G;
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
@@ -37,6 +42,11 @@ TEST_F(ChkQrmTest, FewClrs){
 //	3. A color is found for the given unitig
 //	4. The quorum is reached
 TEST_F(ChkQrmTest, IterAllClrs){
+	cdbg = ColoredCDBG<CoreInfo>(DEFAULT_TEST_K, DEFAULT_TEST_G);
+	cdbgOpt.k = DEFAULT_TEST_K;
+	cdbgOpt.g = DEFAULT_TEST_G;
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
+
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
@@ -59,9 +69,13 @@ TEST_F(ChkQrmTest, IterAllClrs){
 //Tests the function chkQrm under the following conditions
 //	1. The maximum color id is not already smaller than the quorum
 //	2. We are not dealing with the first color when the number of colors allowed to miss has to be decremented by the number of skipped colors
-//	3. A color is (not) found for the given unitig
+//	3. A color is found for the given unitig
 //	4. The quorum is not reached
 TEST_F(ChkQrmTest, ClrNtFnd){
+	cdbg = ColoredCDBG<CoreInfo>(DEFAULT_TEST_K, DEFAULT_TEST_G);
+	cdbgOpt.k = DEFAULT_TEST_K;
+	cdbgOpt.g = DEFAULT_TEST_G;
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
 	cdbgOpt.filename_seq_in.push_back("Test_color1.fa");
 
 	cdbg.build(cdbgOpt);
@@ -87,6 +101,10 @@ TEST_F(ChkQrmTest, ClrNtFnd){
 //	3. A color is found for the given unitig
 //	4. The quorum is not reached
 TEST_F(ChkQrmTest, NtFstKmer){
+	cdbg = ColoredCDBG<CoreInfo>(DEFAULT_TEST_K, DEFAULT_TEST_G);
+	cdbgOpt.k = DEFAULT_TEST_K;
+	cdbgOpt.g = DEFAULT_TEST_G;
+	cdbgOpt.filename_seq_in.push_back("Test.fa");
 	cdbgOpt.filename_seq_in.push_back("Test_color1.fa");
 
 	cdbg.build(cdbgOpt);
@@ -102,6 +120,40 @@ TEST_F(ChkQrmTest, NtFstKmer){
 	i = u.getData()->getUnitigColors(u)->begin(u);
 	EXPECT_EQ(2, (*i).first);
 	EXPECT_EQ(0, (*i).second);
+	++i;
+	EXPECT_EQ(i, u.getData()->getUnitigColors(u)->end());
+	EXPECT_TRUE(u.getData()->getData(u)->coreList.empty());
+}
+
+//Tests the function chkQrm under the following conditions
+//	1. The maximum color id is not already smaller than the quorum
+//	2. We are (not) dealing with the first color when the number of colors allowed to miss has to be decremented by the number of skipped colors
+//	3. A color is (not) found for the given unitig
+//	4. The quorum is reached
+TEST_F(ChkQrmTest, SkpdCol){	
+	cdbg = ColoredCDBG<CoreInfo>(11, 8);
+	cdbgOpt.k = 11;
+	cdbgOpt.g = 8;
+	cdbgOpt.filename_seq_in.push_back("Test21.fa");
+	cdbgOpt.filename_seq_in.push_back("Test21_color1.fa");
+	cdbgOpt.filename_seq_in.push_back("Test21_color2.fa");
+
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+
+	u = *cdbg.begin();
+	u.dist = 1;
+	u.len = 1;
+
+	EXPECT_TRUE(chkQrm(u, qrm));
+	EXPECT_EQ("TTAAAACCCAC", u.mappedSequenceToString());
+	i = u.getData()->getUnitigColors(u)->begin(u);
+	EXPECT_EQ(1, (*i).first);
+	EXPECT_EQ(0, (*i).second);
+	++i;
+	EXPECT_EQ(1, (*i).first);
+	EXPECT_EQ(2, (*i).second);
 	++i;
 	EXPECT_EQ(i, u.getData()->getUnitigColors(u)->end());
 	EXPECT_TRUE(u.getData()->getData(u)->coreList.empty());

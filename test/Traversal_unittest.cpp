@@ -256,6 +256,8 @@ TEST(CalcOffTest, revStnd){
 //	4. We are dealing with a predecessive path that does (not) end on the reverse complementary strand DONE
 //	5. We are dealing with a successive path and on some unitig not at the path's end we are (not) on the reverse complementary strand DONE
 //	6. We are dealing with a predecessive path and on some unitig not at the path's end we are (not) on the reverse complementary strand DONE
+//	7. The path list contains more than one successive path in which the same unitig occurs but with differing distance to the core k-mer at which the path ends and the unitig is (not) visited on the reverse complementary strand 0/0
+//	8. The path list contains more than one predecessive path in which the same unitig occurs but with differing distance to the core k-mer at which the path ends and the unitig is (not) visited on the reverse complementary strand 0/0
 
 //Tests the function addDists under the following conditions
 //	1. The path list is empty
@@ -268,8 +270,8 @@ TEST_F(AddDistsTest, NoPth){
 	addDists(pList, true);
 
 	for( ; i != cdbg.end(); ++i){
-		EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-		EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	}
 }
 
@@ -302,16 +304,16 @@ TEST_F(AddDistsTest, SucPths){
 
 	i = cdbg.begin();
 	EXPECT_EQ(4, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 }
 
 //Tests the function addDists under the following conditions
@@ -333,20 +335,20 @@ TEST_F(AddDistsTest, PredPth){
 	addDists(pList, false);
 
 	i = cdbg.begin();
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 }
 
 //Tests the function addDists under the following conditions
@@ -372,20 +374,20 @@ TEST_F(AddDistsTest, LpredP){
 	addDists(pList, false);
 
 	i = cdbg.begin();
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 	EXPECT_EQ(4, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 }
 
 //Tests the function addDists under the following conditions
@@ -409,13 +411,13 @@ TEST_F(AddDistsTest, SucRev){
 	addDists(pList, true);
 
 	i = cdbg.begin();
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
 }
 
@@ -448,14 +450,14 @@ TEST_F(AddDistsTest, LpRev){
 	addDists(pList, false);
 
 	i = cdbg.begin();
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_EQ(6, i->getData()->getData(*i)->sucCoreDist);
 	EXPECT_EQ(4, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 }
 
 //Tests the function addDists under the following conditions
@@ -482,14 +484,14 @@ TEST_F(AddDistsTest, InterRev){
 	addDists(pList, true);
 
 	i = cdbg.begin();
-	EXPECT_EQ(0, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_EQ(6, i->getData()->getData(*i)->sucCoreDist);
 	EXPECT_EQ(4, i->getData()->getData(*i)->predCoreDist);
 	++i;
 	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
-	EXPECT_EQ(0, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 }
 
 //Tests for function const bool doSucBFS(const UnitigColorMap<CoreInfo>, const uint32_t, list<Path>&)//
