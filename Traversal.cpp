@@ -5,10 +5,6 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 	uint32_t lstDst;
 	list<UnitigColorMap<CoreInfo>>::const_reverse_iterator j;
 
-	//Testing
-	// bool appeared = false;
-	cout << "1 Option " << (pthLst.empty() ? "1" : "2") << endl;
-
 	//Iterate over all paths
 	for(list<Path>::const_iterator i = pthLst.begin(); i != pthLst.end(); ++i){
 		//Get reverse iterator for path
@@ -27,21 +23,6 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 			j->getData()->getData(*j)->sucCoreDist = lstDst;
 		}
 
-		//Testing
-		cout << "2 Option " << (i->first > 2 ? "1" : "2") << endl;
-		if(isSucPth){
-			cout << "3 Option " << (!j->strand ? "1" : "2") << endl;
-		} else{
-			cout << "4 Option " << (!j->strand ? "1" : "2") << endl;
-		}
-		// if(!j->mappedSequenceToString().compare("GCTGTTTAACA") || !j->mappedSequenceToString().compare("TGTTAAACAGC")){
-		// 	cerr << "addDists: Distance set for unitig " << j->mappedSequenceToString() << endl;
-		// 	cerr << "addDists: The whole path is" << endl;
-		// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator k = i->second.begin(); k != i->second.end(); ++k) cerr << k->mappedSequenceToString() << endl;
-		// 	cerr << "addDists: Distance is " << j->getData()->getData(*j)->sucCoreDist << endl;
-		// 	appeared = true;
-		// }
-
 		//Go to next unitig
 		++j;
 
@@ -49,25 +30,6 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 		for(uint32_t c = 2; c < i->second.size(); ++c, ++j){
 			//Update saved distance for next unitig
 			lstDst += j->len;
-
-			//Testing
-			if(isSucPth){
-				cout << "5 Option " << (!j->strand ? "1" : "2") << endl;
-
-				if(!j->strand){
-					if(j->getData()->getData(*j)->predCoreDist != UINT32_MAX && j->getData()->getData(*j)->predCoreDist != lstDst) cout << "7 Option 1" << endl;
-				} else{
-					if(j->getData()->getData(*j)->sucCoreDist != UINT32_MAX && j->getData()->getData(*j)->sucCoreDist != lstDst) cout << "7 Option 2" << endl;
-				}
-			} else{
-				cout << "6 Option " << (!j->strand ? "1" : "2") << endl;
-
-				if(!j->strand){
-					if(j->getData()->getData(*j)->sucCoreDist != UINT32_MAX && j->getData()->getData(*j)->sucCoreDist != lstDst) cout << "8 Option 2" << endl;
-				} else{
-					if(j->getData()->getData(*j)->predCoreDist != UINT32_MAX && j->getData()->getData(*j)->predCoreDist != lstDst) cout << "8 Option 1" << endl;
-				}
-			}
 
 			//Check which distance we have to set
 			if(isSucPth ^ j->strand){
@@ -77,23 +39,8 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 				//Set distance
 				j->getData()->getData(*j)->sucCoreDist = min(j->getData()->getData(*j)->sucCoreDist, lstDst);
 			}
-
-			//Testing
-			// if(!j->mappedSequenceToString().compare("GCTGTTTAACA") || !j->mappedSequenceToString().compare("TGTTAAACAGC")){
-			// 	cerr << "addDists: Distance set for unitig " << j->mappedSequenceToString() << endl;
-			// 	cerr << "addDists: The whole path is" << endl;
-			// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator k = i->second.begin(); k != i->second.end(); ++k) cerr << k->mappedSequenceToString() << endl;
-			// 	cerr << "addDists: Distance is " << j->getData()->getData(*j)->sucCoreDist << endl;
-			// 	appeared = true;
-			// }
 		}
 	}
-
-	//Testing
-	// if(appeared){
-	// 	cerr << "addDists: We do get here" << endl;
-	// 	exit(EXIT_SUCCESS);
-	// }
 }
 
 //This function extends the top priority path of the given priority queue on successive unitigs. If it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Otherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
@@ -217,22 +164,6 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 	//Add initial path to priority queue
 	queue.push(Path(0, uniLst));
 
-	//Testing
-	// string path[] = {"GATGCTGTTTA"};
-	// uint32_t counter = 0;
-	// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")){
-	// 	cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
-	// 	// exit(EXIT_SUCCESS);
-	// }
-	// if(!orig.mappedSequenceToString().compare("GCTGTTTAACA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
-	// if(!orig.mappedSequenceToString().compare("CTGTTTAACAGG")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
-	// if(!orig.mappedSequenceToString().compare("CTGTTTAACAC")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
-	// if(!orig.mappedSequenceToString().compare("TGTTTAACACACAA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
-	// if(!orig.mappedSequenceToString().compare("TAACACACAAT")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
-	// if(!orig.mappedSequenceToString().compare("AACACACAATAA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
-	// if(!orig.mappedSequenceToString().compare("CACACAATAAA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
-	// if(!orig.mappedSequenceToString().compare("ACACAATAAAA")) cerr << "doSucBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
-
 	//Explore paths
 	while(!queue.empty()){
 		//Get iterator of last unitig in top priority path
@@ -240,32 +171,16 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 
 		//Iterate over successors
 		for(suc = it.begin(); suc != it.end(); ++suc){
-			//Testing
-			// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")) cerr << "doSucBFS: We have found successor " << suc->mappedSequenceToString() << endl;
-
 			//Check if distance to next core k-mer (if known) is too large
 			coreDist = (suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist);
 
 			if(coreDist != UINT32_MAX && coreDist > dpth - queue.top().first){
-				//Testing
-				// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")){
-				// 	cerr << "doSucBFS: Distance to next known core k-mer is too large" << endl;
-				// 	cerr << "doSucBFS: Distance is " << suc->getData()->getData(*suc)->sucCoreDist << " and allowed is only " << dpth - queue.top().first << endl;
-				// 	++counter;
-				// }
-
 				//Extending the path on this successor does not make sense
 				continue;
 			}
 
 			//Check if there is a core k-mer on this successor and if it is close enough
 			if(!suc->getData()->getData(*suc)->coreList.empty() && getCoreDist(suc, true) <= dpth - queue.top().first){
-				//Testing
-				// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")){
-				// 	cerr << "doSucBFS: There is a core k-mer on this unitig which is close enough" << endl;
-				// 	++counter;
-				// }
-
 				//Add path to results
 				resPths.push_back(queue.top());
 				//Add successor to path
@@ -288,12 +203,6 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 				//Insert path to queue
 				queue.push(extPth);
 			}
-
-			//Testing
-			// if(!orig.mappedSequenceToString().compare("ATGCTGTTTAA")){
-			// 	cerr << "doSucBFS: We continue with this unitig" << endl;
-			// 	++counter;
-			// }
 		}
 
 		//Remove top priority path from queue
@@ -328,9 +237,6 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 	uniLst.push_back(orig);
 	//Add initial path to priority queue
 	queue.push(Path(0, uniLst));
-
-	//Testing
-	// if(!orig.mappedSequenceToString().compare("GTTTAACAGGTACG")) cerr << "doPredBFS: BFS on unitig " << orig.mappedSequenceToString() << endl;
 
 	//Explore paths
 	while(!queue.empty()){

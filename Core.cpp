@@ -22,18 +22,8 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 			//Update k-mer's position
 			uni.dist = j;
 
-			//Testing
-			// if(!uni.mappedSequenceToString().compare("GTGGGTTTTAA") || !uni.mappedSequenceToString().compare("TGGGTTTTAAG") || !uni.mappedSequenceToString().compare("CTTAAAACCCA") || !uni.mappedSequenceToString().compare("TTAAAACCCAC")) cerr << "markCore: Checking k-mer " << uni.mappedSequenceToString() << endl;
-
 			//Check if quorum is fulfilled
 			if(chkQrm(uni, qrm)){
-				//Testing
-				// if(!uni.mappedSequenceToString().compare("GTGGGTTTTAA") || !uni.mappedSequenceToString().compare("TGGGTTTTAAG") || !uni.mappedSequenceToString().compare("CTTAAAACCCA") || !uni.mappedSequenceToString().compare("TTAAAACCCAC")){
-				// 	cerr << "markCore: Quorum is fulfilled" << endl;
-				// 	cerr << "markCore: Color set is" << endl;
-				// 	for(UnitigColors::const_iterator c = uni.getData()->getUnitigColors(uni)->begin(uni); c != uni.getData()->getUnitigColors(uni)->end(); ++c) cerr << "Position:" << (*c).first << " Color:" << (*c).second << endl;
-				// }
-
 				//Check if there is no current interval yet and set left border
 				if(l < 0) l = j;
 
@@ -43,18 +33,8 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 				//Reset bridging path length if necessary
 				if(nBrd > 0) nBrd = 0;
 			} else{
-				//Testing
-				// if(!uni.mappedSequenceToString().compare("GTGGGTTTTAA") || !uni.mappedSequenceToString().compare("TGGGTTTTAAG") || !uni.mappedSequenceToString().compare("CTTAAAACCCA") || !uni.mappedSequenceToString().compare("TTAAAACCCAC")){
-				// 	cerr << "markCore: Quorum is not fulfilled" << endl;
-				// 	cerr << "markCore: Color set is" << endl;
-				// 	for(UnitigColors::const_iterator c = uni.getData()->getUnitigColors(uni)->begin(uni); c != uni.getData()->getUnitigColors(uni)->end(); ++c) cerr << "Position:" << (*c).first << " Color:" << (*c).second << endl;
-				// }
-
 				//Check if increased path length exceeds delta and an interval has already started
 				if(++nBrd >= dlt && l > -1){
-					//Testing
-					// cout << r << endl;
-
 					//Add interval
 					uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
 					//Reset left interval borders
@@ -66,21 +46,7 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 		}
 
 		//Check if there exists an open interval which was not yet added and add it
-		if(l > -1){
-			//Testing
-			// cout << r << endl;
-
-			uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
-		}
-
-		//Testing
-		// if(!i->mappedSequenceToString().compare("CTTAAAACCCAC") || !i->mappedSequenceToString().compare("GTGGGTTTTAAG")){
-		// 	cerr << "markCore: Found unitig " << i->mappedSequenceToString() << endl;
-		// 	cerr << "markCore: Core list is " << (i->getData()->getData(*i)->coreList.empty() ? "" : "not ") << "empty" << endl;
-		// 	cerr << "markCore: Core list is" << endl;
-		// 	for(list<pair<uint32_t, uint32_t>>::const_iterator intvl = i->getData()->getData(*i)->coreList.begin(); intvl != i->getData()->getData(*i)->coreList.end(); ++intvl) cerr << '[' << intvl->first << ',' << intvl->second << ']' << endl;
-		// 	exit(EXIT_SUCCESS);	
-		// }
+		if(l > -1) uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
 	}
 }
 

@@ -19,9 +19,6 @@ const bool rCrTooFar(const size_t& ulen, const list<pair<uint32_t, uint32_t>>& c
 void markBrdg(const list<Path>& pths, const bool& sucPths){
 	//Iterate over paths
 	for(list<Path>::const_iterator p = pths.begin(); p != pths.end(); ++p){
-		//Testing
-		// cout << p->first << ":" << endl;
-
 		//The first unitig of a successor's path potenially has a bridging suffix and vice versa
 		list<UnitigColorMap<CoreInfo>>::const_iterator u = p->second.begin();
 
@@ -30,18 +27,6 @@ void markBrdg(const list<Path>& pths, const bool& sucPths){
 		} else{
 			u->getData()->getData(*u)->preBrdg = true;
 		}
-
-		//Testing
-		// cout << u->referenceUnitigToString() << endl;
-		// if(!u->mappedSequenceToString().compare("CACAATAAAAAA") || !u->mappedSequenceToString().compare("TTTTTTATTGTG")){
-		// 	cout << "markBrdg: Found unitig " << u->mappedSequenceToString() << endl << "markBrdg: Suffix bridging flag of unitig ATGCTGTTTAA is " << (u->getGraph()->find(Kmer("ATGCTGTTTAA"))->getData()-getData(u->getGraph()->find(Kmer("ATGCTGTTTAA")))->sufBrdg ? "" : "not ") << "set" << endl;
-		// }
-		// if(!u->mappedSequenceToString().compare("ATGCTGTTTAA") || !u->mappedSequenceToString().compare("TTAAACAGCAT")){
-		// 	cerr << "markBrdg: Found the unitig of interest. It belongs to the path:" << endl;
-		// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator v = p->second.begin(); v != p->second.end(); ++v) cerr << v->mappedSequenceToString() << endl;
-		// 	cerr << "markBrdg: sucPths is " << (sucPths ? "" : "not ") << "set" << endl;
-		// 	// exit(EXIT_SUCCESS);
-		// }
 
 		++u;
 
@@ -55,14 +40,6 @@ void markBrdg(const list<Path>& pths, const bool& sucPths){
 				//Mark k-mers at unitig's beginning (reference strand orientation) as bridging
 				u->getData()->getData(*u)->preBrdg = true;
 			}
-
-			//Testing
-			// if(!u->mappedSequenceToString().compare("ATGCTGTTTAA") || !u->mappedSequenceToString().compare("TTAAACAGCAT")){
-			// 	cerr << "markBrdg: Found the unitig of interest. It belongs to the path:" << endl;
-			// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator v = p->second.begin(); v != p->second.end(); ++v) cerr << v->mappedSequenceToString() << endl;
-			// 	cerr << "markBrdg: sucPths is " << (sucPths ? "" : "not ") << "set" << endl;
-			// 	// exit(EXIT_SUCCESS);
-			// }
 		}
 	}
 }
