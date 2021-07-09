@@ -1,4 +1,5 @@
 #include "Core.h"
+#include "Traversal.h"
 
 //This function traverses the graph marking all core k-mers and all bridging k-mers connecting core k-mers within the same unitig
 void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& dlt){
@@ -47,6 +48,63 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 
 		//Check if there exists an open interval which was not yet added and add it
 		if(l > -1) uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
+	}
+}
+
+//This function traverses the graph marking all core k-mers and all bridging k-mers connecting core k-mers within the same unitig. It outputs a priority queue containing all unitigs
+//with core parts as TravTracks for a graph traversal.
+TravTrackQueue detectCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& dlt){
+	uint32_t nBrd;
+	int32_t l, r = -1;
+	UnitigColorMap<CoreInfo> uni;
+	TravTrackQueue queue(prioShrtst);
+
+	//Iterate over unitigs
+	for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
+		//Get current unitig
+		uni = *i;
+		//Set length to 1 k-mer
+		uni.len = 1;
+		//Reset left interval border
+		l = -1;
+		//Reset bridging path length
+		nBrd = 0;
+
+		//Iterate over unitig's k-mers
+		for(uint32_t j = 0; j <= uni.size - cdbg.getK(); ++j){
+			//Update k-mer's position
+			uni.dist = j;
+
+			//Check if quorum is fulfilled
+			if(chkQrm(uni, qrm)){
+				//Check if there is no current interval yet and set left border
+				if(l < 0) l = j;
+
+				//Update right border
+				r = j;
+
+				//Reset bridging path length if necessary
+				if(nBrd > 0) nBrd = 0;
+			} else{
+				//Check if increased path length exceeds delta and an interval has already started
+				if(++nBrd >= dlt && l > -1){
+					//Add interval
+					uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
+					//Reset left interval borders
+					l = -1;
+					//Reset path length
+					nBrd = 0;
+				}
+			}
+		}
+
+		//Check if we have found at least one interval (core k-mer)
+		if(l > -1){
+			//Add the last found interval
+			uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
+			//Push a TravTrack to the queue
+			
+		}
 	}
 }
 
