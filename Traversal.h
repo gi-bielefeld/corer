@@ -54,4 +54,8 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 //This function performs a BFS of the given depths on all predecessors of the given unitig. It returns true if a core k-mer could be reached by any path.
 const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, list<Path>& resPths);
 
+//This function traverses the given graph according to the order dictated by the given priority queue while adding distance information about the closest core k-mers to each
+//processed node. 
+void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue);//TODO: This function still needs to be tested!
+
 #endif

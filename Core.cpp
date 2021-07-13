@@ -102,10 +102,13 @@ TravTrackQueue detectCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, cons
 		if(l > -1){
 			//Add the last found interval
 			uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
-			//Push a TravTrack to the queue
-			
+			//Push a TravTrack to the queue (forward and backward traversal)
+			queue.push(TravTrack(i->len - r, Kmer(uni.mappedSequenceToString().c_str()), true));
+			queue.push(TravTrack(l + 1, Kmer(uni.mappedSequenceToString().c_str()), false));
 		}
 	}
+
+	return queue;
 }
 
 //This function checks if the given unitig fulfills the given quorum and returns true in this case; false otherwise

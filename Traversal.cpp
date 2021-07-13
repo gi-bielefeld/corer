@@ -292,3 +292,61 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 		return false;
 	}
 }
+
+//This function traverses the given graph according to the order dictated by the given priority queue while adding distance information about the closest core k-mers to each
+//processed node. 
+void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue){
+	//A unitig mapping of the unitig we continue our traversal on
+	UnitigColorMap<CoreInfo> uni;
+	//A neighbor iterator for the traversal
+	neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> nIt;
+
+	//Process all unitigs in the queue
+	while(!queue.empty()){
+		//Find the unitig from which we have to continue
+		uni = cdbg.find(queue.top().track);
+
+		//Check if we are dealing with a successive or predecessive path
+		if(queue.top().isSucTrav){	
+			ForwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> fIt = uni.getSuccessors();
+
+			//Iterate over successors
+			for(nIt = fIt.begin(); nIt != fIt.end(); ++nIt){
+				//Ensure that this successor has not already been processed in this direction
+				if(nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist == UINT32_MAX){
+					//Annotate this successor with distance to closest core k-mer
+					nIt->getData()->getData(*nIt)->predCoreDist = queue.top().cDist;
+				} else if(!nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist == UINT32_MAX){
+					//Annotate this successor with distance to closest core k-mer
+					nIt->getData()->getData(*nIt)->sucCoreDist = queue.top().cDist;
+				}
+
+				//If this successor contains a core k-mer we do not need to continue with it
+				if(nIt->getData()->getData(*nIt)->coreList.empty()){
+					//Add this successor to the queue to continue the traversal from here
+					queue.push(TravTrack(queue.top().cDist + nIt->len, Kmer(nIt->mappedSequenceToString().substr(0, cdbg.getK()).c_str()), true));
+				}
+			}
+		} else{
+			BackwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> bIt = uni.getPredecessors();
+
+			//Iterate over predecessors
+			for(nIt = bIt.begin(); nIt != bIt.end(); ++nIt){
+				//Ensure that this predecessor has not already been processed in this direction
+				if(nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist == UINT32_MAX){
+					//Annotate this predecessor with distance to closest core k-mer
+					nIt->getData()->getData(*nIt)->sucCoreDist =queue.top().cDist;
+				} else if(!nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist == UINT32_MAX){
+					//Annotate this predecessor with distance to closest core k-mer
+					nIt->getData()->getData(*nIt)->predCoreDist = queue.top().cDist;
+				}
+
+				//If this predecessor contains a core k-mer we do not need to continue with it
+				if(nIt->getData()->getData(*nIt)->coreList.empty()){
+					//Add this predecessor to the queue to continue the traversal from here
+					queue.push(TravTrack(queue.top().cDist + nIt->len, Kmer(nIt->mappedSequenceToString().substr(0, cdbg.getK()).c_str()), false));
+				}
+			}
+		}
+	}
+}

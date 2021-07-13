@@ -14,6 +14,7 @@ int main(int argc, char **argv){
 	string iFilePref;
 	string oFilePref;
 	ColoredCDBG<CoreInfo> cdbg = ColoredCDBG<CoreInfo>();
+	TravTrackQueue queue;
 
 	//Parse arguments
 	if(!prsArgs(argc, argv, iFilePref, oFilePref, qrm, dlt, thrds, oSnps)){
@@ -34,10 +35,12 @@ int main(int argc, char **argv){
 		cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
 	}
 
-	//Walk through the graph and mark all core parts within each unitig
-	markCore(cdbg, qrm, dlt);
+	//Detect all core k-mers
+	queue = detectCore(cdbg, qrm, dlt);
+	//Annotate unitigs with distances to next core k-mers
+	annotateDists(cdbg, queue);
 	//Walk through the graph and mark all bridging k-mers within each unitig
-	detectBrdg(cdbg, dlt);
+	markBrdg(cdbg, dlt);
 
 	//Check if unitig snippet output is requested
 	if(oSnps){

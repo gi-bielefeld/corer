@@ -2,6 +2,7 @@
 #define CORE_HPP
 
 #include "CoreInfo.h"
+#include "Traversal.h"
 
 #define DEFAULT_CORE_RATIO 0.9
 #define MIN_QUORUM 1

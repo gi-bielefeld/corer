@@ -44,6 +44,28 @@ void markBrdg(const list<Path>& pths, const bool& sucPths){
 	}
 }
 
+//This function iterates over all unitigs in the graph and marks their bridging parts
+void markBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
+	//Pointer to current unitig's CoreInfo object
+	CoreInfo* cInfo;
+
+	//Iterate over unitigs
+	for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
+		cInfo = i->getData()->getData(*i);
+
+		//If there is a core k-mer on this unitig we need to set both bridging flags
+		if(cInfo->coreList.empty()){
+			//Set flag according to distances to closest core k-mers
+			cInfo->preBrdg = (cInfo->predCoreDist + cInfo->sucCoreDist + i->len - 1 <= dlt);
+		} else{
+			//Set flag according to distance to closest predecessive core k-mer
+			cInfo->preBrdg = (cInfo->predCoreDist + cInfo->coreList.front().first <= dlt);
+			//Set flag according to distance to closest successive core k-mer
+			cInfo->sufBrdg = (cInfo->sucCoreDist + (i->len - cInfo->coreList.back().second) - 1 <= dlt);
+		}
+	}
+}
+
 //This function detects and marks all bridging k-mers between core parts on different unitigs in the graph
 void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 	//Length of the path from a core k-mer to the current unitigs beginning
