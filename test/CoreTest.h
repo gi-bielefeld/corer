@@ -50,4 +50,32 @@ class MarkCoreTest : public ::testing::Test {
 		list<pair<uint32_t, uint32_t>>::iterator inter;
 };
 
+class DetectCoreTest : public ::testing::Test {
+
+	protected:
+
+		DetectCoreTest(): cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G), qrm(MIN_QUORUM), dlt(1), queue(prioShrtst) {
+			cdbgOpt.k = DEFAULT_TEST_K;
+			cdbgOpt.g = DEFAULT_TEST_G;
+			cdbgOpt.filename_seq_in.push_back("Test.fa");
+		}
+
+		//Colored de Bruijn graph build options
+		CCDBG_Build_opt cdbgOpt;
+		//Compacted, colored de Bruijn graph with linked CoreInfo objects
+		ColoredCDBG<CoreInfo> cdbg;
+		//The core quorum
+		uint32_t qrm;
+		//The maximal bridging path length
+		uint32_t dlt;
+		//Some unitig iterator
+		ColoredCDBG<CoreInfo>::iterator i;
+		//Some color iterator
+		UnitigColors::const_iterator col;
+		//Some core list iterator
+		list<pair<uint32_t, uint32_t>>::iterator inter;
+		//The resulting priority queue
+		TravTrackQueue queue;
+};
+
 #endif

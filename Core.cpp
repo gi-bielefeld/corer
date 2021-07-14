@@ -77,34 +77,70 @@ TravTrackQueue detectCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, cons
 
 			//Check if quorum is fulfilled
 			if(chkQrm(uni, qrm)){
+				//Testing
+				cout << "1 Option 1" << endl;
+
 				//Check if there is no current interval yet and set left border
-				if(l < 0) l = j;
+				if(l < 0){
+					//Testing
+					cout << "2 Option 1" << endl;
+
+					l = j;
+				} else {
+					//Testing
+					cout << "2 Option 2" << endl;
+				}
 
 				//Update right border
 				r = j;
 
 				//Reset bridging path length if necessary
-				if(nBrd > 0) nBrd = 0;
+				if(nBrd > 0){
+					//Testing
+					cout << "3 Option 1" << endl;
+
+					nBrd = 0;
+				} else{
+					//Testing
+					cout << "3 Option 2" << endl;
+				}
 			} else{
+				//Testing
+				cout << "1 Option 2" << endl;
+
 				//Check if increased path length exceeds delta and an interval has already started
 				if(++nBrd >= dlt && l > -1){
+					//Testing
+					cout << "4 Option 1" << endl;
+
 					//Add interval
 					uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
 					//Reset left interval borders
 					l = -1;
 					//Reset path length
 					nBrd = 0;
+				} else{
+					//Testing
+					cout << "4 Option 2" << endl;
 				}
 			}
 		}
 
-		//Check if we have found at least one interval (core k-mer)
-		if(l > -1){
-			//Add the last found interval
-			uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
+		//If there remains an interval not added yet add it
+		if(l > -1) uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
+
+		if(!uni.getData()->getData(uni)->coreList.empty()){
+			//Testing
+			cout << "5 Option 1" << endl;
+			cout << "i->len - r: " << i->len - r << endl;
+			cout << "l + 1: " << l + 1 << endl;
+
 			//Push a TravTrack to the queue (forward and backward traversal)
 			queue.push(TravTrack(i->len - r, Kmer(uni.mappedSequenceToString().c_str()), true));
-			queue.push(TravTrack(l + 1, Kmer(uni.mappedSequenceToString().c_str()), false));
+			queue.push(TravTrack(uni.getData()->getData(uni)->coreList.front().first + 1, Kmer(uni.mappedSequenceToString().c_str()), false));
+		} else{
+			//Testing
+			cout << "5 Option 2" << endl;
 		}
 	}
 

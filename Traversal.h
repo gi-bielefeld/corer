@@ -19,7 +19,7 @@ using TravTrackQueue = priority_queue<TravTrack, vector<TravTrack>, const bool (
 inline const bool prioShrtst(const Path& left, const Path& right){ return left.first > right.first; }
 
 //A compare function to prioritize TravTracks belonging to short paths
-inline const bool prioShrtst(const TravTrack& s, const TravTrack& t){ return s.cDist > t.cDist; }//TODO This function still needs to be tested!
+inline const bool prioShrtst(const TravTrack& s, const TravTrack& t){ return s.cDist > t.cDist; }
 
 //This function calculates an offset on a unitig depending on the given strand
 inline const uint32_t calcOff(const uint32_t& refOff, const size_t& uLen, const bool& strand){ return (strand ? refOff : uLen - (refOff + 1)); }

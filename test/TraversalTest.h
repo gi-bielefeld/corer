@@ -36,6 +36,17 @@ class PrioShrtstTest : public ::testing::Test {
 		
 };
 
+class PrioShrtstTest1 : public ::testing::Test {
+
+	protected:
+
+		PrioShrtstTest1(): s(42, Kmer("ACGTACGTA"), true), t(43, Kmer("ACGTACGTC"), false) {}
+
+		//TravTracks to be compared
+		TravTrack s, t;
+		
+};
+
 class GetCoreDistTest : public ::testing::Test {
 
 protected:

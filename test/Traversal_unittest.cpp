@@ -19,6 +19,20 @@ TEST_F(PrioShrtstTest, FstLng){ EXPECT_TRUE(prioShrtst(p, q)); }
 //	2. The second path is longer than the first
 TEST_F(PrioShrtstTest, SndLng){ EXPECT_FALSE(prioShrtst(q, p)); }
 
+//Tests for function const bool prioShrtst(const TravTrack&, const TravTrack&)//
+//	1. The first TravTrack does (not) belong to a longer path than the second one DONE
+//	2. The second TravTrack does (not) belong to a longer path than the first one DONE
+
+//Tests the function prioShrtst under the following conditions
+//	1. The first TravTrack does belong to a longer path than the second one
+//	2. The second TravTrack does not belong to a longer path than the first one
+TEST_F(PrioShrtstTest1, FstLng){ EXPECT_TRUE(prioShrtst(t, s)); }
+
+//Tests the function prioShrtst under the following conditions
+//	1. The first TravTrack does not belong to a longer path than the second one
+//	2. The second TravTrack does belong to a longer path than the first one
+TEST_F(PrioShrtstTest1, SndLng){ EXPECT_FALSE(prioShrtst(s, t)); }
+
 //Tests for function const uint32_t getCoreDist(const neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false>&, const bool&)//
 //	1. The function is (not) called in the context of a successive traversal DONE
 //	2. The function is called for a unitig's reference/reverse complementary strand DONE

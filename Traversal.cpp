@@ -348,5 +348,8 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue){
 				}
 			}
 		}
+
+		//Remove processed TravTrack from queue
+		queue.pop();
 	}
 }
