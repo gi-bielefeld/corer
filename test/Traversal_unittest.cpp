@@ -1191,3 +1191,15 @@ TEST_F(DoPredBFStest, FltdRev){
 	EXPECT_FALSE(doPredBFS(*i, 3, res));
 	EXPECT_TRUE(res.empty());
 }
+
+//Tests for function void annotateDists(ColoredCDBG<CoreInfo>&, TravTrackQueue&)//
+//	1. The queue is (not) empty at the beginning 0/0
+//	2. A TravTrack in the queue tracks a traversal on successors/predecessors 0/0
+//	3. We encounter a successor on which we are on the reference strand and that has already/not yet been processed 0/0
+//	4. We encounter a successor on which we are on the reverse complementary strand and that has already/not yet been processed 0/0
+//	5. We processed a successor and did (not) annotate it 0/0
+//	6. We annotated a successor on which a/no core k-mer lies 0/0
+//	7. We encounter a predecessor on which we are on the reference strand and that has already/not yet been processed 0/0
+//	8. We encounter a predecessor on which we are on the reverse complementary strand and that has already/not yet been processed 0/0
+//	9. We processed a predecessor and did (not) annotate it 0/0
+//	10. We annotated a predecessor on which a/no core k-mer lies 0/0

@@ -296,10 +296,19 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 //This function traverses the given graph according to the order dictated by the given priority queue while adding distance information about the closest core k-mers to each
 //processed node. 
 void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue){
+	//A flag stating if a distance on a unitig could be updated
+	bool distUpdated;
 	//A unitig mapping of the unitig we continue our traversal on
 	UnitigColorMap<CoreInfo> uni;
 	//A neighbor iterator for the traversal
 	neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> nIt;
+
+	//Testing
+	if(queue.empty()){
+		cout << "1 Option 1" << endl;
+	} else{
+		cout << "1 Option 2" << endl;
+	}
 
 	//Process all unitigs in the queue
 	while(!queue.empty()){
@@ -307,44 +316,102 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue){
 		uni = cdbg.find(queue.top().track);
 
 		//Check if we are dealing with a successive or predecessive path
-		if(queue.top().isSucTrav){	
+		if(queue.top().isSucTrav){
+			//Testing
+			cout << "2 Option 1" << endl;
+
 			ForwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> fIt = uni.getSuccessors();
 
 			//Iterate over successors
 			for(nIt = fIt.begin(); nIt != fIt.end(); ++nIt){
+				//Yet, nothing has been updated
+				distUpdated = false;
+
 				//Ensure that this successor has not already been processed in this direction
 				if(nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist == UINT32_MAX){
+					//Testing
+					cout << "3 Option 2" << endl;
+
 					//Annotate this successor with distance to closest core k-mer
 					nIt->getData()->getData(*nIt)->predCoreDist = queue.top().cDist;
+					distUpdated = true;
 				} else if(!nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist == UINT32_MAX){
+					//Testing
+					cout << "4 Option 2" << endl;
+
 					//Annotate this successor with distance to closest core k-mer
 					nIt->getData()->getData(*nIt)->sucCoreDist = queue.top().cDist;
+					distUpdated = true;
 				}
 
-				//If this successor contains a core k-mer we do not need to continue with it
-				if(nIt->getData()->getData(*nIt)->coreList.empty()){
+				//Testing
+				if(nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist != UINT32_MAX) cout << "3 Option 1" << endl;
+				if(!nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist != UINT32_MAX) cout << "4 Option 1" << endl;
+				if(distUpdated){
+					cout << "5 Option 1" << endl;
+				} else{
+					cout << "5 Option 2" << endl;
+				}
+
+				//If this successor contains a core k-mer or was already annotated we do not need to continue with it
+				if(distUpdated && nIt->getData()->getData(*nIt)->coreList.empty()){
+					//Testing
+					cout << "6 Option 2" << endl;
+
 					//Add this successor to the queue to continue the traversal from here
 					queue.push(TravTrack(queue.top().cDist + nIt->len, Kmer(nIt->mappedSequenceToString().substr(0, cdbg.getK()).c_str()), true));
+				} else{
+					//Testing
+					cout << "6 Option 1" << endl;
 				}
 			}
 		} else{
+			//Testing
+			cout << "2 Option 2" << endl;
+
 			BackwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> bIt = uni.getPredecessors();
 
 			//Iterate over predecessors
 			for(nIt = bIt.begin(); nIt != bIt.end(); ++nIt){
+				//Yet, nothing has been updated
+				distUpdated = false;
+
 				//Ensure that this predecessor has not already been processed in this direction
 				if(nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist == UINT32_MAX){
+					//Testing
+					cout << "7 Option 2" << endl;
+
 					//Annotate this predecessor with distance to closest core k-mer
 					nIt->getData()->getData(*nIt)->sucCoreDist =queue.top().cDist;
+					distUpdated = true;
 				} else if(!nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist == UINT32_MAX){
+					//Testing
+					cout << "8 Option 2" << endl;
+
 					//Annotate this predecessor with distance to closest core k-mer
 					nIt->getData()->getData(*nIt)->predCoreDist = queue.top().cDist;
+					distUpdated = true;
+				}
+
+				//Testing
+				if(nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist != UINT32_MAX) cout << "7 Option 1" << endl;
+				if(!nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist != UINT32_MAX) cout << "8 Option 1" << endl;
+				if(distUpdated){
+					cout << "9 Option 1" << endl;
+				} else{
+					cout << "9 Option 2" << endl;
 				}
 
 				//If this predecessor contains a core k-mer we do not need to continue with it
-				if(nIt->getData()->getData(*nIt)->coreList.empty()){
+				if(distUpdated && nIt->getData()->getData(*nIt)->coreList.empty()){
+					//Testing
+					cout << "10 Option 2" << endl;
+
 					//Add this predecessor to the queue to continue the traversal from here
 					queue.push(TravTrack(queue.top().cDist + nIt->len, Kmer(nIt->mappedSequenceToString().substr(0, cdbg.getK()).c_str()), false));
+				} else{
+					//Testing
+					cout << "10 Option 1" << endl;
 				}
 			}
 		}
