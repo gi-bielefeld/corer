@@ -197,4 +197,24 @@ protected:
 
 };
 
+class AnnotateDistsTest : public ::testing::Test {
+
+protected:
+
+	AnnotateDistsTest(): cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
+		cdbgOpt.k = DEFAULT_TEST_K;
+		cdbgOpt.g = DEFAULT_TEST_G;
+		cdbgOpt.filename_ref_in.push_back("Test.fa");
+	}
+
+	//Some unitig iterator
+	ColoredCDBG<CoreInfo>::iterator i;
+	//Colored de Bruijn graph build options
+	CCDBG_Build_opt cdbgOpt;
+	//Compacted, colored de Bruijn graph with linked CoreInfo objects
+	ColoredCDBG<CoreInfo> cdbg;
+	//A TravTrack queue to process
+	TravTrackQueue queue;
+};
+
 #endif

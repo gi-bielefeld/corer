@@ -56,12 +56,12 @@ void markBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		//If there is a core k-mer on this unitig we need to set both bridging flags
 		if(cInfo->coreList.empty()){
 			//Set flag according to distances to closest core k-mers
-			cInfo->preBrdg = (cInfo->predCoreDist + cInfo->sucCoreDist + i->len - 1 <= dlt);
+			cInfo->preBrdg = (cInfo->predCoreDist <= dlt && cInfo->sucCoreDist <= dlt && cInfo->predCoreDist + cInfo->sucCoreDist + i->len - 1 <= dlt);
 		} else{
 			//Set flag according to distance to closest predecessive core k-mer
-			cInfo->preBrdg = (cInfo->predCoreDist + cInfo->coreList.front().first <= dlt);
+			cInfo->preBrdg = (cInfo->predCoreDist <= dlt && cInfo->predCoreDist + cInfo->coreList.front().first <= dlt);
 			//Set flag according to distance to closest successive core k-mer
-			cInfo->sufBrdg = (cInfo->sucCoreDist + (i->len - cInfo->coreList.back().second) - 1 <= dlt);
+			cInfo->sufBrdg = (cInfo->sucCoreDist <= dlt && cInfo->sucCoreDist + (i->len - cInfo->coreList.back().second) - 1 <= dlt);
 		}
 	}
 }

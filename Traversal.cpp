@@ -312,6 +312,9 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue){
 
 	//Process all unitigs in the queue
 	while(!queue.empty()){
+		//Testing
+		cout << "TravTrack at top: isSucTrav: " << (queue.top().isSucTrav ? "true" : "false") << " cDist: " << queue.top().cDist << " track: " << queue.top().track.toString() << endl;
+
 		//Find the unitig from which we have to continue
 		uni = cdbg.find(queue.top().track);
 
@@ -326,6 +329,10 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue){
 			for(nIt = fIt.begin(); nIt != fIt.end(); ++nIt){
 				//Yet, nothing has been updated
 				distUpdated = false;
+
+				//Testing
+				if(nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist != UINT32_MAX) cout << "3 Option 1" << endl;
+				if(!nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist != UINT32_MAX) cout << "4 Option 1" << endl;
 
 				//Ensure that this successor has not already been processed in this direction
 				if(nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist == UINT32_MAX){
@@ -345,8 +352,6 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue){
 				}
 
 				//Testing
-				if(nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist != UINT32_MAX) cout << "3 Option 1" << endl;
-				if(!nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist != UINT32_MAX) cout << "4 Option 1" << endl;
 				if(distUpdated){
 					cout << "5 Option 1" << endl;
 				} else{
@@ -376,6 +381,10 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue){
 				//Yet, nothing has been updated
 				distUpdated = false;
 
+				//Testing
+				if(nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist != UINT32_MAX) cout << "7 Option 1" << endl;
+				if(!nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist != UINT32_MAX) cout << "8 Option 1" << endl;
+
 				//Ensure that this predecessor has not already been processed in this direction
 				if(nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist == UINT32_MAX){
 					//Testing
@@ -394,8 +403,6 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue){
 				}
 
 				//Testing
-				if(nIt->strand && nIt->getData()->getData(*nIt)->sucCoreDist != UINT32_MAX) cout << "7 Option 1" << endl;
-				if(!nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist != UINT32_MAX) cout << "8 Option 1" << endl;
 				if(distUpdated){
 					cout << "9 Option 1" << endl;
 				} else{
