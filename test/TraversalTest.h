@@ -204,7 +204,6 @@ protected:
 	AnnotateDistsTest(): cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
 		cdbgOpt.k = DEFAULT_TEST_K;
 		cdbgOpt.g = DEFAULT_TEST_G;
-		cdbgOpt.filename_ref_in.push_back("Test.fa");
 	}
 
 	//Some unitig iterator

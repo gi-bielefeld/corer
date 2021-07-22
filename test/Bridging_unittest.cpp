@@ -231,6 +231,105 @@ TEST_F(MarkBrdgTest, PredRev){
 	EXPECT_TRUE(uni.getData()->getData(uni)->preBrdg);
 }
 
+//Tests for function void markBrdg(ColoredCDBG<CoreInfo>&, const uint32_t&)//
+//	1. There is a/no core k-mer on the current unitig DONE
+//	2. There is no core k-mer on the current unitig and predCoreDist was (never) updated DONE
+//	3. There is no core k-mer on the current unitig and sucCoreDist was (never) updated DONE
+//	4. There is no core k-mer on the current unitig, predCoreDist and sucCoreDist were both updated and this unitig is (not) bridging DONE
+//	5. There is a core k-mer on the current unitig and predCoreDist was (never) updated DONE
+//	6. There is a core k-mer on the current unitig and sucCoreDist was (never) updated DONE
+//	7. There is a core k-mer on the current unitig, predCoreDist was updated and the unitig's prefix is (not) bridging DONE
+//	8. There is a core k-mer on the current unitig, sucCoreDist was updated and the unitig's suffix is (not) bridging DONE
+
+//Tests the function markBrdg under the following conditions
+//	1. There is a/no core k-mer on the current unitig
+//	2. There is no core k-mer on the current unitig and predCoreDist was updated
+//	3. There is no core k-mer on the current unitig and sucCoreDist was (never) updated
+//	4. There is no core k-mer on the current unitig, predCoreDist and sucCoreDist were both updated and this unitig is bridging
+//	5. There is a core k-mer on the current unitig and predCoreDist was (never) updated
+//	6. There is a core k-mer on the current unitig and sucCoreDist was (never) updated
+//	7. There is a core k-mer on the current unitig, predCoreDist was updated and the unitig's prefix is bridging
+//	8. There is a core k-mer on the current unitig, sucCoreDist was updated and the unitig's suffix is bridging
+TEST_F(MarkBrdgTest1, DltFul){
+	queue = detectCore(cdbg, 2, dlt);
+	annotateDists(cdbg, queue);
+	markBrdg(cdbg, dlt);
+	i = cdbg.begin();
+
+	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_TRUE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+}
+
+//Tests the function markBrdg under the following conditions
+//	1. There is a/no core k-mer on the current unitig
+//	2. There is no core k-mer on the current unitig and predCoreDist was updated
+//	3. There is no core k-mer on the current unitig and sucCoreDist was (never) updated
+//	4. There is no core k-mer on the current unitig, predCoreDist and sucCoreDist were both updated and this unitig is not bridging
+//	5. There is a core k-mer on the current unitig and predCoreDist was (never) updated
+//	6. There is a core k-mer on the current unitig and sucCoreDist was (never) updated
+//	7. There is a core k-mer on the current unitig, predCoreDist was updated and the unitig's prefix is not bridging
+//	8. There is a core k-mer on the current unitig, sucCoreDist was updated and the unitig's suffix is not bridging
+TEST_F(MarkBrdgTest1, NotBrd){
+	dlt = 3;
+	queue = detectCore(cdbg, 2, dlt);
+	annotateDists(cdbg, queue);
+	markBrdg(cdbg, dlt);
+	i = cdbg.begin();
+
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+}
+
+//Tests the function markBrdg under the following conditions
+//	1. There is no core k-mer on the current unitig
+//	2. There is no core k-mer on the current unitig and predCoreDist was never updated
+//	3. There is no core k-mer on the current unitig and sucCoreDist was never updated
+TEST_F(MarkBrdgTest1, NoCr){
+	queue = detectCore(cdbg, 3, dlt);
+	annotateDists(cdbg, queue);
+	markBrdg(cdbg, dlt);
+	i = cdbg.begin();
+
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+	++i;
+	EXPECT_FALSE(i->getData()->getData(*i)->preBrdg);
+	EXPECT_FALSE(i->getData()->getData(*i)->sufBrdg);
+}
+
 //Tests for function void detectBrdg(ColoredCDBG<CoreInfo>&, const uint32_t&)//
 //	1. A unitig's core list is (not) empty DONE
 //	2. The last k-mer on a unitig is (not) marked as core DONE

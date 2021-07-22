@@ -13,7 +13,7 @@ const bool rCrTooFar(const size_t& ulen, const list<pair<uint32_t, uint32_t>>& c
 void markBrdg(const list<Path>& pths, const bool& sucPths);
 
 //This function iterates over all unitigs in the graph and marks their bridging parts
-void markBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt);//TODO: This function still needs to be tested!
+void markBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt);
 
 //This function detects and marks all bridging k-mers between core parts on different unitigs in the graph
 void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt);

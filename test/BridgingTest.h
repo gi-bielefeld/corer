@@ -5,6 +5,7 @@
 
 #include "Traversal.h"
 #include "CoreTest.h"
+#include "Bridging.h"
 
 using namespace std;
 
@@ -41,6 +42,32 @@ class MarkBrdgTest : public ::testing::Test {
 		UnitigColorMap<CoreInfo> uni;
 		//A list of paths
 		list<Path> l;
+};
+
+class MarkBrdgTest1 : public ::testing::Test {
+
+	protected:
+
+		MarkBrdgTest1(): dlt(4), cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
+			cdbgOpt.k = DEFAULT_TEST_K;
+			cdbgOpt.g = DEFAULT_TEST_G;
+			cdbgOpt.filename_ref_in.push_back("Test.fa");
+			cdbgOpt.filename_ref_in.push_back("Test_color7.fa");
+			cdbg.build(cdbgOpt);
+			cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+			cdbg.buildColors(cdbgOpt);
+		}
+
+		//The used value of delta
+		uint32_t dlt;
+		//Some unitig iterator
+		ColoredCDBG<CoreInfo>::iterator i;
+		//Colored de Bruijn graph build options
+		CCDBG_Build_opt cdbgOpt;
+		//Compacted, colored de Bruijn graph with linked CoreInfo objects
+		ColoredCDBG<CoreInfo> cdbg;
+		//A priority queue for bridging k-mer detection
+		TravTrackQueue queue;
 };
 
 class DetectBrdgTest : public ::testing::Test {

@@ -1,6 +1,6 @@
->s1
+>u4 p0 u7 p0 u2 p0-1
 TGCAACCGTCAA
->s2
+>u1 p0-1 u7 p0 u3 p0-1 u5 p0
 AAGCAACCGTCCCA
->s3
+>u1 p0-1 u7 p0 u3 p0-1 u6 p0
 AAGCAACCGTCCCC
