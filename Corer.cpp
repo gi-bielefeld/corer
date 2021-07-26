@@ -39,6 +39,19 @@ int main(int argc, char **argv){
 	queue = detectCore(cdbg, qrm, dlt);
 	//Annotate unitigs with distances to next core k-mers
 	annotateDists(cdbg, queue);
+
+	//Testing
+	UnitigColorMap<CoreInfo> u = cdbg.find(Kmer("CACCCGTCTGCGGCCAGATTA"));
+	if(!u.isEmpty){
+		cout << "K-mer found" << endl;
+		cout << "It is part of unitig " << u.referenceUnitigToString() << endl;
+		cout << "sucCoreDist: " << u.getData()->getData(u)->sucCoreDist << " predCoreDist: " << u.getData()->getData(u)->predCoreDist << endl;
+		cout << "There are " << (u.getData()->getData(u)->coreList.empty() ? "no " : "") << "core k-mers on this unitig" << endl;
+	} else{
+		cout << "K-mer not found" << endl;
+	}
+	return 0;
+
 	//Walk through the graph and mark all bridging k-mers within each unitig
 	markBrdg(cdbg, dlt);
 
