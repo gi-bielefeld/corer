@@ -22,6 +22,12 @@ void markBrdg(const list<Path>& pths, const bool& sucPths){
 		//The first unitig of a successor's path potenially has a bridging suffix and vice versa
 		list<UnitigColorMap<CoreInfo>>::const_iterator u = p->second.begin();
 
+		//Testing
+		// if(!u->referenceUnitigToString().compare("CACCCGTCTGCGGCCAGATTATTCGCCTGTCGCATCGCCCG")){
+		// 	cout << "markBrdg: Found a path in which k-mer CACCCGTCTGCGGCCAGATTA appears:" << endl;
+		// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator v = p->second.begin(); v != p->second.end(); ++v) cout << v->mappedSequenceToString() << endl;
+		// }
+
 		if(sucPths){
 			u->getData()->getData(*u)->sufBrdg = true;
 		} else{
@@ -32,6 +38,12 @@ void markBrdg(const list<Path>& pths, const bool& sucPths){
 
 		//Iterate over unitigs in path
 		for(; u != p->second.end(); ++u){
+			//Testing
+			// if(!u->referenceUnitigToString().compare("CACCCGTCTGCGGCCAGATTATTCGCCTGTCGCATCGCCCG")){
+			// 	cout << "markBrdg: Found a path in which k-mer CACCCGTCTGCGGCCAGATTA appears:" << endl;
+			// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator v = p->second.begin(); v != p->second.end(); ++v) cout << v->mappedSequenceToString() << endl;
+			// }
+
 			//Check which bridging flag we have to set
 			if(sucPths ^ u->strand){
 				//Mark k-mers at unitig's end (reference strand orientation) as bridging
@@ -70,12 +82,22 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		if((cInfo->coreList.empty() || cInfo->coreList.front().first > 0) && !cInfo->preBrdg && !rCrTooFar(i->len, cInfo->coreList, dlt)){
 			//Check if there are no core k-mers on this unitig
 			if(cInfo->coreList.empty()){
-				//The length of the existing path the minimum length path found during BFS on successive unitigs in addition to all k-mers on the current unitig (except for the one we start at)
+				//The length of the existing path is the minimum length path found during BFS on successive unitigs in addition to all k-mers on the current unitig (except for
+				//the one we start at)
 				exstPthLen = findMinPthLen(sucPaths) + i->len - 1;
 			} else{
 				//A path has to reach the leftmost core k-mer on this unitig only
 				exstPthLen = cInfo->coreList.front().first;
 			}
+
+			//We have to catch this to prevent an overflow
+			if(dlt < exstPthLen) exstPthLen = dlt;
+
+			//Testing
+			// if(!i->referenceUnitigToString().compare("CACCCGTCTGCGGCCAGATTATTCGCCTGTCGCATCGCCCG")){
+			// 	cout << "detectBrdg: We are dealing with unitig " << i->referenceUnitigToString() << endl;
+			// 	cout << "detectBrdg: exstPthLen: " << exstPthLen << " (uint32_t) (dlt - exstPthLen):" << (uint32_t) (dlt - exstPthLen) << endl;
+			// }
 
 			//Do BFS on predecessive unitigs and mark all bridging k-mers if necessary
 			if(doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - exstPthLen)), predPaths) || !cInfo->coreList.empty()){

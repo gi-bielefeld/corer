@@ -39,6 +39,9 @@ int main(int argc, char **argv){
 	//Walk through the graph and mark all bridging k-mers within each unitig
 	detectBrdg(cdbg, dlt);
 
+	//Testing
+	// return 0;
+
 	//Check if unitig snippet output is requested
 	if(oSnps){
 		//Output core as unitig snippets
