@@ -41,7 +41,7 @@ int main(int argc, char **argv){
 	annotateDists(cdbg, queue);
 
 	//Testing
-	UnitigColorMap<CoreInfo> u = cdbg.find(Kmer("CACCCGTCTGCGGCCAGATTA"));
+	UnitigColorMap<CoreInfo> u = cdbg.find(Kmer("GCCAGGAACACCTGACGCCGT"));
 	if(!u.isEmpty){
 		cout << "K-mer found" << endl;
 		cout << "It is part of unitig " << u.referenceUnitigToString() << endl;
