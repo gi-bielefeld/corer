@@ -245,16 +245,31 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 
 		//Iterate over predecessors
 		for(pred = it.begin(); pred != it.end(); ++pred){
+			//Testing
+			// if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
+			// 	cout << "doPredBFS: We are dealing with unitig " << queue.top().second.back().referenceUnitigToString() << endl;
+			// }
+
 			//Check if distance to next core k-mer (if known) is too large
 			coreDist = (pred->strand ? pred->getData()->getData(*pred)->predCoreDist : pred->getData()->getData(*pred)->sucCoreDist);
 
-			if(coreDist != UINT32_MAX && coreDist > dpth - queue.top().first){
+			if(coreDist != UINT32_MAX && coreDist > dpth - queue.top().first){	
+				//Testing
+				// if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
+				// 	cout << "doPredBFS: Next core is too far" << endl;
+				// }
+
 				//Extending the path on this predecessor does not make sense
 				continue;
 			}
 
 			//Check if there is a core k-mer on this predecessor and if it is close enough
-			if(!pred->getData()->getData(*pred)->coreList.empty() && getCoreDist(pred, false) <= dpth - queue.top().first){
+			if(!pred->getData()->getData(*pred)->coreList.empty() && getCoreDist(pred, false) <= dpth - queue.top().first){	
+				//Testing
+				// if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
+				// 	cout << "doPredBFS: We have found a close enough core k-mer" << endl;
+				// }
+
 				//Add path to results
 				resPths.push_back(queue.top());
 				//Add predecessor to path
@@ -267,6 +282,11 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 
 			//Check if adding all k-mers of predecessive unitig to path does not make it too long
 			if(queue.top().first + pred->len < dpth){
+				//Testing
+				if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
+					cout << "doPredBFS: We do çontinue with its predecessor" << endl;
+				}
+
 				//Get path
 				extPth = queue.top();
 				//Add current predecessor to path

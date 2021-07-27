@@ -16,15 +16,17 @@ const bool rCrTooFar(const size_t& ulen, const list<pair<uint32_t, uint32_t>>& c
 }
 
 //This function takes a list of paths obtained by a BFS and a flag indicating whether paths are successive, and marks all involved non-core k-mers as bridging
-void markBrdg(const list<Path>& pths, const bool& sucPths){
+void markBrdg(const list<Path>& pths, const bool& sucPths, const uint32_t& maxPthLen){
 	//Iterate over paths
 	for(list<Path>::const_iterator p = pths.begin(); p != pths.end(); ++p){
+		if(maxPthLen < p->first) continue;
+
 		//The first unitig of a successor's path potenially has a bridging suffix and vice versa
 		list<UnitigColorMap<CoreInfo>>::const_iterator u = p->second.begin();
 
 		//Testing
-		// if(!u->referenceUnitigToString().compare("CACCCGTCTGCGGCCAGATTATTCGCCTGTCGCATCGCCCG")){
-		// 	cout << "markBrdg: Found a path in which k-mer CACCCGTCTGCGGCCAGATTA appears:" << endl;
+		// if(!u->referenceUnitigToString().compare("CGGCAGGCGATGCAATTCCGCCAGGAACACCTGACGCCG")){
+		// 	cout << "markBrdg: Found a path in which untitig CGGCAGGCGATGCAATTCCGCCAGGAACACCTGACGCCG appears:" << endl;
 		// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator v = p->second.begin(); v != p->second.end(); ++v) cout << v->mappedSequenceToString() << endl;
 		// }
 
@@ -38,9 +40,9 @@ void markBrdg(const list<Path>& pths, const bool& sucPths){
 
 		//Iterate over unitigs in path
 		for(; u != p->second.end(); ++u){
-			//Testing
-			// if(!u->referenceUnitigToString().compare("CACCCGTCTGCGGCCAGATTATTCGCCTGTCGCATCGCCCG")){
-			// 	cout << "markBrdg: Found a path in which k-mer CACCCGTCTGCGGCCAGATTA appears:" << endl;
+			// //Testing
+			// if(!u->referenceUnitigToString().compare("CGGCAGGCGATGCAATTCCGCCAGGAACACCTGACGCCG")){
+			// 	cout << "markBrdg: Found a path in which unitig CGGCAGGCGATGCAATTCCGCCAGGAACACCTGACGCCG appears:" << endl;
 			// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator v = p->second.begin(); v != p->second.end(); ++v) cout << v->mappedSequenceToString() << endl;
 			// }
 
@@ -94,17 +96,19 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 			if(dlt < exstPthLen) exstPthLen = dlt;
 
 			//Testing
-			// if(!i->referenceUnitigToString().compare("CACCCGTCTGCGGCCAGATTATTCGCCTGTCGCATCGCCCG")){
+			// if(!i->referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
 			// 	cout << "detectBrdg: We are dealing with unitig " << i->referenceUnitigToString() << endl;
 			// 	cout << "detectBrdg: exstPthLen: " << exstPthLen << " (uint32_t) (dlt - exstPthLen):" << (uint32_t) (dlt - exstPthLen) << endl;
+			// 	cout << "detectBrdg: predPaths is " << (predPaths.empty() ? "" : "not ") << "empty" << endl;
+			// 	// exit(0);
 			// }
 
 			//Do BFS on predecessive unitigs and mark all bridging k-mers if necessary
 			if(doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - exstPthLen)), predPaths) || !cInfo->coreList.empty()){
 				//Mark k-mers of successive result paths as bridging
-				markBrdg(sucPaths, true);
+				markBrdg(sucPaths, true, dlt - findMinPthLen(predPaths) + 1 - i->len);
 				//Mark k-mers of predecessive result paths as bridging
-				markBrdg(predPaths, false);
+				markBrdg(predPaths, false, dlt - findMinPthLen(sucPaths) + 1 - i->len);
 			}
 		}
 
