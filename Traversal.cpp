@@ -283,9 +283,9 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 			//Check if adding all k-mers of predecessive unitig to path does not make it too long
 			if(queue.top().first + pred->len < dpth){
 				//Testing
-				if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
-					cout << "doPredBFS: We do çontinue with its predecessor" << endl;
-				}
+				// if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
+				// 	cout << "doPredBFS: We do çontinue with its predecessor" << endl;
+				// }
 
 				//Get path
 				extPth = queue.top();

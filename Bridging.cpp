@@ -25,8 +25,8 @@ void markBrdg(const list<Path>& pths, const bool& sucPths, const uint32_t& maxPt
 		list<UnitigColorMap<CoreInfo>>::const_iterator u = p->second.begin();
 
 		//Testing
-		// if(!u->referenceUnitigToString().compare("CGGCAGGCGATGCAATTCCGCCAGGAACACCTGACGCCG")){
-		// 	cout << "markBrdg: Found a path in which untitig CGGCAGGCGATGCAATTCCGCCAGGAACACCTGACGCCG appears:" << endl;
+		// if(!u->referenceUnitigToString().compare("AAATCCTAGCCCGTAAGCACAAA")){
+		// 	cout << "markBrdg: Found a path in which untitig AAATCCTAGCCCGTAAGCACAAA appears at the beginning:" << endl;
 		// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator v = p->second.begin(); v != p->second.end(); ++v) cout << v->mappedSequenceToString() << endl;
 		// }
 
@@ -40,9 +40,9 @@ void markBrdg(const list<Path>& pths, const bool& sucPths, const uint32_t& maxPt
 
 		//Iterate over unitigs in path
 		for(; u != p->second.end(); ++u){
-			// //Testing
-			// if(!u->referenceUnitigToString().compare("CGGCAGGCGATGCAATTCCGCCAGGAACACCTGACGCCG")){
-			// 	cout << "markBrdg: Found a path in which unitig CGGCAGGCGATGCAATTCCGCCAGGAACACCTGACGCCG appears:" << endl;
+			//Testing
+			// if(!u->referenceUnitigToString().compare("AAATCCTAGCCCGTAAGCACAAA")){
+			// 	cout << "markBrdg: Found a path in which unitig AAATCCTAGCCCGTAAGCACAAA appears:" << endl;
 			// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator v = p->second.begin(); v != p->second.end(); ++v) cout << v->mappedSequenceToString() << endl;
 			// }
 
@@ -74,6 +74,9 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		//Get CoreInfo object
 		cInfo = i->getData()->getData(*i);
 
+		//We are done with this unitig if there is no core k-mer on it and it is already marked as either prefix or suffix bridging
+		if(cInfo->coreList.empty() && (cInfo->sufBrdg || cInfo->preBrdg)) continue;
+
 		//Check if last k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the left side (i.e. the distance to the closest core k-mer on this unitig or the unitig's beginning) is not already too large
 		if((cInfo->coreList.empty() || cInfo->coreList.back().second < i->len - 1) && !cInfo->sufBrdg && !lCrTooFar(i->len, cInfo->coreList, dlt)){
 			//Do BFS on successive unitigs and check if we need to try a BFS on predecessors as well (which is the case only if there is a core k-mer on the current unitig or the BFS on successive unitigs was successful)
@@ -96,10 +99,13 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 			if(dlt < exstPthLen) exstPthLen = dlt;
 
 			//Testing
-			// if(!i->referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
+			// if(!i->referenceUnitigToString().compare("AAATCCTAGCCCGTAAGCACAAA")){
 			// 	cout << "detectBrdg: We are dealing with unitig " << i->referenceUnitigToString() << endl;
 			// 	cout << "detectBrdg: exstPthLen: " << exstPthLen << " (uint32_t) (dlt - exstPthLen):" << (uint32_t) (dlt - exstPthLen) << endl;
 			// 	cout << "detectBrdg: predPaths is " << (predPaths.empty() ? "" : "not ") << "empty" << endl;
+			// 	cout << "detectBrdg: coreList is " << (cInfo->coreList.empty() ? "" : "not ") << "empty" << endl;
+			// 	cout << "detectBrdg: sucPaths is " << (sucPaths.empty() ? "" : "not ") << "empty" << endl;
+			// 	cout << "detectBrdg: sufBrdg is " << (cInfo->sufBrdg ? "" : "not ") << "set" << endl;
 			// 	// exit(0);
 			// }
 
