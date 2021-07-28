@@ -38,7 +38,7 @@ int main(int argc, char **argv){
 	//Detect all core k-mers
 	queue = detectCore(cdbg, qrm, dlt);
 	//Annotate unitigs with distances to next core k-mers
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 
 	//Testing
 	// UnitigColorMap<CoreInfo> u = cdbg.find(Kmer("TCAACTCTTACGGGATGTCAG"));

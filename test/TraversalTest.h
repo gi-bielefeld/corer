@@ -201,11 +201,13 @@ class AnnotateDistsTest : public ::testing::Test {
 
 protected:
 
-	AnnotateDistsTest(): cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
+	AnnotateDistsTest(): dlt(42), cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
 		cdbgOpt.k = DEFAULT_TEST_K;
 		cdbgOpt.g = DEFAULT_TEST_G;
 	}
 
+	//Some delta value
+	uint32_t dlt;
 	//Some unitig iterator
 	ColoredCDBG<CoreInfo>::iterator i;
 	//Colored de Bruijn graph build options

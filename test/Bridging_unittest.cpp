@@ -252,7 +252,7 @@ TEST_F(MarkBrdgTest, PredRev){
 //	8. There is a core k-mer on the current unitig, sucCoreDist was updated and the unitig's suffix is bridging
 TEST_F(MarkBrdgTest1, DltFul){
 	queue = detectCore(cdbg, 2, dlt);
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 	markBrdg(cdbg, dlt);
 	i = cdbg.begin();
 
@@ -284,7 +284,7 @@ TEST_F(MarkBrdgTest1, DltFul){
 TEST_F(MarkBrdgTest1, NotBrd){
 	dlt = 3;
 	queue = detectCore(cdbg, 2, dlt);
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 	markBrdg(cdbg, dlt);
 	i = cdbg.begin();
 
@@ -310,7 +310,7 @@ TEST_F(MarkBrdgTest1, NotBrd){
 //	3. There is no core k-mer on the current unitig and sucCoreDist was never updated
 TEST_F(MarkBrdgTest1, NoCr){
 	queue = detectCore(cdbg, 3, dlt);
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 	markBrdg(cdbg, dlt);
 	i = cdbg.begin();
 

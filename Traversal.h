@@ -56,6 +56,6 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 
 //This function traverses the given graph according to the order dictated by the given priority queue while adding distance information about the closest core k-mers to each
 //processed node. 
-void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue);
+void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue, const uint32_t& dlt);
 
 #endif

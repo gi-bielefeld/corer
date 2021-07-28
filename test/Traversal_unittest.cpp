@@ -1203,6 +1203,10 @@ TEST_F(DoPredBFStest, FltdRev){
 //	8. We encounter a predecessor on which we are on the reverse complementary strand and that has already/not yet been processed DONE
 //	9. We processed a predecessor and did (not) annotate it DONE
 //	10. We annotated a predecessor on which a/no core k-mer lies DONE
+//	11. We annotated a successor which has a/no further successors 0/0
+//	12. We annotated a successor which does (not) make the path too long 0/0
+//	13. We annotated a predecessor which has a/no further predecessors 0/0
+//	14. We annotated a predecessor which does (not) make the path too long 0/0
 
 //Tests the function annotateDists under the following conditions
 //	1. The queue is empty at the beginning
@@ -1213,7 +1217,7 @@ TEST_F(AnnotateDistsTest, EmptQ){
 	cdbg.buildColors(cdbgOpt);
 	queue = TravTrackQueue(prioShrtst);
 
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 
 	for(i = cdbg.begin(); i != cdbg.end(); ++i){
 		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
@@ -1236,9 +1240,9 @@ TEST_F(AnnotateDistsTest, SucTrav){
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
-	queue = detectCore(cdbg, 2, 42);
+	queue = detectCore(cdbg, 2, dlt);
 
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 
 	i = cdbg.begin();
 	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
@@ -1272,9 +1276,9 @@ TEST_F(AnnotateDistsTest, ProcPred){
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
-	queue = detectCore(cdbg, 2, 42);
+	queue = detectCore(cdbg, 2, dlt);
 
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 
 	i = cdbg.begin();
 	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
@@ -1305,9 +1309,9 @@ TEST_F(AnnotateDistsTest, ProcSuc){
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
-	queue = detectCore(cdbg, 2, 42);
+	queue = detectCore(cdbg, 2, dlt);
 
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 
 	i = cdbg.begin();
 	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
@@ -1335,9 +1339,9 @@ TEST_F(AnnotateDistsTest, ProcRef){
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
-	queue = detectCore(cdbg, 2, 42);
+	queue = detectCore(cdbg, 2, dlt);
 
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 
 	i = cdbg.begin();
 	EXPECT_EQ(3, i->getData()->getData(*i)->predCoreDist);
@@ -1363,9 +1367,9 @@ TEST_F(AnnotateDistsTest, PredRev){
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
 	cdbg.buildColors(cdbgOpt);
-	queue = detectCore(cdbg, 2, 42);
+	queue = detectCore(cdbg, 2, dlt);
 
-	annotateDists(cdbg, queue);
+	annotateDists(cdbg, queue, dlt);
 
 	i = cdbg.begin();
 	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
