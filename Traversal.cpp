@@ -169,6 +169,17 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 		//Get iterator of last unitig in top priority path
 		ForwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it = queue.top().second.back().getSuccessors();
 
+		//Testing
+		// if(!orig.referenceUnitigToString().compare("CTGACATCCCGTAAGAGTTGA")){
+		// 	cout << "doSucBFS: Traversal for interesting unitig" << endl;
+		// 	cout << "doSucBFS: Queue's top is " << queue.top().second.back().mappedSequenceToString() << endl;
+		// 	cout << "doSucBFS: Queue's top does " << (it.hasSuccessors() ? "" : "not ") << "have successors" << endl;
+		// 	cout << "doSucBFS: Successors are:" << endl;
+		// 	// for(suc = it.begin(); suc != it.end(); ++suc){
+		// 	// 	cout << it->mappedSequenceToString() << " coreDist: " << (suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist) << endl;
+		// 	// }
+		// }
+
 		//Iterate over successors
 		for(suc = it.begin(); suc != it.end(); ++suc){
 			//Check if distance to next core k-mer (if known) is too large

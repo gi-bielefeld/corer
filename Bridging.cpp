@@ -74,17 +74,41 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		//Get CoreInfo object
 		cInfo = i->getData()->getData(*i);
 
-		//We are done with this unitig if there is no core k-mer on it and it is already marked as either prefix or suffix bridging
-		if(cInfo->coreList.empty() && (cInfo->sufBrdg || cInfo->preBrdg)) continue;
+		//Testing
+		// if(!i->referenceUnitigToString().compare("CTGACATCCCGTAAGAGTTGA")){
+		// 	cout << "detectBrdg: We are dealing with the unitig of interest..." << endl;
+		// }
+
+		// //We are done with this unitig if there is no core k-mer on it and it is already marked as either prefix or suffix bridging
+		// if(cInfo->coreList.empty() && (cInfo->sufBrdg || cInfo->preBrdg)){
+		// 	//Testing
+		// 	if(!i->referenceUnitigToString().compare("CTGACATCCCGTAAGAGTTGA")){
+		// 		cout << "detectBrdg: Unitig was already marked as bridging" << endl;
+		// 	}
+
+		// 	continue;
+		// }
 
 		//Check if last k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the left side (i.e. the distance to the closest core k-mer on this unitig or the unitig's beginning) is not already too large
-		if((cInfo->coreList.empty() || cInfo->coreList.back().second < i->len - 1) && !cInfo->sufBrdg && !lCrTooFar(i->len, cInfo->coreList, dlt)){
+		if((cInfo->coreList.empty() || (cInfo->coreList.back().second < i->len - 1 && !cInfo->sufBrdg)) && !lCrTooFar(i->len, cInfo->coreList, dlt)){
 			//Do BFS on successive unitigs and check if we need to try a BFS on predecessors as well (which is the case only if there is a core k-mer on the current unitig or the BFS on successive unitigs was successful)
-			if(!doSucBFS(*i, (dlt + 1) / 2, sucPaths) && cInfo->coreList.empty()) continue;
+			if(!doSucBFS(*i, (dlt + 1) / 2, sucPaths) && cInfo->coreList.empty()){
+				// //Testing
+				// if(!i->referenceUnitigToString().compare("CTGACATCCCGTAAGAGTTGA")){
+				// 	cout << "detectBrdg: BFS on successors was not successful" << endl;
+				// }
+
+				continue;
+			}
 		}
 
+		//Testing
+		// if(!i->referenceUnitigToString().compare("CTGACATCCCGTAAGAGTTGA")){
+		// 	cout << "detectBrdg: We get here" << endl;
+		// }
+
 		//Check if first k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the right side (i.e. the distance to the closest core kmer on this unitig or the unitig's end) is not already too large
-		if((cInfo->coreList.empty() || cInfo->coreList.front().first > 0) && !cInfo->preBrdg && !rCrTooFar(i->len, cInfo->coreList, dlt)){
+		if((cInfo->coreList.empty() || (cInfo->coreList.front().first > 0 && !cInfo->preBrdg)) && !rCrTooFar(i->len, cInfo->coreList, dlt)){
 			//Check if there are no core k-mers on this unitig
 			if(cInfo->coreList.empty()){
 				//The length of the existing path is the minimum length path found during BFS on successive unitigs in addition to all k-mers on the current unitig (except for
