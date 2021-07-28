@@ -562,41 +562,72 @@ TEST_F(DetectCoreTest, twoClrs){
 	++i;
 	EXPECT_EQ(i, cdbg.end());
 	ASSERT_EQ(queue.size(), 8);
-	//1. Element (1, Kmer("GGCAAAGAC"), false)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GGCAAAGAC", queue.top().track.toString());
-	EXPECT_FALSE(queue.top().isSucTrav);
-	queue.pop();
-	//2. Element (1, Kmer("AAAGGCAAA"), true)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("AAAGGCAAA", queue.top().track.toString());
-	EXPECT_TRUE(queue.top().isSucTrav);
-	queue.pop();
-	//3. Element (1, Kmer("GCAAACACA"), false)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GCAAACACA", queue.top().track.toString());
-	EXPECT_FALSE(queue.top().isSucTrav);
-	queue.pop();
-	//4. Element (1, Kmer("GCAAACACA"), true)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GCAAACACA", queue.top().track.toString());
-	EXPECT_TRUE(queue.top().isSucTrav);
-	queue.pop();
-	//5. Element (1, Kmer("AAAGGCAAA"), false)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("AAAGGCAAA", queue.top().track.toString());
-	EXPECT_FALSE(queue.top().isSucTrav);
-	queue.pop();
-	//6. Element (2, Kmer("GGCAAACAC"), false)
-	EXPECT_EQ(2, queue.top().cDist);
-	EXPECT_EQ("GGCAAACAC", queue.top().track.toString());
-	EXPECT_FALSE(queue.top().isSucTrav);
-	queue.pop();
-	//7. Element (2, Kmer("GGCAAACAC"), true)
-	EXPECT_EQ(2, queue.top().cDist);
-	EXPECT_EQ("GGCAAACAC", queue.top().track.toString());
-	EXPECT_TRUE(queue.top().isSucTrav);
-	queue.pop();
+
+	for(c = 5; c > 0; --c){
+		EXPECT_EQ(1, queue.top().cDist);
+
+		//Element (1, Kmer("GGCAAAGAC"), false)
+		if(!queue.top().track.toString().compare("GGCAAAGAC")){
+			EXPECT_FALSE(queue.top().isSucTrav);
+			EXPECT_FALSE(u2SeenPred);
+			u2SeenPred = true;
+		//Element (1, Kmer("AAAGGCAAA"), true)
+		} else if(!queue.top().track.toString().compare("AAAGGCAAA") && queue.top().isSucTrav){
+			if(!u3SeenSuc){
+				u3SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u3SeenSuc);
+			}
+		//Element (1, Kmer("AAAGGCAAA"), false)
+		} else if(!queue.top().track.toString().compare("AAAGGCAAA") && !queue.top().isSucTrav){
+			if(!u3SeenPred){
+				u3SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u3SeenPred);
+			}
+		//Element (1, Kmer("GCAAACACA"), true)
+		} else if(!queue.top().track.toString().compare("GCAAACACA") && queue.top().isSucTrav){
+			if(!u4SeenSuc){
+				u4SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u4SeenSuc);
+			}
+		//Element (1, Kmer("GCAAACACA"), false)
+		} else if(!queue.top().track.toString().compare("GCAAACACA") && !queue.top().isSucTrav){
+			if(!u4SeenPred){
+				u4SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u4SeenPred);
+			}
+		} else{
+			//This should not happen...
+			EXPECT_EQ("", queue.top().track.toString());
+		}
+
+		queue.pop();
+	}
+
+	for(c = 2; c > 0; --c){
+		EXPECT_EQ(2, queue.top().cDist);
+		EXPECT_EQ("GGCAAACAC", queue.top().track.toString());
+
+		if(queue.top().isSucTrav){
+			//Element (2, Kmer("GGCAAACAC"), true)
+			EXPECT_FALSE(u1SeenSuc);
+			u1SeenSuc = true;
+		} else{
+			//Element (2, Kmer("GGCAAACAC"), false)
+			EXPECT_FALSE(u1SeenPred);
+			u1SeenPred = true;
+		}
+
+		queue.pop();
+	}
+	
 	//8. Element (3, Kmer("GGCAAAGAC"), true)
 	EXPECT_EQ(3, queue.top().cDist);
 	EXPECT_EQ("GGCAAAGAC", queue.top().track.toString());
@@ -696,56 +727,94 @@ TEST_F(DetectCoreTest, snglClr){
 	++i;
 	EXPECT_EQ(i, cdbg.end());
 	ASSERT_EQ(queue.size(), 10);
-	//1. Element (1, Kmer("GGCAAACAC"), true)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GGCAAACAC", queue.top().track.toString());
-	EXPECT_TRUE(queue.top().isSucTrav);
-	queue.pop();
-	//2. Element (1, Kmer("GGCAAACAC"), false)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GGCAAACAC", queue.top().track.toString());
-	EXPECT_FALSE(queue.top().isSucTrav);
-	queue.pop();
-	//3. Element (1, Kmer("GGCAAAGAC"), false)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GGCAAAGAC", queue.top().track.toString());
-	EXPECT_FALSE(queue.top().isSucTrav);
-	queue.pop();
-	//4. Element (1, Kmer("GCAAACACA"), false)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GCAAACACA", queue.top().track.toString());
-	EXPECT_FALSE(queue.top().isSucTrav);
-	queue.pop();
-	//5. Element (1, Kmer("GCAAACACC"), false)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GCAAACACC", queue.top().track.toString());
-	EXPECT_FALSE(queue.top().isSucTrav);
-	queue.pop();
-	//6. Element (1, Kmer("GCAAACACC"), true)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GCAAACACC", queue.top().track.toString());
-	EXPECT_TRUE(queue.top().isSucTrav);
-	queue.pop();
-	//7. Element (1, Kmer("GCAAACACA"), true)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GCAAACACA", queue.top().track.toString());
-	EXPECT_TRUE(queue.top().isSucTrav);
-	queue.pop();
-	//8. Element (1, Kmer("AAAGGCAAA"), false)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("AAAGGCAAA", queue.top().track.toString());
-	EXPECT_FALSE(queue.top().isSucTrav);
-	queue.pop();
-	//9. Element (1, Kmer("AAAGGCAAA"), true)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("AAAGGCAAA", queue.top().track.toString());
-	EXPECT_TRUE(queue.top().isSucTrav);
-	queue.pop();
-	//10. Element (1, Kmer("GGCAAAGAC"), true)
-	EXPECT_EQ(1, queue.top().cDist);
-	EXPECT_EQ("GGCAAAGAC", queue.top().track.toString());
-	EXPECT_TRUE(queue.top().isSucTrav);
-	queue.pop();
+
+	for(c = 10; c > 0; --c){
+		EXPECT_EQ(1, queue.top().cDist);
+
+		//Element (1, Kmer("GGCAAACAC"), true)
+		if(!queue.top().track.toString().compare("GGCAAACAC") && queue.top().isSucTrav){
+			if(!u1SeenSuc){
+				u1SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u1SeenSuc);
+			}
+		//Element (1, Kmer("GGCAAACAC"), false)
+		} else if(!queue.top().track.toString().compare("GGCAAACAC") && !queue.top().isSucTrav){
+			if(!u1SeenPred){
+				u1SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u1SeenPred);
+			}
+		//Element (1, Kmer("GGCAAAGAC"), true)
+		} else if(!queue.top().track.toString().compare("GGCAAAGAC") && queue.top().isSucTrav){
+			if(!u2SeenSuc){
+				u2SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u2SeenSuc);
+			}
+		//Element (1, Kmer("GGCAAAGAC"), false)
+		} else if(!queue.top().track.toString().compare("GGCAAAGAC") && !queue.top().isSucTrav){
+			if(!u2SeenPred){
+				u2SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u2SeenPred);
+			}
+		//Element (1, Kmer("AAAGGCAAA"), true)
+		} else if(!queue.top().track.toString().compare("AAAGGCAAA") && queue.top().isSucTrav){
+			if(!u3SeenSuc){
+				u3SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u3SeenSuc);
+			}
+		//Element (1, Kmer("AAAGGCAAA"), false)
+		} else if(!queue.top().track.toString().compare("AAAGGCAAA") && !queue.top().isSucTrav){
+			if(!u3SeenPred){
+				u3SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u3SeenPred);
+			}
+		//Element (1, Kmer("GCAAACACA"), true)
+		} else if(!queue.top().track.toString().compare("GCAAACACA") && queue.top().isSucTrav){
+			if(!u4SeenSuc){
+				u4SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u4SeenSuc);
+			}
+		//Element (1, Kmer("GCAAACACA"), false)
+		} else if(!queue.top().track.toString().compare("GCAAACACA") && !queue.top().isSucTrav){
+			if(!u4SeenPred){
+				u4SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u4SeenPred);
+			}
+		//Element (1, Kmer("GCAAACACC"), true)
+		} else if(!queue.top().track.toString().compare("GCAAACACC") && queue.top().isSucTrav){
+			if(!u5SeenSuc){
+				u5SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u5SeenSuc);
+			}
+		//Element (1, Kmer("GCAAACACC"), false)
+		} else if(!queue.top().track.toString().compare("GCAAACACC") && !queue.top().isSucTrav){
+			if(!u5SeenPred){
+				u5SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u5SeenPred);
+			}
+		}
+
+		queue.pop();
+	}
 }
 
 //Tests the function detectCore under the following conditions
