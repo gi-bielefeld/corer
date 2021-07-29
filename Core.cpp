@@ -102,9 +102,11 @@ TravTrackQueue detectCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, cons
 		if(l > -1) uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
 
 		if(!uni.getData()->getData(uni)->coreList.empty()){
-			//Push a TravTrack to the queue (forward and backward traversal)
-			queue.push(TravTrack(i->len - r, Kmer(uni.mappedSequenceToString().c_str()), true));
-			queue.push(TravTrack(uni.getData()->getData(uni)->coreList.front().first + 1, Kmer(uni.mappedSequenceToString().c_str()), false));
+			//If a unitig has no successors we do not need a traversal on them
+			if(uni.getSuccessors().hasSuccessors()) queue.push(TravTrack(i->len - r, Kmer(uni.mappedSequenceToString().c_str()), true));
+
+			//If a unitig has no predecessors we do not need a traversal on them
+			if(uni.getPredecessors().hasPredecessors()) queue.push(TravTrack(uni.getData()->getData(uni)->coreList.front().first + 1, Kmer(uni.mappedSequenceToString().c_str()), false));
 		}
 	}
 

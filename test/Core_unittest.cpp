@@ -456,13 +456,17 @@ TEST_F(MarkCoreTest, TwoInts){
 //	3. The bridging path's length has (not) to be reseted DONE
 //	4. Delta is (not) exceeded DONE
 //	5. No/An interval has been found DONE
+//	6. A unitig has (a/no) successor(s) DONE
+//	7. A unitig has (a/no) predecessor(s) DONE
 
 //Tests the function detectCore under the following conditions
 //	1. The quorum is (not) fulfilled for a k-mer
 //	2. A new interval has to be started
 //	3. The bridging path's length has (not) to be reseted
-//	4. Delta is (not) exceeded
+//	4. Delta is not exceeded
 //	5. No/An interval has been found
+//	6. A unitig has (a/no) successor(s)
+//	7. A unitig has (a/no) predecessor(s)
 TEST_F(DetectCoreTest, twoClrs){
 	cdbgOpt.filename_seq_in.push_back("Test_color1.fa");
 
@@ -561,9 +565,9 @@ TEST_F(DetectCoreTest, twoClrs){
 	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
 	++i;
 	EXPECT_EQ(i, cdbg.end());
-	ASSERT_EQ(queue.size(), 8);
+	ASSERT_EQ(queue.size(), 5);
 
-	for(c = 5; c > 0; --c){
+	for(c = 3; c > 0; --c){
 		EXPECT_EQ(1, queue.top().cDist);
 
 		//Element (1, Kmer("GGCAAAGAC"), false)
@@ -578,22 +582,6 @@ TEST_F(DetectCoreTest, twoClrs){
 			} else{
 				//This should not happen...
 				EXPECT_FALSE(u3SeenSuc);
-			}
-		//Element (1, Kmer("AAAGGCAAA"), false)
-		} else if(!queue.top().track.toString().compare("AAAGGCAAA") && !queue.top().isSucTrav){
-			if(!u3SeenPred){
-				u3SeenPred = true;
-			} else{
-				//This should not happen...
-				EXPECT_FALSE(u3SeenPred);
-			}
-		//Element (1, Kmer("GCAAACACA"), true)
-		} else if(!queue.top().track.toString().compare("GCAAACACA") && queue.top().isSucTrav){
-			if(!u4SeenSuc){
-				u4SeenSuc = true;
-			} else{
-				//This should not happen...
-				EXPECT_FALSE(u4SeenSuc);
 			}
 		//Element (1, Kmer("GCAAACACA"), false)
 		} else if(!queue.top().track.toString().compare("GCAAACACA") && !queue.top().isSucTrav){
@@ -627,11 +615,6 @@ TEST_F(DetectCoreTest, twoClrs){
 
 		queue.pop();
 	}
-	
-	//8. Element (3, Kmer("GGCAAAGAC"), true)
-	EXPECT_EQ(3, queue.top().cDist);
-	EXPECT_EQ("GGCAAAGAC", queue.top().track.toString());
-	EXPECT_TRUE(queue.top().isSucTrav);
 }
 
 //Tests the function detectCore under the following conditions
@@ -639,6 +622,8 @@ TEST_F(DetectCoreTest, twoClrs){
 //	2. A new interval has (not) to be started
 //	3. The bridging path's length has not to be reseted
 //	5. An interval has been found
+//	6. A unitig has (a/no) successor(s)
+//	7. A unitig has (a/no) predecessor(s)
 TEST_F(DetectCoreTest, snglClr){
 	cdbg.build(cdbgOpt);
 	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
@@ -726,9 +711,9 @@ TEST_F(DetectCoreTest, snglClr){
 	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
 	++i;
 	EXPECT_EQ(i, cdbg.end());
-	ASSERT_EQ(queue.size(), 10);
+	ASSERT_EQ(queue.size(), 6);
 
-	for(c = 10; c > 0; --c){
+	for(c = 6; c > 0; --c){
 		EXPECT_EQ(1, queue.top().cDist);
 
 		//Element (1, Kmer("GGCAAACAC"), true)
@@ -747,14 +732,6 @@ TEST_F(DetectCoreTest, snglClr){
 				//This should not happen...
 				EXPECT_FALSE(u1SeenPred);
 			}
-		//Element (1, Kmer("GGCAAAGAC"), true)
-		} else if(!queue.top().track.toString().compare("GGCAAAGAC") && queue.top().isSucTrav){
-			if(!u2SeenSuc){
-				u2SeenSuc = true;
-			} else{
-				//This should not happen...
-				EXPECT_FALSE(u2SeenSuc);
-			}
 		//Element (1, Kmer("GGCAAAGAC"), false)
 		} else if(!queue.top().track.toString().compare("GGCAAAGAC") && !queue.top().isSucTrav){
 			if(!u2SeenPred){
@@ -771,22 +748,6 @@ TEST_F(DetectCoreTest, snglClr){
 				//This should not happen...
 				EXPECT_FALSE(u3SeenSuc);
 			}
-		//Element (1, Kmer("AAAGGCAAA"), false)
-		} else if(!queue.top().track.toString().compare("AAAGGCAAA") && !queue.top().isSucTrav){
-			if(!u3SeenPred){
-				u3SeenPred = true;
-			} else{
-				//This should not happen...
-				EXPECT_FALSE(u3SeenPred);
-			}
-		//Element (1, Kmer("GCAAACACA"), true)
-		} else if(!queue.top().track.toString().compare("GCAAACACA") && queue.top().isSucTrav){
-			if(!u4SeenSuc){
-				u4SeenSuc = true;
-			} else{
-				//This should not happen...
-				EXPECT_FALSE(u4SeenSuc);
-			}
 		//Element (1, Kmer("GCAAACACA"), false)
 		} else if(!queue.top().track.toString().compare("GCAAACACA") && !queue.top().isSucTrav){
 			if(!u4SeenPred){
@@ -794,14 +755,6 @@ TEST_F(DetectCoreTest, snglClr){
 			} else{
 				//This should not happen...
 				EXPECT_FALSE(u4SeenPred);
-			}
-		//Element (1, Kmer("GCAAACACC"), true)
-		} else if(!queue.top().track.toString().compare("GCAAACACC") && queue.top().isSucTrav){
-			if(!u5SeenSuc){
-				u5SeenSuc = true;
-			} else{
-				//This should not happen...
-				EXPECT_FALSE(u5SeenSuc);
 			}
 		//Element (1, Kmer("GCAAACACC"), false)
 		} else if(!queue.top().track.toString().compare("GCAAACACC") && !queue.top().isSucTrav){
@@ -811,6 +764,9 @@ TEST_F(DetectCoreTest, snglClr){
 				//This should not happen...
 				EXPECT_FALSE(u5SeenPred);
 			}
+		} else{
+			//This should not happen...
+			EXPECT_EQ("", queue.top().track.toString());
 		}
 
 		queue.pop();
@@ -823,6 +779,8 @@ TEST_F(DetectCoreTest, snglClr){
 //	3. The bridging path's length has not to be reseted
 //	4. Delta is exceeded
 //	5. No/An interval has been found
+//	6. A unitig has (a) successor(s)
+//	7. A unitig has (a) predecessor(s)
 TEST_F(DetectCoreTest, TwoInts){
 	cdbgOpt.filename_seq_in.push_back("Test_color8.fa");
 

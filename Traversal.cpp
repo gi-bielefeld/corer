@@ -303,9 +303,6 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue, const uin
 	//A neighbor iterator for the traversal
 	neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> nIt;
 
-	//Testing
-	cout << "1 Option " << (queue.empty() ? "1" : "2") << endl;
-
 	//Process all unitigs in the queue
 	while(!queue.empty()){
 		//Find the unitig from which we have to continue
@@ -315,22 +312,13 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue, const uin
 		if(queue.top().isSucTrav){
 			ForwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> fIt = uni.getSuccessors();
 
-			//Testing
-			cout << "2 Option 1" << endl;
-
 			//Iterate over successors
 			for(nIt = fIt.begin(); nIt != fIt.end(); ++nIt){
 				//Yet, nothing has been updated
 				distUpdated = false;
 
-				//Testing
-				if(nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist != UINT32_MAX) cout << "3 Option 2" << endl;
-
 				//Ensure that this successor has not already been processed in this direction
 				if(nIt->strand && nIt->getData()->getData(*nIt)->predCoreDist == UINT32_MAX){
-					//Testing
-					cout << "3 Option 1" << endl;
-
 					//Annotate this successor with distance to closest core k-mer
 					nIt->getData()->getData(*nIt)->predCoreDist = queue.top().cDist;
 					distUpdated = true;
@@ -348,10 +336,7 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue, const uin
 			}
 		} else{
 			BackwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> bIt = uni.getPredecessors();
-
-			//Testing
-			cout << "2 Option 2" << endl;
-
+		
 			//Iterate over predecessors
 			for(nIt = bIt.begin(); nIt != bIt.end(); ++nIt){
 				//Yet, nothing has been updated
