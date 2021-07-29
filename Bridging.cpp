@@ -62,6 +62,10 @@ void markBrdg(const list<Path>& pths, const bool& sucPths, const uint32_t& maxPt
 void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 	//Length of the path from a core k-mer to the current unitigs beginning
 	uint32_t exstPthLen;
+
+	//Testing
+	// uint32_t counter = 0;
+
 	//Pointer to current unitig's CoreInfo object
 	CoreInfo* cInfo;
 	//List of paths leading to reachable core k-mers on successive unitigs
@@ -77,6 +81,10 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		//Testing
 		// if(!i->referenceUnitigToString().compare("CTGACATCCCGTAAGAGTTGA")){
 		// 	cout << "detectBrdg: We are dealing with the unitig of interest..." << endl;
+		// }
+		// ++counter;
+		// if(counter % 1000 == 0){
+		// 	cerr << "detectBrdg: Processed " << counter << " of " << cdbg.size() << " unitigs" << endl;
 		// }
 
 		// //We are done with this unitig if there is no core k-mer on it and it is already marked as either prefix or suffix bridging
