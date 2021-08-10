@@ -257,7 +257,7 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 		//Iterate over predecessors
 		for(pred = it.begin(); pred != it.end(); ++pred){
 			//Testing
-			// if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
+			// if(!orig.referenceUnitigToString().compare("GCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAAATATGGGGACAATTCGCGCAACCTATCCACATCGGAACCTGTTGCGGGAGCAAAAACCCAGTGTTTTCAACACGCAAGCCTGTGGATAACTTCTGCTCGATGGAGTAAGAATAG")){
 			// 	cout << "doPredBFS: We are dealing with unitig " << queue.top().second.back().referenceUnitigToString() << endl;
 			// }
 
@@ -266,7 +266,7 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 
 			if(coreDist != UINT32_MAX && coreDist > dpth - queue.top().first){	
 				//Testing
-				// if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
+				// if(!orig.referenceUnitigToString().compare("GCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAAATATGGGGACAATTCGCGCAACCTATCCACATCGGAACCTGTTGCGGGAGCAAAAACCCAGTGTTTTCAACACGCAAGCCTGTGGATAACTTCTGCTCGATGGAGTAAGAATAG")){
 				// 	cout << "doPredBFS: Next core is too far" << endl;
 				// }
 
@@ -277,8 +277,9 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 			//Check if there is a core k-mer on this predecessor and if it is close enough
 			if(!pred->getData()->getData(*pred)->coreList.empty() && getCoreDist(pred, false) <= dpth - queue.top().first){	
 				//Testing
-				// if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
+				// if(!orig.referenceUnitigToString().compare("GCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAAATATGGGGACAATTCGCGCAACCTATCCACATCGGAACCTGTTGCGGGAGCAAAAACCCAGTGTTTTCAACACGCAAGCCTGTGGATAACTTCTGCTCGATGGAGTAAGAATAG")){
 				// 	cout << "doPredBFS: We have found a close enough core k-mer" << endl;
+				// 	cout << "doPredBFS: Current predecessor is " << pred->mappedSequenceToString() << endl;
 				// }
 
 				//Add path to results
@@ -294,8 +295,8 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 			//Check if adding all k-mers of predecessive unitig to path does not make it too long
 			if(queue.top().first + pred->len < dpth){
 				//Testing
-				// if(!queue.top().second.back().referenceUnitigToString().compare("GCCAGGAACACCTGACGCCGTACGGATGAGC")){
-				// 	cout << "doPredBFS: We do çontinue with its predecessor" << endl;
+				// if(!orig.referenceUnitigToString().compare("GCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAAATATGGGGACAATTCGCGCAACCTATCCACATCGGAACCTGTTGCGGGAGCAAAAACCCAGTGTTTTCAACACGCAAGCCTGTGGATAACTTCTGCTCGATGGAGTAAGAATAG")){
+				// 	cout << "doPredBFS: We do continue with its predecessor" << endl;
 				// }
 
 				//Get path
@@ -315,6 +316,14 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 
 	//Check if we could find valid paths
 	if(!resPths.empty()){
+		//Testing
+		// if(!orig.referenceUnitigToString().compare("GCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAAATATGGGGACAATTCGCGCAACCTATCCACATCGGAACCTGTTGCGGGAGCAAAAACCCAGTGTTTTCAACACGCAAGCCTGTGGATAACTTCTGCTCGATGGAGTAAGAATAG")){
+		// 	cout << "doPredBFS: pathLen: " << resPths.back().first << " resPths:" << endl;
+		// 	for(list<UnitigColorMap<CoreInfo>>::const_iterator i = resPths.back().second.begin(); i != resPths.back().second.end(); ++i){
+		// 		cout << i->mappedSequenceToString() << endl;
+		// 	}
+		// }
+
 		//Add core k-mer distance for unitigs on result paths
 		addDists(resPths, false);
 		//Report success
