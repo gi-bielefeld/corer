@@ -170,14 +170,14 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 		ForwardCDBG<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> it = queue.top().second.back().getSuccessors();
 
 		//Testing
-		// if(!orig.referenceUnitigToString().compare("CTGACATCCCGTAAGAGTTGA")){
+		// if(!orig.referenceUnitigToString().compare("AGAATTGTTGTGAAACTTAAATAAATAAAAAAGGATGTGGGA")){
 		// 	cout << "doSucBFS: Traversal for interesting unitig" << endl;
 		// 	cout << "doSucBFS: Queue's top is " << queue.top().second.back().mappedSequenceToString() << endl;
 		// 	cout << "doSucBFS: Queue's top does " << (it.hasSuccessors() ? "" : "not ") << "have successors" << endl;
 		// 	cout << "doSucBFS: Successors are:" << endl;
-		// 	// for(suc = it.begin(); suc != it.end(); ++suc){
-		// 	// 	cout << it->mappedSequenceToString() << " coreDist: " << (suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist) << endl;
-		// 	// }
+		// 	for(suc = it.begin(); suc != it.end(); ++suc){
+		// 		cout << suc->mappedSequenceToString() << " coreDist: " << (suc->strand ? suc->getData()->getData(*suc)->sucCoreDist : suc->getData()->getData(*suc)->predCoreDist) << endl;
+		// 	}
 		// }
 
 		//Iterate over successors
@@ -192,6 +192,11 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 
 			//Check if there is a core k-mer on this successor and if it is close enough
 			if(!suc->getData()->getData(*suc)->coreList.empty() && getCoreDist(suc, true) <= dpth - queue.top().first){
+				//Testing
+				// if(!orig.referenceUnitigToString().compare("AGAATTGTTGTGAAACTTAAATAAATAAAAAAGGATGTGGGA")){
+				// 	cout << "doSucBFS: We found a core k-mer on the current successor which is close enough" << endl;
+				// }
+
 				//Add path to results
 				resPths.push_back(queue.top());
 				//Add successor to path

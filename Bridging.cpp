@@ -79,8 +79,10 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		cInfo = i->getData()->getData(*i);
 
 		//Testing
-		// if(!i->referenceUnitigToString().compare("TGCACGGCTCCTCATGAGTCAAGCTCTACCAATTTACAAGCACCCCTACCCGTGGGCGTGATTCATGCACATTTCCACAATTGCCGTGGTGCATAGGCTCGCGAAAATGTACACCGTGCGCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAA")){
+		// if(!i->referenceUnitigToString().compare("AGAATTGTTGTGAAACTTAAATAAATAAAAAAGGATGTGGGA")){
 		// 	cout << "detectBrdg: We are dealing with the unitig of interest..." << endl;
+		// 	cout << "detectBrdg: sufBrdg is " << (cInfo->sufBrdg ? "" : "not ") << "set" << endl;
+		// 	cout << "detectBrdg: lCrTooFar(i->len, cInfo->coreList, dlt): " << (lCrTooFar(i->len, cInfo->coreList, dlt) ? "true" : "false") << endl;
 		// }
 		// ++counter;
 		// if(counter % 1000 == 0){
@@ -100,14 +102,15 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		//Check if last k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the left side (i.e. the distance to the closest core k-mer on this unitig or the unitig's beginning) is not already too large
 		if((cInfo->coreList.empty() || (cInfo->coreList.back().second < i->len - 1 && !cInfo->sufBrdg)) && !lCrTooFar(i->len, cInfo->coreList, dlt)){
 			//Testing
-			// if(!i->referenceUnitigToString().compare("TGCACGGCTCCTCATGAGTCAAGCTCTACCAATTTACAAGCACCCCTACCCGTGGGCGTGATTCATGCACATTTCCACAATTGCCGTGGTGCATAGGCTCGCGAAAATGTACACCGTGCGCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAA")){
+			// if(!i->referenceUnitigToString().compare("AGAATTGTTGTGAAACTTAAATAAATAAAAAAGGATGTGGGA")){
 			// 	cout << "detectBrdg: We try a BFS on successors..." << endl;
+			// 	// exit(0);
 			// }
 
 			//Do BFS on successive unitigs and check if we need to try a BFS on predecessors as well (which is the case only if there is a core k-mer on the current unitig or the BFS on successive unitigs was successful)
 			if(!doSucBFS(*i, (dlt + 1) / 2, sucPaths) && cInfo->coreList.empty()){
 				//Testing
-				// if(!i->referenceUnitigToString().compare("TGCACGGCTCCTCATGAGTCAAGCTCTACCAATTTACAAGCACCCCTACCCGTGGGCGTGATTCATGCACATTTCCACAATTGCCGTGGTGCATAGGCTCGCGAAAATGTACACCGTGCGCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAA")){
+				// if(!i->referenceUnitigToString().compare("AGAATTGTTGTGAAACTTAAATAAATAAAAAAGGATGTGGGA")){
 				// 	cout << "detectBrdg: BFS on successors was not successful" << endl;
 				// }
 
@@ -120,21 +123,21 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		// 	cout << "detectBrdg: We get here" << endl;
 		// }
 
+		//Check if there are no core k-mers on this unitig
+		if(cInfo->coreList.empty()){
+			//The length of the existing path is the minimum length path found during BFS on successive unitigs in addition to all k-mers on the current unitig (except for
+			//the one we start at)
+			exstPthLen = findMinPthLen(sucPaths) + i->len - 1;
+		} else{
+			//A path has to reach the leftmost core k-mer on this unitig only
+			exstPthLen = cInfo->coreList.front().first;
+		}
+
+		//We have to catch this to prevent an overflow
+		if(dlt < exstPthLen) exstPthLen = dlt;
+
 		//Check if first k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the right side (i.e. the distance to the closest core kmer on this unitig or the unitig's end) is not already too large
 		if((cInfo->coreList.empty() || (cInfo->coreList.front().first > 0 && !cInfo->preBrdg)) && !rCrTooFar(i->len, cInfo->coreList, dlt)){
-			//Check if there are no core k-mers on this unitig
-			if(cInfo->coreList.empty()){
-				//The length of the existing path is the minimum length path found during BFS on successive unitigs in addition to all k-mers on the current unitig (except for
-				//the one we start at)
-				exstPthLen = findMinPthLen(sucPaths) + i->len - 1;
-			} else{
-				//A path has to reach the leftmost core k-mer on this unitig only
-				exstPthLen = cInfo->coreList.front().first;
-			}
-
-			//We have to catch this to prevent an overflow
-			if(dlt < exstPthLen) exstPthLen = dlt;
-
 			//Testing
 			// if(!i->referenceUnitigToString().compare("GCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAAATATGGGGACAATTCGCGCAACCTATCCACATCGGAACCTGTTGCGGGAGCAAAAACCCAGTGTTTTCAACACGCAAGCCTGTGGATAACTTCTGCTCGATGGAGTAAGAATAG")){
 			// 	cout << "detectBrdg: We are dealing with unitig " << i->referenceUnitigToString() << endl;
@@ -147,7 +150,11 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 			// }
 
 			//Do BFS on predecessive unitigs and mark all bridging k-mers if necessary
-			if(doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - exstPthLen)), predPaths) || !cInfo->coreList.empty()){
+			doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - exstPthLen)), predPaths);
+		}
+
+			// if(suc || !cInfo->coreList.empty()){
+
 				//Testing
 				// if(!i->referenceUnitigToString().compare("GCTGTGGGCAGATTCGCCGCATTACCCACAAACCCGTTGAAATATGGGGACAATTCGCGCAACCTATCCACATCGGAACCTGTTGCGGGAGCAAAAACCCAGTGTTTTCAACACGCAAGCCTGTGGATAACTTCTGCTCGATGGAGTAAGAATAG")){
 				// 	cout << "detectBrdg: Mark the core" << endl;
@@ -158,19 +165,19 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 				// 	}
 				// }
 
-				if(cInfo->coreList.empty()){
-					//Mark k-mers of successive result paths as bridging
-					markBrdg(sucPaths, true, dlt - findMinPthLen(predPaths) + 1 - i->len);
-					//Mark k-mers of predecessive result paths as bridging
-					markBrdg(predPaths, false, dlt - findMinPthLen(sucPaths) + 1 - i->len);
-				} else{
-					//Mark k-mers of successive result paths as bridging
-					markBrdg(sucPaths, true, dlt - (i->len - cInfo->coreList.back().second) + 1);
-					//Mark k-mers of predecessive result paths as bridging
-					markBrdg(predPaths, false, dlt - cInfo->coreList.front().first);
-				}
-			}
+		if(cInfo->coreList.empty() && !predPaths.empty() && !sucPaths.empty()){
+			//Mark k-mers of successive result paths as bridging
+			markBrdg(sucPaths, true, dlt - findMinPthLen(predPaths) + 1 - i->len);
+			//Mark k-mers of predecessive result paths as bridging
+			markBrdg(predPaths, false, dlt - findMinPthLen(sucPaths) + 1 - i->len);
+		} else if(!cInfo->coreList.empty()){
+			//Mark k-mers of successive result paths as bridging
+			markBrdg(sucPaths, true, dlt - (i->len - cInfo->coreList.back().second) + 1);
+			//Mark k-mers of predecessive result paths as bridging
+			markBrdg(predPaths, false, dlt - cInfo->coreList.front().first);
 		}
+
+			// }
 
 		//Clear path lists
 		sucPaths.clear();
