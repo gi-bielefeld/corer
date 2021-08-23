@@ -5,14 +5,21 @@
 #include <list>
 
 #include "CoreInfo.h"
+#include "TravTrack.h"
 
 #define DEFAULT_DELTA 50
 
 //A path through the graph is a list of unitigs
 using Path = pair<uint32_t, list<UnitigColorMap<CoreInfo>>>;
 
+//A priority queue for TravTrack elements
+using TravTrackQueue = priority_queue<TravTrack, vector<TravTrack>, const bool (*)(const TravTrack&, const TravTrack&)>;
+
 //A compare function to prioritize shortest paths
 inline const bool prioShrtst(const Path& left, const Path& right){ return left.first > right.first; }
+
+//A compare function to prioritize TravTracks belonging to short paths
+inline const bool prioShrtst(const TravTrack& s, const TravTrack& t){ return s.cDist > t.cDist; }
 
 //This function calculates an offset on a unitig depending on the given strand
 inline const uint32_t calcOff(const uint32_t& refOff, const size_t& uLen, const bool& strand){ return (strand ? refOff : uLen - (refOff + 1)); }
@@ -46,5 +53,9 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 
 //This function performs a BFS of the given depths on all predecessors of the given unitig. It returns true if a core k-mer could be reached by any path.
 const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, list<Path>& resPths);
+
+//This function traverses the given graph according to the order dictated by the given priority queue while adding distance information about the closest core k-mers to each
+//processed node. 
+void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue, const uint32_t& dlt);
 
 #endif

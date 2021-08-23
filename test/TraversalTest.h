@@ -36,6 +36,17 @@ class PrioShrtstTest : public ::testing::Test {
 		
 };
 
+class PrioShrtstTest1 : public ::testing::Test {
+
+	protected:
+
+		PrioShrtstTest1(): s(42, Kmer("ACGTACGTA"), true), t(43, Kmer("ACGTACGTC"), false) {}
+
+		//TravTracks to be compared
+		TravTrack s, t;
+		
+};
+
 class GetCoreDistTest : public ::testing::Test {
 
 protected:
@@ -184,6 +195,27 @@ protected:
 	//A list of paths
 	list<Path> res;
 
+};
+
+class AnnotateDistsTest : public ::testing::Test {
+
+protected:
+
+	AnnotateDistsTest(): dlt(42), cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
+		cdbgOpt.k = DEFAULT_TEST_K;
+		cdbgOpt.g = DEFAULT_TEST_G;
+	}
+
+	//Some delta value
+	uint32_t dlt;
+	//Some unitig iterator
+	ColoredCDBG<CoreInfo>::iterator i;
+	//Colored de Bruijn graph build options
+	CCDBG_Build_opt cdbgOpt;
+	//Compacted, colored de Bruijn graph with linked CoreInfo objects
+	ColoredCDBG<CoreInfo> cdbg;
+	//A TravTrack queue to process
+	TravTrackQueue queue;
 };
 
 #endif

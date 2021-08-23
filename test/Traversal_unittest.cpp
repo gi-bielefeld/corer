@@ -19,6 +19,20 @@ TEST_F(PrioShrtstTest, FstLng){ EXPECT_TRUE(prioShrtst(p, q)); }
 //	2. The second path is longer than the first
 TEST_F(PrioShrtstTest, SndLng){ EXPECT_FALSE(prioShrtst(q, p)); }
 
+//Tests for function const bool prioShrtst(const TravTrack&, const TravTrack&)//
+//	1. The first TravTrack does (not) belong to a longer path than the second one DONE
+//	2. The second TravTrack does (not) belong to a longer path than the first one DONE
+
+//Tests the function prioShrtst under the following conditions
+//	1. The first TravTrack does belong to a longer path than the second one
+//	2. The second TravTrack does not belong to a longer path than the first one
+TEST_F(PrioShrtstTest1, FstLng){ EXPECT_TRUE(prioShrtst(t, s)); }
+
+//Tests the function prioShrtst under the following conditions
+//	1. The first TravTrack does not belong to a longer path than the second one
+//	2. The second TravTrack does belong to a longer path than the first one
+TEST_F(PrioShrtstTest1, SndLng){ EXPECT_FALSE(prioShrtst(s, t)); }
+
 //Tests for function const uint32_t getCoreDist(const neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false>&, const bool&)//
 //	1. The function is (not) called in the context of a successive traversal DONE
 //	2. The function is called for a unitig's reference/reverse complementary strand DONE
@@ -1176,4 +1190,263 @@ TEST_F(DoPredBFStest, FltdRev){
 
 	EXPECT_FALSE(doPredBFS(*i, 3, res));
 	EXPECT_TRUE(res.empty());
+}
+
+//Tests for function void annotateDists(ColoredCDBG<CoreInfo>&, TravTrackQueue&)//
+//	1. The queue is (not) empty at the beginning DONE
+//	2. A TravTrack in the queue tracks a traversal on successors/predecessors DONE
+//	3. We encounter a successor on which we are on the reference strand and that has already/not yet been processed DONE
+//	4. We encounter a successor on which we are on the reverse complementary strand and that has already/not yet been processed DONE
+//	5. We processed a successor and did (not) annotate it DONE
+//	6. We annotated a successor on which a/no core k-mer lies DONE
+//	7. We encounter a predecessor on which we are on the reference strand and that has already/not yet been processed DONE
+//	8. We encounter a predecessor on which we are on the reverse complementary strand and that has already/not yet been processed DONE
+//	9. We processed a predecessor and did (not) annotate it DONE
+//	10. We annotated a predecessor on which a/no core k-mer lies DONE
+//	11. We annotated a successor which has (a/no) further successor(s) DONE
+//	12. We annotated a successor which does (not) make the path too long DONE
+//	13. We annotated a predecessor which has (a/no) further predecessor(s) DONE
+//	14. We annotated a predecessor which does (not) make the path too long DONE
+
+//Tests the function annotateDists under the following conditions
+//	1. The queue is empty at the beginning
+TEST_F(AnnotateDistsTest, EmptQ){
+	cdbgOpt.filename_ref_in.push_back("Test.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	queue = TravTrackQueue(prioShrtst);
+
+	annotateDists(cdbg, queue, dlt);
+
+	for(i = cdbg.begin(); i != cdbg.end(); ++i){
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+		EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	}
+}
+
+//Tests the function annotateDists under the following conditions
+//	1. The queue is not empty at the beginning
+//	2. A TravTrack in the queue tracks a traversal on successors/predecessors
+//	3. We encounter a successor on which we are on the reference strand and that has not yet been processed
+//	5. We processed a successor and did annotate it
+//	6. We annotated a successor on which a/no core k-mer lies
+//	7. We encounter a predecessor on which we are on the reference strand and that has not yet been processed
+//	9. We processed a predecessor and did annotate it
+//	10. We annotated a predecessor on which a/no core k-mer lies
+//	11. We annotated a successor which has (a/no) further successor(s)
+//	12. We annotated a successor which does not make the path too long
+//	13. We annotated a predecessor which has (a/no) further predecessor(s)
+//	14. We annotated a predecessor which does not make the path too long
+TEST_F(AnnotateDistsTest, SucTrav){
+	cdbgOpt.filename_ref_in.push_back("Test.fa");
+	cdbgOpt.filename_ref_in.push_back("Test_color7.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	queue = detectCore(cdbg, 2, dlt);
+
+	annotateDists(cdbg, queue, dlt);
+
+	i = cdbg.begin();
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(4, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(4, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(4, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+}
+
+//Tests the function annotateDists under the following conditions
+//	1. The queue is not empty at the beginning
+//	2. A TravTrack in the queue tracks a traversal on successors/predecessors
+//	3. We encounter a successor on which we are on the reference strand and that has not yet been processed
+//	5. We processed a successor and did annotate it
+//	6. We annotated a successor on which a/no core k-mer lies
+//	7. We encounter a predecessor on which we are on the reference strand and that has already/not yet been processed
+//	9. We processed a predecessor and did (not) annotate it
+//	10. We annotated a predecessor on which a core k-mer lies
+//	11. We annotated a successor which has (a/no) further successor(s)
+//	12. We annotated a successor which does not make the path too long
+//	13. We annotated a predecessor which has (a/no) further predecessor(s)
+//	14. We annotated a predecessor which does not make the path too long
+TEST_F(AnnotateDistsTest, ProcPred){
+	cdbgOpt.filename_ref_in.push_back("Test.fa");
+	cdbgOpt.filename_ref_in.push_back("Test_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	queue = detectCore(cdbg, 2, dlt);
+
+	annotateDists(cdbg, queue, dlt);
+
+	i = cdbg.begin();
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(2, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(2, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+}
+
+//Tests the function annotateDists under the following conditions
+//	1. The queue is not empty at the beginning
+//	2. A TravTrack in the queue tracks a traversal on successors
+//	4. We encounter a successor on which we are on the reverse complementary strand and that has already/not yet been processed
+//	5. We processed a successor and did (not) annotate it
+//	6. We annotated a successor on which no core k-mer lies
+//	11. We annotated a successor which has no further successors
+//	12. We annotated a successor which does not make the path too long
+TEST_F(AnnotateDistsTest, ProcSuc){
+	cdbgOpt.filename_ref_in.push_back("Test8.fa");
+	cdbgOpt.filename_ref_in.push_back("Test8_color1.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	queue = detectCore(cdbg, 2, dlt);
+
+	annotateDists(cdbg, queue, dlt);
+
+	i = cdbg.begin();
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
+}
+
+//Tests the function annotateDists under the following conditions
+//	1. The queue is not empty at the beginning
+//	2. A TravTrack in the queue tracks a traversal on successors/predecessors
+//	3. We encounter a successor on which we are on the reference strand and that has already/not yet been processed
+//	5. We processed a successor and did (not) annotate it
+//	6. We annotated a successor on which a/no core k-mer lies
+//	7. We encounter a predecessor on which we are on the reference strand and that has already/not yet been processed
+//	9. We processed a predecessor and did (not) annotate it
+//	10. We annotated a predecessor on which a/no core k-mer lies
+//	11. We annotated a successor which has (a) further successor(s)
+//	12. We annotated a successor which does not make the path too long
+//	13. We annotated a predecessor which has (a) further predecessor(s)
+//	14. We annotated a predecessor which does not make the path too long
+TEST_F(AnnotateDistsTest, ProcRef){
+	cdbgOpt.filename_ref_in.push_back("Test15_color1.fa");
+	cdbgOpt.filename_ref_in.push_back("Test15_color11.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	queue = detectCore(cdbg, 2, dlt);
+
+	annotateDists(cdbg, queue, dlt);
+
+	i = cdbg.begin();
+	EXPECT_EQ(3, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(3, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(19, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(19, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(19, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(19, i->getData()->getData(*i)->sucCoreDist);
+}
+
+//Tests the function annotateDists under the following conditions
+//	1. The queue is not empty at the beginning
+//	2. A TravTrack in the queue tracks a traversal on predecessors
+//	7. We encounter a predecessor on which we are on the reference strand and that has not yet been processed
+//	8. We encounter a predecessor on which we are on the reverse complementary strand and that has already/not yet been processed
+//	9. We processed a predecessor and did (not) annotate it
+//	10. We annotated a predecessor on which no core k-mer lies
+//	13. We annotated a predecessor which has (a/no) further predecessor(s)
+//	14. We annotated a predecessor which does not make the path too long
+TEST_F(AnnotateDistsTest, PredRev){
+	cdbgOpt.filename_ref_in.push_back("Test19_color1.fa");
+	cdbgOpt.filename_ref_in.push_back("Test19_color2.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	queue = detectCore(cdbg, 2, dlt);
+
+	annotateDists(cdbg, queue, dlt);
+
+	i = cdbg.begin();
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(2, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(2, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+}
+
+//Tests the function annotateDists under the following conditions
+//	1. The queue is not empty at the beginning
+//	2. A TravTrack in the queue tracks a traversal on successors/predecessors
+//	3. We encounter a successor on which we are on the reference strand and that has not yet been processed
+//	5. We processed a successor and did annotate it
+//	6. We annotated a successor on which no core k-mer lies
+//	7. We encounter a predecessor on which we are on the reference strand and that has not yet been processed
+//	9. We processed a predecessor and did annotate it
+//	10. We annotated a predecessor on which no core k-mer lies
+//	11. We annotated a successor which has (a/no) further successor(s)
+//	12. We annotated a successor which does make the path too long
+//	13. We annotated a predecessor which has a further predecessor
+//	14. We annotated a predecessor which does make the path too long
+TEST_F(AnnotateDistsTest, LngPth){
+	cdbgOpt.filename_ref_in.push_back("Test.fa");
+	cdbgOpt.filename_ref_in.push_back("Test_color7.fa");
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+	dlt = 3;
+	queue = detectCore(cdbg, 2, dlt);
+
+	annotateDists(cdbg, queue, dlt);
+
+	i = cdbg.begin();
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(1, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(1, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
+	++i;
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
+	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 }

@@ -449,3 +449,427 @@ TEST_F(MarkCoreTest, TwoInts){
 	++i;
 	EXPECT_EQ(i, cdbg.end());
 }
+
+//Tests for function TravTrackQueue detectCore(ColoredCDBG<CoreInfo>&, const uint32_t&, const uint32_t&)//
+//	1. The quorum is (not) fulfilled for a k-mer DONE
+//	2. A new interval has (not) to be started DONE
+//	3. The bridging path's length has (not) to be reseted DONE
+//	4. Delta is (not) exceeded DONE
+//	5. No/An interval has been found DONE
+//	6. A unitig has (a/no) successor(s) DONE
+//	7. A unitig has (a/no) predecessor(s) DONE
+
+//Tests the function detectCore under the following conditions
+//	1. The quorum is (not) fulfilled for a k-mer
+//	2. A new interval has to be started
+//	3. The bridging path's length has (not) to be reseted
+//	4. Delta is not exceeded
+//	5. No/An interval has been found
+//	6. A unitig has (a/no) successor(s)
+//	7. A unitig has (a/no) predecessor(s)
+TEST_F(DetectCoreTest, twoClrs){
+	cdbgOpt.filename_seq_in.push_back("Test_color1.fa");
+
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+
+	qrm = 2;
+
+	queue = detectCore(cdbg, qrm, dlt);
+
+	i = cdbg.begin();
+
+	EXPECT_EQ("AAGGCAAACAC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(1, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(1, (*col).first);
+	EXPECT_EQ(1, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(1, inter->first);
+	EXPECT_EQ(1, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("AAGGCAAAGAC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(1, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(1, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(0, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("AAAGGCAAA", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(1, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(0, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("GCAAACACA", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(1, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(0, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("GCAAACACC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_EQ(i, cdbg.end());
+	ASSERT_EQ(queue.size(), 5);
+
+	for(c = 3; c > 0; --c){
+		EXPECT_EQ(1, queue.top().cDist);
+
+		//Element (1, Kmer("GGCAAAGAC"), false)
+		if(!queue.top().track.toString().compare("GGCAAAGAC")){
+			EXPECT_FALSE(queue.top().isSucTrav);
+			EXPECT_FALSE(u2SeenPred);
+			u2SeenPred = true;
+		//Element (1, Kmer("AAAGGCAAA"), true)
+		} else if(!queue.top().track.toString().compare("AAAGGCAAA") && queue.top().isSucTrav){
+			if(!u3SeenSuc){
+				u3SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u3SeenSuc);
+			}
+		//Element (1, Kmer("GCAAACACA"), false)
+		} else if(!queue.top().track.toString().compare("GCAAACACA") && !queue.top().isSucTrav){
+			if(!u4SeenPred){
+				u4SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u4SeenPred);
+			}
+		} else{
+			//This should not happen...
+			EXPECT_EQ("", queue.top().track.toString());
+		}
+
+		queue.pop();
+	}
+
+	for(c = 2; c > 0; --c){
+		EXPECT_EQ(2, queue.top().cDist);
+		EXPECT_EQ("GGCAAACAC", queue.top().track.toString());
+
+		if(queue.top().isSucTrav){
+			//Element (2, Kmer("GGCAAACAC"), true)
+			EXPECT_FALSE(u1SeenSuc);
+			u1SeenSuc = true;
+		} else{
+			//Element (2, Kmer("GGCAAACAC"), false)
+			EXPECT_FALSE(u1SeenPred);
+			u1SeenPred = true;
+		}
+
+		queue.pop();
+	}
+}
+
+//Tests the function detectCore under the following conditions
+//	1. The quorum is fulfilled for a k-mer
+//	2. A new interval has (not) to be started
+//	3. The bridging path's length has not to be reseted
+//	5. An interval has been found
+//	6. A unitig has (a/no) successor(s)
+//	7. A unitig has (a/no) predecessor(s)
+TEST_F(DetectCoreTest, snglClr){
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+
+	queue = detectCore(cdbg, qrm, dlt);
+
+	i = cdbg.begin();
+
+	EXPECT_EQ("AAGGCAAACAC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(1, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(2, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("AAGGCAAAGAC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(1, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(2, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("AAAGGCAAA", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(0, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("GCAAACACA", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(0, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("GCAAACACC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(0, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ(i, cdbg.end());
+	ASSERT_EQ(queue.size(), 6);
+
+	for(c = 6; c > 0; --c){
+		EXPECT_EQ(1, queue.top().cDist);
+
+		//Element (1, Kmer("GGCAAACAC"), true)
+		if(!queue.top().track.toString().compare("GGCAAACAC") && queue.top().isSucTrav){
+			if(!u1SeenSuc){
+				u1SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u1SeenSuc);
+			}
+		//Element (1, Kmer("GGCAAACAC"), false)
+		} else if(!queue.top().track.toString().compare("GGCAAACAC") && !queue.top().isSucTrav){
+			if(!u1SeenPred){
+				u1SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u1SeenPred);
+			}
+		//Element (1, Kmer("GGCAAAGAC"), false)
+		} else if(!queue.top().track.toString().compare("GGCAAAGAC") && !queue.top().isSucTrav){
+			if(!u2SeenPred){
+				u2SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u2SeenPred);
+			}
+		//Element (1, Kmer("AAAGGCAAA"), true)
+		} else if(!queue.top().track.toString().compare("AAAGGCAAA") && queue.top().isSucTrav){
+			if(!u3SeenSuc){
+				u3SeenSuc = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u3SeenSuc);
+			}
+		//Element (1, Kmer("GCAAACACA"), false)
+		} else if(!queue.top().track.toString().compare("GCAAACACA") && !queue.top().isSucTrav){
+			if(!u4SeenPred){
+				u4SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u4SeenPred);
+			}
+		//Element (1, Kmer("GCAAACACC"), false)
+		} else if(!queue.top().track.toString().compare("GCAAACACC") && !queue.top().isSucTrav){
+			if(!u5SeenPred){
+				u5SeenPred = true;
+			} else{
+				//This should not happen...
+				EXPECT_FALSE(u5SeenPred);
+			}
+		} else{
+			//This should not happen...
+			EXPECT_EQ("", queue.top().track.toString());
+		}
+
+		queue.pop();
+	}
+}
+
+//Tests the function detectCore under the following conditions
+//	1. The quorum is (not) fulfilled for a k-mer
+//	2. A new interval has to be started
+//	3. The bridging path's length has not to be reseted
+//	4. Delta is exceeded
+//	5. No/An interval has been found
+//	6. A unitig has (a) successor(s)
+//	7. A unitig has (a) predecessor(s)
+TEST_F(DetectCoreTest, TwoInts){
+	cdbgOpt.filename_seq_in.push_back("Test_color8.fa");
+
+	cdbg.build(cdbgOpt);
+	cdbg.simplify(cdbgOpt.deleteIsolated, cdbgOpt.clipTips, cdbgOpt.verbose);
+	cdbg.buildColors(cdbgOpt);
+
+	qrm = 2;
+
+	queue = detectCore(cdbg, qrm, dlt);
+
+	i = cdbg.begin();
+
+	EXPECT_EQ("AAGGCAAACAC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(1, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(1, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(1, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	inter = i->getData()->getData(*i)->coreList.begin();
+	EXPECT_EQ(0, inter->first);
+	EXPECT_EQ(0, inter->second);
+	++inter;
+	EXPECT_EQ(2, inter->first);
+	EXPECT_EQ(2, inter->second);
+	++inter;
+	EXPECT_EQ(inter, i->getData()->getData(*i)->coreList.end());
+	++i;
+	EXPECT_EQ("AAGGCAAAGAC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(1, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(2, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_EQ("AAAGGCAAA", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_EQ("GCAAACACA", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_EQ("GCAAACACC", i->mappedSequenceToString());
+	col = i->getData()->getUnitigColors(*i)->begin(*i);
+	EXPECT_EQ(0, (*col).first);
+	EXPECT_EQ(0, (*col).second);
+	++col;
+	EXPECT_EQ(col, i->getData()->getUnitigColors(*i)->end());
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_EQ(i, cdbg.end());
+	ASSERT_EQ(queue.size(), 2);
+	//1. Element (1, Kmer("GGCAAACAC"), true)
+	EXPECT_EQ(1, queue.top().cDist);
+	EXPECT_EQ("GGCAAACAC", queue.top().track.toString());
+	EXPECT_TRUE(queue.top().isSucTrav);
+	queue.pop();
+	//2. Element (1, Kmer("GGCAAACAC"), false)
+	EXPECT_EQ(1, queue.top().cDist);
+	EXPECT_EQ("GGCAAACAC", queue.top().track.toString());
+	EXPECT_FALSE(queue.top().isSucTrav);
+	queue.pop();
+}
