@@ -27,11 +27,13 @@ class MarkBrdgTest : public ::testing::Test {
 
 	protected:
 
-		MarkBrdgTest(): cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
+		MarkBrdgTest(): dlt(42), cdbg(DEFAULT_TEST_K, DEFAULT_TEST_G) {
 			cdbgOpt.k = DEFAULT_TEST_K;
 			cdbgOpt.g = DEFAULT_TEST_G;
 		}
 
+		//The maximum path length
+		uint32_t dlt;
 		//Some unitig iterator
 		ColoredCDBG<CoreInfo>::iterator i;
 		//Colored de Bruijn graph build options

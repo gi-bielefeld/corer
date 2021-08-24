@@ -83,7 +83,7 @@ TEST_F(CrTooFarTest, NKmer){
 	EXPECT_FALSE(rCrTooFar(len, ints, d));
 }
 
-//Tests for function void markBrdg(const list<Path>&, const bool&)//
+//Tests for function void void markBrdg(const list<Path>&, const bool&, const uint32_t&)//
 //	1. Our list of paths is (not) empty DONE
 //	2. Our list consists of one/many path(s) DONE
 //	3. We are (not) dealing with a list of successive paths DONE
@@ -94,7 +94,7 @@ TEST_F(CrTooFarTest, NKmer){
 //	1. Our list of paths is empty
 //	3. We are dealing with a list of successive paths
 TEST_F(MarkBrdgTest, NoPths){
-	markBrdg(l, true);
+	markBrdg(l, true, dlt);
 	EXPECT_TRUE(l.empty());
 }
 
@@ -121,7 +121,7 @@ TEST_F(MarkBrdgTest, SnglPth){
 	i->getData()->getData(*i)->coreList.push_back(pair<uint32_t, uint32_t>(0,0));
 	l.front().second.push_front(*i);
 
-	markBrdg(l, false);
+	markBrdg(l, false, dlt);
 	EXPECT_EQ(1, l.size());
 	list<UnitigColorMap<CoreInfo>>::const_iterator u = l.front().second.begin();
 	EXPECT_TRUE(u->getData()->getData(*u)->preBrdg);
@@ -155,7 +155,7 @@ TEST_F(MarkBrdgTest, MnyPths){
 	l.front().second.push_front(*i);
 	l.back().second.push_front(*i);
 
-	markBrdg(l, true);
+	markBrdg(l, true, dlt);
 	EXPECT_EQ(2, l.size());
 	EXPECT_EQ(2, l.front().second.size());
 	EXPECT_EQ(2, l.back().second.size());
@@ -191,7 +191,7 @@ TEST_F(MarkBrdgTest, SucRev){
 	uni.getData()->getData(uni)->predCoreDist = 1;
 	l.front().second.push_back(uni);
 
-	markBrdg(l, true);
+	markBrdg(l, true, dlt);
 	EXPECT_EQ(1, l.size());
 	EXPECT_EQ(2, l.front().second.size());
 	uni = l.front().second.front();
@@ -222,7 +222,7 @@ TEST_F(MarkBrdgTest, PredRev){
 	uni.getData()->getData(uni)->sucCoreDist = 3;
 	l.front().second.push_back(uni);
 
-	markBrdg(l, false);
+	markBrdg(l, false, dlt);
 	EXPECT_EQ(1, l.size());
 	EXPECT_EQ(2, l.front().second.size());
 	uni = l.front().second.front();
