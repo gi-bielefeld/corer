@@ -1,0 +1,18 @@
+# PLEASE ADJUST THE FOLLOWING PARAMETERS --------------------------------------
+
+#Program binaries that shall be used
+corer_bin_dir: ".."
+panaroo_bin: "path/to/panaroo/bin"
+sibeliaz_bin: "path/to/sibeliaz/bin"
+
+#------------------------------------------------------------------------------
+
+
+# DO NOT ADJUST THE FOLLOWING PARAMETERS (unless you know what you are doing) -
+
+#Deltas to use
+dlts: [20, 40, 60, 80]
+#Bifrost graph file suffixes
+gFileSuffixes: ["gfa", "bfg_colors"]
+#Spezies to analyze
+species: ["bifidobacteriumAnimalis", "enterococcusFaecium", "yersiniaPestis", "listeriaMonocytogenes"]

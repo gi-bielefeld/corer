@@ -1,0 +1,73 @@
+configfile: 'config.yaml'
+
+from glob import glob
+from os.path import basename
+
+def getGffFiles(sp):
+	return ["%s/annotations/%s.gff" %(sp, basename(g).split('.')[0]) for g in glob("%s/genomeSequences/*.fasta" %sp)]
+
+def getAssemblies(wcs):
+	return ["%s/genomeSequences/%s" %(wcs.spec, basename(g)) for g in glob("%s/genomeSequences/*.fasta" %wcs.spec)]
+
+rule all:
+	input:
+		expand("bifidobacteriumAnimalis/graphs/assemblyGraph_k17_Core_m18_d{d}.{gFSuf}", d=config['dlts'], gFSuf=config['gFileSuffixes']),
+		expand("bifidobacteriumAnimalis/benchmarks/benchmark_assemblyGraph_k17_Core_m18_d{d}.txt", d=config['dlts']),
+		expand("enterococcusFaecium/graphs/assemblyGraph_k17_Core_m146_d{d}.{gFSuf}", d=config['dlts'], gFSuf=config['gFileSuffixes']),
+		expand("enterococcusFaecium/benchmarks/benchmark_assemblyGraph_k17_Core_m146_d{d}.txt", d=config['dlts']),
+		expand("yersiniaPestis/graphs/assemblyGraph_k17_Core_m46_d{d}.{gFSuf}", d=config['dlts'], gFSuf=config['gFileSuffixes']),
+		expand("yersiniaPestis/benchmarks/benchmark_assemblyGraph_k17_Core_m46_d{d}.txt", d=config['dlts']),
+		expand("listeriaMonocytogenes/graphs/assemblyGraph_k17_Core_m250_d{d}.{gFSuf}", d=config['dlts'], gFSuf=config['gFileSuffixes']),
+		expand("listeriaMonocytogenes/benchmarks/benchmark_assemblyGraph_k17_Core_m250_d{d}.txt", d=config['dlts'] + [100, 120, 140, 160, \
+			180, 200, 220, 240]),
+		expand("{s}/panarooRes/gene_presence_absence.csv", s=config['species']),
+		expand("{s}/panarooRes/benchmark.txt", s=config['species']),
+		expand("{s}/sibeliaz/blocks_coords.gff", s=config['species']),
+		expand("{s}/sibeliaz/benchmark.txt", s=config['species'])
+
+rule calculateCore:
+	input:
+		expand("{sp}/graphs/{t}Graph_k{k}.{suf}", sp='{sp}', t='{gtype}', k='{k}', suf=config['gFileSuffixes'])
+	params:
+		qrm = "{qrm}",
+		dlt = "{dlt}"
+	output:
+		grph = expand("{sp}/graphs/{t}Graph_k{k}_Core_m{qrm}_d{dlt}.{gFSuf}", sp='{sp}', t='{gtype}', k='{k}', qrm='{qrm}', dlt='{dlt}', \
+			gFSuf=config['gFileSuffixes']),
+		bnchmrk = "{sp}/benchmarks/benchmark_{gtype}Graph_k{k}_Core_m{qrm}_d{dlt}.txt"
+	shell:
+		"mkdir -p {wildcards.sp}/benchmarks;" +
+		" /usr/bin/time -v %s/Corer -q {params.qrm} -d {params.dlt} -i $(echo {input} | cut -d'.' -f1) " %config['corer_bin_dir'] +
+		"-o $(echo {output.grph} | cut -d'.' -f1) 2> {output.bnchmrk}"
+
+rule runPanaroo:
+	input:
+		getGffFiles
+	output:
+		"{spec}/panarooRes/combined_DNA_CDS.fasta",
+		"{spec}/panarooRes/combined_protein_cdhit_out.txt",
+		"{spec}/panarooRes/combined_protein_cdhit_out.txt.clstr",
+		"{spec}/panarooRes/combined_protein_CDS.fasta",
+		"{spec}/panarooRes/final_graph.gml",
+		"{spec}/panarooRes/gene_data.csv",
+		"{spec}/panarooRes/gene_presence_absence.csv",
+		"{spec}/panarooRes/gene_presence_absence_roary.csv",
+		"{spec}/panarooRes/gene_presence_absence.Rtab",
+		"{spec}/panarooRes/pan_genome_reference.fa",
+		"{spec}/panarooRes/pre_filt_graph.gml",
+		"{spec}/panarooRes/struct_presence_absence.Rtab",
+		"{spec}/panarooRes/summary_statistics.txt",
+		"{spec}/panarooRes/benchmark.txt",
+	shell:
+		"mkdir -p {wildcards.spec}/panarooRes; /usr/bin/time -v %s/panaroo -i {input} -o " %config['panaroo_bin'] + \
+		"{wildcards.spec}/panarooRes --clean-mode strict 2> {wildcards.spec}/panarooRes/benchmark.txt"
+
+rule runSibeliaZ:
+	input:
+		getAssemblies
+	output:
+		res = "{spec}/sibeliaz/blocks_coords.gff",
+		benchmark = "{spec}/sibeliaz/benchmark.txt"
+	shell:
+		"mkdir -p {wildcards.spec}/sibeliaz; /usr/bin/time -v %s/sibeliaz -n -o {wildcards.spec}/sibeliaz " %config['sibeliaz_bin'] + \
+		"{input} 2> {output.benchmark}"
