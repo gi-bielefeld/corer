@@ -20,6 +20,12 @@ rule all:
 		expand("listeriaMonocytogenes/graphs/assemblyGraph_k17_Core_m250_d{d}.{gFSuf}", d=config['dlts'], gFSuf=config['gFileSuffixes']),
 		expand("listeriaMonocytogenes/benchmarks/benchmark_assemblyGraph_k17_Core_m250_d{d}.txt", d=config['dlts'] + [100, 120, 140, 160, \
 			180, 200, 220, 240]),
+		expand("arabidopsis/graphs/assemblyGraph_k21_Core_m18_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
+		"arabidopsis/benchmarks/benchmark_assemblyGraph_k21_Core_m18_d60.txt",
+		expand("arabidopsis/graphs/assemblyGraph_k21_wotSf_Core_m17_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
+		"arabidopsis/benchmarks/benchmark_assemblyGraph_k21_wotSf_Core_m17_d60.txt",
+		expand("arabidopsis/graphs/readGraph_k21_Core_m17_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
+		"arabidopsis/benchmarks/benchmark_readGraph_k21_Core_m17_d60.txt",
 		expand("{s}/panarooRes/gene_presence_absence.csv", s=config['species']),
 		expand("{s}/panarooRes/benchmark.txt", s=config['species']),
 		expand("{s}/sibeliaz/blocks_coords.gff", s=config['species']),

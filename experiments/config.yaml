@@ -15,4 +15,4 @@ dlts: [20, 40, 60, 80]
 #Bifrost graph file suffixes
 gFileSuffixes: ["gfa", "bfg_colors"]
 #Spezies to analyze
-species: ["bifidobacteriumAnimalis", "enterococcusFaecium", "yersiniaPestis", "listeriaMonocytogenes"]
+species: ["bifidobacteriumAnimalis", "enterococcusFaecium", "yersiniaPestis", "listeriaMonocytogenes", "arabidopsis"]
