@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "BridgingTest.h"
-#include "../Bridging.cpp"
+#include "../src/Bridging.cpp"
 
 //Tests for function const bool lCrTooFar(const size_t&, const list<pair<uint32_t, uint32_t>>&, const uint32_t&)//
 //	1. The core list is empty and the unitig is (not) too long DONE

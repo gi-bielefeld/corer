@@ -7,7 +7,18 @@ def getGffFiles(sp):
 	return ["%s/annotations/%s.gff" %(sp, basename(g).split('.')[0]) for g in glob("%s/genomeSequences/*.fasta" %sp)]
 
 def getAssemblies(wcs):
-	return ["%s/genomeSequences/%s" %(wcs.spec, basename(g)) for g in glob("%s/genomeSequences/*.fasta" %wcs.spec)]
+	gList = ["%s/genomeSequences/%s" %(wcs.spec, basename(g)) for g in glob("%s/genomeSequences/*.fas*" %wcs.spec)]
+
+	if wcs.gtype.find("wotSf") > -1:
+		gList.remove("arabidopsis/genomeSequences/sf_2.v7.PR_in_lowercase.fas")
+
+	return gList
+
+def listGenomes(sp):
+	return ["%s/genomeSequences/%s.fasta" %(sp, a.strip()) for a in open("%s/genomeSequences/accessions.txt" %sp, 'r')]
+
+def getReadSets(acc):
+	return ["arabidopsis/reads/" + basename(f) for l in open("arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt", 'r') if l.find(acc.capitalize()) > -1 for f in l.split('\t')[6].split(';')]
 
 rule all:
 	input:
@@ -22,8 +33,8 @@ rule all:
 			180, 200, 220, 240]),
 		expand("arabidopsis/graphs/assemblyGraph_k21_Core_m18_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
 		"arabidopsis/benchmarks/benchmark_assemblyGraph_k21_Core_m18_d60.txt",
-		expand("arabidopsis/graphs/assemblyGraph_k21_wotSf_Core_m17_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
-		"arabidopsis/benchmarks/benchmark_assemblyGraph_k21_wotSf_Core_m17_d60.txt",
+		expand("arabidopsis/graphs/assemblyGraph_wotSf_k21_Core_m17_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
+		"arabidopsis/benchmarks/benchmark_assemblyGraph_wotSf_k21_Core_m17_d60.txt",
 		expand("arabidopsis/graphs/readGraph_k21_Core_m17_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
 		"arabidopsis/benchmarks/benchmark_readGraph_k21_Core_m17_d60.txt",
 		expand("{s}/panarooRes/gene_presence_absence.csv", s=config['species']),
@@ -45,6 +56,84 @@ rule calculateCore:
 		"mkdir -p {wildcards.sp}/benchmarks;" +
 		" /usr/bin/time -v %s/Corer -q {params.qrm} -d {params.dlt} -i $(echo {input} | cut -d'.' -f1) " %config['corer_bin_dir'] +
 		"-o $(echo {output.grph} | cut -d'.' -f1) 2> {output.bnchmrk}"
+
+rule buildPangenomeGraph:
+	input:
+		"{sp}/{gtype}List.txt"
+	threads:
+		8
+	output:
+		expand("{sp}/{g}_k{k}_s11.{gFSuf}", sp='{sp}', g='{gtype}', k='{k}', gFSuf=G_SUFS)
+	shell:
+		"mkdir -p {wildcards.sp}/graphs; Bifrost build -r {input.lst} -o $(echo {output} | cut -d'.' -f1) -t {threads} -v -c -k {wildcards.k}"
+
+rule createReadGraphList:
+	input:
+		["arabidopsis/reads/%s.fasta" %basename(l).split('_')[0] for l in open("arabidopsis/genomeSequences/links.txt", 'r') if l.find("sf") < 0]
+	output:
+		"arabidopsis/readGraphList.txt"
+	shell:
+		"ls -l {input} | tr -s ' ' | cut -d' ' -f9 > {output}"
+
+rule extractGraphSeqs:
+	input:
+		"arabidopsis/graphs/readGraph_{acc}_k21.gfa"
+	output:
+		"arabidopsis/reads/{acc}.fasta"
+	shell:
+		"python3 scripts/extractGFAseqs.py {input} > {output}"
+
+rule buildGenomeGraph:
+	input:
+		"arabidopsis/{acc}List.txt"
+	threads:
+		8
+	output:
+		"arabidopsis/graphs/readGraph_{acc}_k21.gfa"
+	shell:
+		"mkdir -p arabidopsis/graphs; Bifrost build -s {input} -o $(echo {output} | cut -d'.' -f1) -t {threads} -v -k 21"
+
+rule createReadList:
+	input:
+		getReadSets
+	output:
+		"arabidopsis/{acc}List.txt"
+	shell:
+		"ls -l {input} | tr -s ' ' | cut -d' ' -f9 > {output}"
+
+rule downloadReadSets:
+	input:
+		"arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt"
+	output:
+		["arabidopsis/reads/" + basename(f) for l in open("arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt", 'r') for f in l.split('\t')[6].split(';')]
+	shell:
+		"wget {input}; mv *.fastq.gz arabidopsis/reads"
+
+rule createAssemblyList:
+	input:
+		getAssemblies
+	output:
+		temp("{sp}/{gtype}List.txt")
+	wildcard_constraints:
+		gtype="[a]+"
+	shell:
+		"ls -l {input} | tr -s ' ' | cut -d' ' -f9 > {output}"
+
+rule getNCBI_Genomes:
+	input:
+		"{sp}/genomeSequences/accessions.txt"
+	output:
+		listNCBI_Genomes
+	shell:
+		"python3 script/get_fastas_for_acc_list.py {input}"
+
+rule: getArabidopsisGenomes:
+	input:
+		"arabidopsis/genomeSequences/links.txt"
+	output:
+		expand("arabidopsis/genomeSequences/{g}", g=[u.split('/')[-1].strip() for u in open("arabidopsis/genomeSequences/links.txt", 'r')])
+	shell:
+		"for u in $(cat {input}); do wget $u; done; mv *.fas arabidopsis/genomeSequences"
 
 rule runPanaroo:
 	input:

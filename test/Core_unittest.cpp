@@ -2,7 +2,7 @@
 #include <bifrost/CompactedDBG.hpp>
 #include <bifrost/ColoredCDBG.hpp>
 
-#include "../Core.cpp"
+#include "../src/Core.cpp"
 #include "CoreTest.h"
 
 //Tests for function const bool chkQrm(UnitigColorMap<CoreInfo>&, const uint32_t&)//
