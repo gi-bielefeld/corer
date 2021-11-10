@@ -63,7 +63,7 @@ rule buildPangenomeGraph:
 	threads:
 		8
 	output:
-		expand("{sp}/{g}_k{k}_s11.{gFSuf}", sp='{sp}', g='{gtype}', k='{k}', gFSuf=G_SUFS)
+		expand("{sp}/{g}_k{k}_s11.{gFSuf}", sp='{sp}', g='{gtype}', k='{k}', gFSuf=config['gFileSuffixes'])
 	shell:
 		"mkdir -p {wildcards.sp}/graphs; Bifrost build -r {input.lst} -o $(echo {output} | cut -d'.' -f1) -t {threads} -v -c -k {wildcards.k}"
 
