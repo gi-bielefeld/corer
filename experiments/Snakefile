@@ -127,7 +127,7 @@ rule getNCBI_Genomes:
 	shell:
 		"python3 script/get_fastas_for_acc_list.py {input}"
 
-rule: getArabidopsisGenomes:
+rule getArabidopsisGenomes:
 	input:
 		"arabidopsis/genomeSequences/links.txt"
 	output:
