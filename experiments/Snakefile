@@ -168,7 +168,7 @@ rule getNCBI_Genomes:
 	output:
 		"{sp}/genomeSequences/{acc}.fasta"
 	shell:
-		"python3 script/get_fastas_for_acc_list.py {input}"
+		"python3 scripts/get_fastas_for_acc_list.py {input}"
 
 rule getArabidopsisGenomes:
 	input:
