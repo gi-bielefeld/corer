@@ -1,7 +1,7 @@
 #ifndef IO_TEST_HPP
 #define IO_TEST_HPP
 
-#include "../Traversal.h"
+#include "../src/Traversal.h"
 #include "CoreTest.h"
 
 class PrsArgsTest : public ::testing::Test {

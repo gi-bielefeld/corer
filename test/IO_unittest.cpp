@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "../IO.cpp"
+#include "../src/IO.cpp"
 #include "IOtest.h"
-#include "../Bridging.h"
+#include "../src/Bridging.h"
 
 //Tests for function const bool prsArgs(int&, char**, string&, uint32_t&, uint32_t&)//
 //	1. Input graph prefix is (not) given DONE

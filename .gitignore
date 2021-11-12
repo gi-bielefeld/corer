@@ -2,7 +2,6 @@ CopyG.cpp
 Corer
 Corer_expRt
 Corer_polyRt
-makefile
 test/MyTest
 MyTest*
 test/testCoreGraph.*
@@ -11,3 +10,4 @@ bugRep*
 *.txt
 long*
 small*
+test/makefile

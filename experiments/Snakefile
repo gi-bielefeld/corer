@@ -3,11 +3,38 @@ configfile: 'config.yaml'
 from glob import glob
 from os.path import basename
 
+def getAccessionNames(sp):
+	accNames = []
+
+	for l in open(glob("%s/genomeSequences/*.txt" %sp)[0], 'r'):
+		splittedAccName = basename(l.strip()).split('.')
+
+		if len(splittedAccName) > 1:
+			accNames.append('.'.join(splittedAccName[:-1]))
+		else:
+			accNames.append(splittedAccName[0])
+
+	return accNames
+
 def getGffFiles(sp):
-	return ["%s/annotations/%s.gff" %(sp, basename(g).split('.')[0]) for g in glob("%s/genomeSequences/*.fasta" %sp)]
+	return ["%s/annotations/%s.gff" %(sp, a) for a in getAccessionNames(sp)]
 
 def getAssemblies(wcs):
-	return ["%s/genomeSequences/%s" %(wcs.spec, basename(g)) for g in glob("%s/genomeSequences/*.fasta" %wcs.spec)]
+	if wcs.sp == "arabidopsis":
+		gList = ["%s/genomeSequences/%s.fas" %(wcs.sp, a) for a in getAccessionNames(wcs.sp)]
+	else:
+		gList = ["%s/genomeSequences/%s.fasta" %(wcs.sp, a) for a in getAccessionNames(wcs.sp)]
+
+	if wcs.gtype.find("wotSf") > -1:
+		gList.remove("arabidopsis/genomeSequences/sf_2.v7.PR_in_lowercase.fas")
+
+	return gList
+
+def listGenomes(sp):
+	return ["%s/genomeSequences/%s.fasta" %(sp, a.strip()) for a in open("%s/genomeSequences/accessions.txt" %sp, 'r')]
+
+def getReadSets(acc):
+	return ["arabidopsis/reads/" + basename(f) for l in open("arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt", 'r') if l.find(str(acc).capitalize()) > -1 for f in l.split('\t')[6].split(';')]
 
 rule all:
 	input:
@@ -20,25 +47,142 @@ rule all:
 		expand("listeriaMonocytogenes/graphs/assemblyGraph_k17_Core_m250_d{d}.{gFSuf}", d=config['dlts'], gFSuf=config['gFileSuffixes']),
 		expand("listeriaMonocytogenes/benchmarks/benchmark_assemblyGraph_k17_Core_m250_d{d}.txt", d=config['dlts'] + [100, 120, 140, 160, \
 			180, 200, 220, 240]),
-		expand("{s}/panarooRes/gene_presence_absence.csv", s=config['species']),
-		expand("{s}/panarooRes/benchmark.txt", s=config['species']),
-		expand("{s}/sibeliaz/blocks_coords.gff", s=config['species']),
-		expand("{s}/sibeliaz/benchmark.txt", s=config['species'])
+		expand("arabidopsis/graphs/assemblyGraph_k21_Core_m18_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
+		"arabidopsis/benchmarks/benchmark_assemblyGraph_k21_Core_m18_d60.txt",
+		expand("arabidopsis/graphs/assemblyGraphWotSf_k21_Core_m17_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
+		"arabidopsis/benchmarks/benchmark_assemblyGraphWotSf_k21_Core_m17_d60.txt",
+		expand("arabidopsis/graphs/readGraph_k21_Core_m17_d60.{gFSuf}", gFSuf=config['gFileSuffixes']),
+		"arabidopsis/benchmarks/benchmark_readGraph_k21_Core_m17_d60.txt",
+		expand("{s}/panarooRes/gene_presence_absence.csv", s=config['prokaryotes']),
+		expand("{s}/panarooRes/benchmark.txt", s=config['prokaryotes']),
+		expand("{s}/sibeliaz/assemblyGraph/blocks_coords.gff", s=config['prokaryotes'] + config['eukaryotes']),
+		expand("{s}/sibeliaz/assemblyGraph/benchmark.txt", s=config['prokaryotes'] + config['eukaryotes']),
+		"arabidopsis/sibeliaz/assemblyGraphWotSf/blocks_coords.gff",
+		"arabidopsis/sibeliaz/assemblyGraphWotSf/benchmark.txt"
+
+rule annotateGenome:
+	input:
+		"{sp}/genomeSequences/{genomeId}.fasta"
+	output:
+		expand("{sp}/annotations/{genomeId}.{suf}", sp="{sp}", genomeId="{genomeId}", suf=config['prokkaOutputFileSuffixes'])
+	threads:
+		workflow.cores
+	# wildcard_constraints:
+	# 	genomeId="[N,C,L,H,A]+.*"
+	shell:
+		"mkdir -p {wildcards.sp}/annotations; %s/prokka --force --outdir {wildcards.sp}/annotations --prefix {wildcards.genomeId} --cpus {threads} {input}" %config['prokka_bin']
+
+rule annotatePlantGenome:
+	input:
+		"{sp}/genomeSequences/{genomeId}.fas"
+	output:
+		"{sp}/annotations/{genomeId}.gff"
+	wildcard_constraints:
+		genomeId="[a-z]+"
+	shell:
+		"mkdir -p {wildcards.sp}/annotations; %s/augustus --species=arabidopsis {input} > {output}" %config['augustus_bin']
 
 rule calculateCore:
 	input:
-		expand("{sp}/graphs/{t}Graph_k{k}.{suf}", sp='{sp}', t='{gtype}', k='{k}', suf=config['gFileSuffixes'])
+		expand("{sp}/graphs/{t}_k{k}.{suf}", sp='{sp}', t='{gtype}', k='{k}', suf=config['gFileSuffixes'])
 	params:
 		qrm = "{qrm}",
 		dlt = "{dlt}"
 	output:
-		grph = expand("{sp}/graphs/{t}Graph_k{k}_Core_m{qrm}_d{dlt}.{gFSuf}", sp='{sp}', t='{gtype}', k='{k}', qrm='{qrm}', dlt='{dlt}', \
+		grph = expand("{sp}/graphs/{t}_k{k}_Core_m{qrm}_d{dlt}.{gFSuf}", sp='{sp}', t='{gtype}', k='{k}', qrm='{qrm}', dlt='{dlt}', \
 			gFSuf=config['gFileSuffixes']),
-		bnchmrk = "{sp}/benchmarks/benchmark_{gtype}Graph_k{k}_Core_m{qrm}_d{dlt}.txt"
+		bnchmrk = "{sp}/benchmarks/benchmark_{gtype}_k{k}_Core_m{qrm}_d{dlt}.txt"
 	shell:
 		"mkdir -p {wildcards.sp}/benchmarks;" +
 		" /usr/bin/time -v %s/Corer -q {params.qrm} -d {params.dlt} -i $(echo {input} | cut -d'.' -f1) " %config['corer_bin_dir'] +
 		"-o $(echo {output.grph} | cut -d'.' -f1) 2> {output.bnchmrk}"
+
+rule buildPangenomeGraph:
+	input:
+		"{sp}/{gtype}PangenomeList.txt"
+	threads:
+		8
+	output:
+		expand("{sp}/graphs/{g}_k{k}.{gFSuf}", sp='{sp}', g='{gtype}', k='{k}', gFSuf=config['gFileSuffixes'])
+	wildcard_constraints:
+		k = "[0-9]+",
+		gtype = "[a-z,A-Z]+"
+	shell:
+		"mkdir -p {wildcards.sp}/graphs; Bifrost build -r {input} -o $(echo {output} | cut -d'.' -f1) -t {threads} -v -c -k {wildcards.k}"
+
+rule createReadGraphList:
+	input:
+		["arabidopsis/reads/%s.fasta" %basename(l).split('_')[0] for l in open("arabidopsis/genomeSequences/links.txt", 'r') if l.find("sf") < 0]
+	output:
+		"arabidopsis/readGraphPangenomeList.txt"
+	shell:
+		"ls -l {input} | tr -s ' ' | cut -d' ' -f9 > {output}"
+
+rule extractGraphSeqs:
+	input:
+		"arabidopsis/graphs/readGraph_{acc}_k21.gfa"
+	output:
+		"arabidopsis/reads/{acc}.fasta"
+	shell:
+		"python3 scripts/extractGFAseqs.py {input} > {output}"
+
+rule buildGenomeGraph:
+	input:
+		"arabidopsis/{acc}ReadList.txt"
+	threads:
+		8
+	output:
+		"arabidopsis/graphs/readGraph_{acc}_k21.gfa"
+	shell:
+		"mkdir -p arabidopsis/graphs; Bifrost build -s {input} -o $(echo {output} | cut -d'.' -f1) -t {threads} -v -k 21"
+
+rule createReadList:
+	input:
+		getReadSets
+	output:
+		"arabidopsis/{acc}ReadList.txt"
+	shell:
+		"ls -l {input} | tr -s ' ' | cut -d' ' -f9 > {output}"
+
+rule downloadReadSets:
+	input:
+		"arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt"
+	threads:
+		workflow.cores
+	output:
+		["arabidopsis/reads/" + basename(f) for l in open("arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt", 'r') for f in l.split('\t')[6].split(';')]
+	shell:
+		"wget $(python3 scripts/getReadLocations.py {input}); mv *.fastq.gz arabidopsis/reads"
+
+rule createAssemblyList:
+	input:
+		getAssemblies
+	output:
+		temp("{sp}/{gtype}PangenomeList.txt")
+	# wildcard_constraints:
+	# 	gtype="[a-z,A,P,F,M]+"
+	shell:
+		"ls -l {input} | tr -s ' ' | cut -d' ' -f9 > {output}"
+
+rule getNCBI_Genomes:
+	input:
+		"{sp}/genomeSequences/accessions.txt"
+	threads:
+		workflow.cores
+	output:
+		"{sp}/genomeSequences/{acc}.fasta"
+	shell:
+		"python3 scripts/get_fastas_for_acc_list.py {input}"
+
+rule getArabidopsisGenomes:
+	input:
+		"arabidopsis/genomeSequences/links.txt"
+	threads:
+		workflow.cores
+	output:
+		expand("arabidopsis/genomeSequences/{g}", g=[basename(u.strip()) for u in open("arabidopsis/genomeSequences/links.txt", 'r')])
+	shell:
+		"for u in $(cat {input}); do wget $u; done; mv *.fas arabidopsis/genomeSequences"
 
 rule runPanaroo:
 	input:
@@ -66,8 +210,8 @@ rule runSibeliaZ:
 	input:
 		getAssemblies
 	output:
-		res = "{spec}/sibeliaz/blocks_coords.gff",
-		benchmark = "{spec}/sibeliaz/benchmark.txt"
+		res = "{sp}/sibeliaz/{gtype}/blocks_coords.gff",
+		benchmark = "{sp}/sibeliaz/{gtype}/benchmark.txt"
 	shell:
-		"mkdir -p {wildcards.spec}/sibeliaz; /usr/bin/time -v %s/sibeliaz -n -o {wildcards.spec}/sibeliaz " %config['sibeliaz_bin'] + \
+		"mkdir -p {wildcards.sp}/sibeliaz {wildcards.sp}/sibeliaz/{wildcards.gtype}; /usr/bin/time -v %s/sibeliaz -n -o {wildcards.sp}/sibeliaz/{wildcards.gtype} " %config['sibeliaz_bin'] + \
 		"{input} 2> {output.benchmark}"
