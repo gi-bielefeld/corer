@@ -152,7 +152,7 @@ rule downloadReadSets:
 	output:
 		["arabidopsis/reads/" + basename(f) for l in open("arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt", 'r') for f in l.split('\t')[6].split(';')]
 	shell:
-		"wget {input}; mv *.fastq.gz arabidopsis/reads"
+		"wget $(python3 scripts/getReadLocations.py {input}); mv *.fastq.gz arabidopsis/reads"
 
 rule createAssemblyList:
 	input:
