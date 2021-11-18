@@ -28,7 +28,7 @@ A provided evaluation workflow requires [snakemake](https://snakemake.readthedoc
 ## Compilation
 
 ```
-cd <corer_directory>
+cd <corer_directory>/src
 make
 ```
 
@@ -41,7 +41,7 @@ Please note the installation instructions regarding the default maximum *k*-mer 
 E.g., if your Bifrost libraries have been compiled to support a *k*-mer length of up to 63, change Corer's 
 makefile accordingly (add `-DMAX_KMER_SIZE=64` to CFLAGS).
 
-If during the compilation, the bifrost library files are not found, make sure that the corresponding folder is found as include path by the C++ compiler. You may have to add
+If during the compilation, the Bifrost library files are not found, make sure that the corresponding folder is found as include path by the C++ compiler. You may have to add
 `-I/usr/local/include` (with the corresponding folder) to CFLAGS in the makefile.
 
 ## Usage:
@@ -114,14 +114,14 @@ Test data can be downloaded from public databases.
 
 1. **Prokaryotic data sets**
 
-   Four prokaryotic pangenomes may be downloaded from [NCBI](https://www.ncbi.nlm.nih.gov). Accession number can be found in the directory
+   Four prokaryotic pangenomes may be downloaded from [NCBI](https://www.ncbi.nlm.nih.gov). Accession numbers can be found in the directory
    *experiments*.
    
 3. **Arabidopsis pangenome**
 
    Assemblies of 18 accessions of Arabidopsis thaliana can be downloaded [here](http://mtweb.cs.ucl.ac.uk/mus/www/19genomes/fasta/MASKED/).
 
-   Corresponding read data sets for 17 of the above assemblies is available [here](https://www.ebi.ac.uk/ena/browser/view/PRJEB2457?show=reads).
+   Corresponding read data sets for 17 of the above assemblies are available [here](https://www.ebi.ac.uk/ena/browser/view/PRJEB2457?show=reads).
 
 ## Evaluation workflow
 
@@ -132,6 +132,8 @@ For execution of the workflow, proceed as follows:
 
 * Install all programs to be tested on your system.
 
+* Install gene annotation pipelines ([prokka](https://github.com/tseemann/prokka) for prokaryotic and [Augustus](http://bioinf.uni-greifswald.de/augustus/) for eukaryotic data sets).
+
 * Download the testing data.
 
 * Place your testing data into the provided subdirectories and add the locations of program 
@@ -141,9 +143,13 @@ For execution of the workflow, proceed as follows:
   # PLEASE ADJUST THE FOLLOWING PARAMETERS --------------------------------------
 
   #Program binaries that shall be used
-  corer_bin_dir: ".."
+  corer_bin_dir: "../src"
   panaroo_bin: "path/to/panaroo/bin"
   sibeliaz_bin: "path/to/sibeliaz/bin"
+  #Program binaries of gene annotation softwares
+  prokka_bin: "/path/to/prokka/bin"
+  augustus_bin: "/path/to/augustus/bin"
+
 
   #------------------------------------------------------------------------------
   ...
