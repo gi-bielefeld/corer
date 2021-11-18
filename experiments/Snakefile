@@ -159,8 +159,8 @@ rule createAssemblyList:
 		getAssemblies
 	output:
 		temp("{sp}/{gtype}PangenomeList.txt")
-	wildcard_constraints:
-		gtype="[a-z,A,P,F,M]+"
+	# wildcard_constraints:
+	# 	gtype="[a-z,A,P,F,M]+"
 	shell:
 		"ls -l {input} | tr -s ' ' | cut -d' ' -f9 > {output}"
 
