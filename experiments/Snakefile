@@ -144,15 +144,15 @@ rule createReadList:
 	shell:
 		"ls -l {input} | tr -s ' ' | cut -d' ' -f9 > {output}"
 
-rule downloadReadSets:
-	input:
-		"arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt"
-	threads:
-		workflow.cores
-	output:
-		["arabidopsis/reads/" + basename(f) for l in open("arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt", 'r') for f in l.split('\t')[6].split(';') if f != "fastq_ftp"]
-	shell:
-		"wget $(python3 scripts/getReadLocations.py {input}); mv *.fastq.gz arabidopsis/reads"
+# rule downloadReadSets:
+# 	input:
+# 		"arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt"
+# 	threads:
+# 		workflow.cores
+# 	output:
+# 		["arabidopsis/reads/" + basename(f) for l in open("arabidopsis/reads/filereport_read_run_PRJEB2457_tsv.txt", 'r') for f in l.split('\t')[6].split(';') if f != "fastq_ftp"]
+# 	shell:
+# 		"wget $(python3 scripts/getReadLocations.py {input}); mv *.fastq.gz arabidopsis/reads"
 
 rule createAssemblyList:
 	input:
@@ -164,25 +164,25 @@ rule createAssemblyList:
 	shell:
 		"ls -l {input} | tr -s ' ' | cut -d' ' -f9 > {output}"
 
-rule getNCBI_Genomes:
-	input:
-		"{sp}/genomeSequences/accessions.txt"
-	threads:
-		workflow.cores
-	output:
-		"{sp}/genomeSequences/{acc}.fasta"
-	shell:
-		"python3 scripts/get_fastas_for_acc_list.py {input}"
+# rule getNCBI_Genomes:
+# 	input:
+# 		"{sp}/genomeSequences/accessions.txt"
+# 	threads:
+# 		workflow.cores
+# 	output:
+# 		"{sp}/genomeSequences/{acc}.fasta"
+# 	shell:
+# 		"python3 scripts/get_fastas_for_acc_list.py {input}"
 
-rule getArabidopsisGenomes:
-	input:
-		"arabidopsis/genomeSequences/links.txt"
-	threads:
-		workflow.cores
-	output:
-		expand("arabidopsis/genomeSequences/{g}", g=[basename(u.strip()) for u in open("arabidopsis/genomeSequences/links.txt", 'r')])
-	shell:
-		"for u in $(cat {input}); do wget $u; done; mv *.fas arabidopsis/genomeSequences"
+# rule getArabidopsisGenomes:
+# 	input:
+# 		"arabidopsis/genomeSequences/links.txt"
+# 	threads:
+# 		workflow.cores
+# 	output:
+# 		expand("arabidopsis/genomeSequences/{g}", g=[basename(u.strip()) for u in open("arabidopsis/genomeSequences/links.txt", 'r')])
+# 	shell:
+# 		"for u in $(cat {input}); do wget $u; done; mv *.fas arabidopsis/genomeSequences"
 
 rule runPanaroo:
 	input:
