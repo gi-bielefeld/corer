@@ -22,3 +22,7 @@ prokaryotes: ["bifidobacteriumAnimalis", "enterococcusFaecium", "yersiniaPestis"
 eukaryotes: ["arabidopsis"]
 #Output file suffixes of prokka
 prokkaOutputFileSuffixes: ["err", "faa", "ffn", "fna", "fsa", "gbk", "gff", "log", "sqn", "tbl", "tsv", "txt"]
+#Relative core quorum
+relQrm: 0.95
+#Gene coverage threshold
+geneCovThres: 0.5

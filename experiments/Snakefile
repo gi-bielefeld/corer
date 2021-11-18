@@ -16,6 +16,18 @@ def getAccessionNames(sp):
 
 	return accNames
 
+def getBifrostResultFiles(wcs):
+	specs = config['prokaryotes']
+	accs = {s: getAccessionNames(s) for s in specs}
+
+	return ["%s/bifrostRes/qRes_assemblyGraph_k17_Core_m%s_d60_q%s.tsv" %(s, ceil(wcs.relQrm * len(accs[s])), a) for s in specs for a in accs[s]]
+
+def getGeneCovs(wcs):
+	specs = config['prokaryotes'].remove("listeriaMonocytogenes")
+	accs = {s: getAccessionNames(s) for s in specs}
+
+	return ["%s/geneCoverages/coverage_m%s_q%s.txt" %(s, ceil(wcs.relQrm * len(accs[s])), a) for s in specs for a in accs[s]]
+
 def getGffFiles(sp):
 	return ["%s/annotations/%s.gff" %(sp, a) for a in getAccessionNames(sp)]
 
@@ -58,7 +70,21 @@ rule all:
 		expand("{s}/sibeliaz/assemblyGraph/blocks_coords.gff", s=config['prokaryotes'] + config['eukaryotes']),
 		expand("{s}/sibeliaz/assemblyGraph/benchmark.txt", s=config['prokaryotes'] + config['eukaryotes']),
 		"arabidopsis/sibeliaz/assemblyGraphWotSf/blocks_coords.gff",
-		"arabidopsis/sibeliaz/assemblyGraphWotSf/benchmark.txt"
+		"arabidopsis/sibeliaz/assemblyGraphWotSf/benchmark.txt",
+		"tables/toolComparison.tsv"
+
+rule createResultTable:
+	input:
+		bifRes = getBifrostResultFiles,
+		panRes = expand("{s}/panarooRes/gene_presence_absence.csv", s=config['prokaryotes']),
+		covs = getGeneCovs
+	params:
+		relQrm = config['relQrm'],
+		covThres = config['geneCovThres']
+	output:
+		"tables/toolComparison.tsv"
+	shell:
+		"python3 scripts/"
 
 rule annotateGenome:
 	input:
