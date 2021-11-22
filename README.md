@@ -169,7 +169,7 @@ We recommend to have a look at the [FAQs of Bifrost](https://github.com/pmelsted
 
 ## Contact
 
-For any question, feedback or problem, please feel free to file an issue or the developers via email and we will get back to you as soon as possible.
+For any question, feedback or problem, please feel free to file an issue or contact the developers via email and we will get back to you as soon as possible.
 
 ## Licenses
 
