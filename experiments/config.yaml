@@ -1,12 +1,22 @@
 # PLEASE ADJUST THE FOLLOWING PARAMETERS --------------------------------------
 
 #Program binaries that shall be used
-corer_bin_dir: "../src"
+corer_bin: "../src/Corer"
 panaroo_bin: "/path/to/panaroo/bin"
 sibeliaz_bin: "/path/to/sibeliaz/bin"
 #Program binaries of gene annotation softwares
 prokka_bin: "/path/to/prokka/bin"
 augustus_bin: "/path/to/augustus/bin"
+#Bifrost binary that shall be used
+bifrost_bin: "/path/to/bifrost/bin"
+#Blastn binary that shall be used
+blastn_bin: "/path/to/blastn/bin"
+#Makeblastdb binary that shall be used
+makeblastdb_bin: "/path/to/makeblastdb/bin"
+#Path to BUSCO analysis script
+BUSCOscript: "/path/to/BUSCO/script.py"
+#Brassicales BUSCO database directory
+BUSCObrasDB: "/path/to/db/dir"
 
 #------------------------------------------------------------------------------
 
@@ -17,8 +27,16 @@ augustus_bin: "/path/to/augustus/bin"
 dlts: [20, 40, 60, 80]
 #Bifrost graph file suffixes
 gFileSuffixes: ["gfa", "bfg_colors"]
+#Number of cores to be used by Bifrost
+bifrostCores: 8
 #Spezies to analyze
 prokaryotes: ["bifidobacteriumAnimalis", "enterococcusFaecium", "yersiniaPestis", "listeriaMonocytogenes"]
 eukaryotes: ["arabidopsis"]
 #Output file suffixes of prokka
 prokkaOutputFileSuffixes: ["err", "faa", "ffn", "fna", "fsa", "gbk", "gff", "log", "sqn", "tbl", "tsv", "txt"]
+#Relative core quorum
+relQrm: 0.95
+#Gene coverage threshold
+geneCovThres: 0.5
+#File suffixes of BLAST database files
+BLASTdatabaseFileSuffixes: ["nhr", "nin", "nsq"]
