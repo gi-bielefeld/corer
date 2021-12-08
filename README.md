@@ -134,21 +134,33 @@ For execution of the workflow, proceed as follows:
 
 * Install gene annotation pipelines ([prokka](https://github.com/tseemann/prokka) for prokaryotic and [Augustus](http://bioinf.uni-greifswald.de/augustus/) for eukaryotic data sets).
 
+* Install all tools needed for subsequent analyses.
+
 * Download the testing data.
 
 * Place your testing data into the provided subdirectories and add the locations of program 
-  binaries into the configuration file *experiments/config.yaml*:
+  binaries and other dependencies into the configuration file *experiments/config.yaml*:
 
   ```
   # PLEASE ADJUST THE FOLLOWING PARAMETERS --------------------------------------
 
   #Program binaries that shall be used
-  corer_bin_dir: "../src"
-  panaroo_bin: "path/to/panaroo/bin"
-  sibeliaz_bin: "path/to/sibeliaz/bin"
-  #Program binaries of gene annotation softwares
-  prokka_bin: "/path/to/prokka/bin"
-  augustus_bin: "/path/to/augustus/bin"
+   corer_bin: "../src/Corer"
+   panaroo_bin: "/path/to/panaroo/bin"
+   sibeliaz_bin: "/path/to/sibeliaz/bin"
+   #Program binaries of gene annotation softwares
+   prokka_bin: "/path/to/prokka/bin"
+   augustus_bin: "/path/to/augustus/bin"
+   #Bifrost binary that shall be used
+   bifrost_bin: "/path/to/bifrost/bin"
+   #Blastn binary that shall be used
+   blastn_bin: "/path/to/blastn/bin"
+   #Makeblastdb binary that shall be used
+   makeblastdb_bin: "/path/to/makeblastdb/bin"
+   #Path to BUSCO analysis script
+   BUSCOscript: "/path/to/BUSCO/script.py"
+   #Brassicales BUSCO database directory
+   BUSCObrasDB: "/path/to/db/dir"
 
 
   #------------------------------------------------------------------------------
