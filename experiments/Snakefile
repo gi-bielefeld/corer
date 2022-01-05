@@ -102,10 +102,18 @@ rule all:
 		"arabidopsis/coreSizes/coreSize_readGraph_k21_m17.txt",
 		"arabidopsis/coreSizes/coreSize_readGraph_k21_Core_m17_d60_m17.txt"
 
+rule getProteinSeqs:
+	input:
+		"arabidopsis/annotations/{acc}.gff"
+	output:
+		"arabidopsis/proteinSequences/{acc}.fasta"
+	shell:
+		"python3 scripts/extractProteinSeqs.py {input} {output}"
+
 rule runBUSCOanalysis:
 	input:
 		brasDB = config['BUSCObrasDB'],
-		genes = "arabidopsis/genes/{acc}.fasta"
+		genes = "arabidopsis/proteinSequences/{acc}.fasta"
 	output:
 		"arabidopsis/buscoAnalysis/run_BUSCO_{acc}/full_table_BUSCO_{acc}.tsv"
 	shell:
