@@ -121,7 +121,9 @@ Test data can be downloaded from public databases.
 
    Assemblies of 18 accessions of Arabidopsis thaliana can be downloaded [here](http://mtweb.cs.ucl.ac.uk/mus/www/19genomes/fasta/MASKED/).
 
-   Corresponding read data sets for 17 of the above assemblies are available [here](https://www.ebi.ac.uk/ena/browser/view/PRJEB2457?show=reads).
+   Corresponding annotations for all 18 accessions can be downloaded [here](http://mtweb.cs.ucl.ac.uk/mus/www/19genomes/annotations/consolidated_annotation_9.4.2011/gene_models/). A list of exact file names we used for our experiments is contained in the *experiments* directory.
+   
+   Read data sets for 17 of the above assemblies are available [here](https://www.ebi.ac.uk/ena/browser/view/PRJEB2457?show=reads).
 
 ## Evaluation workflow
 
