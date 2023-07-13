@@ -11,20 +11,20 @@ int main(int argc, char **argv){
 	uint32_t qrm = 0;
 	uint32_t dlt = DEFAULT_DELTA;
 	size_t thrds = DEFAULT_NB_THREADS;
-	string iFilePref;
+	string iGFile, iCFile;
 	string oFilePref;
 	ColoredCDBG<CoreInfo> cdbg = ColoredCDBG<CoreInfo>();
 	TravTrackQueue queue;
 
 	//Parse arguments
-	if(!prsArgs(argc, argv, iFilePref, oFilePref, qrm, dlt, thrds, oSnps)){
+	if(!prsArgs(argc, argv, iGFile, iCFile, oFilePref, qrm, dlt, thrds, oSnps)){//TODO: Tests for this function need to be adjusted!
 		//Display help message
 		dspHlp();
 		return EXIT_FAILURE;
 	}
 
 	//Load graph
-	if(!cdbg.read(iFilePref + GFA_FILE_ENDING, iFilePref + COLOR_FILE_ENDING, thrds, false)){
+	if(!cdbg.read(iGFile, iCFile, thrds, BIFROST_VERBOSE_MODE)){
 		cerr << "ERROR: Graph could not be loaded" << endl;
 		return EXIT_FAILURE;
 	}
