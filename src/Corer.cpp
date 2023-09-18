@@ -23,6 +23,10 @@ int main(int argc, char **argv){
 		return EXIT_FAILURE;
 	}
 
+	//Testing
+	// cout << "main: iGFile: " << iGFile << endl;
+	// cout << "main: iCFile: " << iCFile << endl;
+
 	//Load graph
 	if(!cdbg.read(iGFile, iCFile, thrds, BIFROST_VERBOSE_MODE)){
 		cerr << "ERROR: Graph could not be loaded" << endl;
