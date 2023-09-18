@@ -1,8 +1,8 @@
 #include <bifrost/CompactedDBG.hpp>
 #include <bifrost/ColoredCDBG.hpp>
 
-#define COLOR_FILE_ENDING ".bfg_colors"
-#define GFA_FILE_ENDING ".gfa"
+#define COLOR_FILE_ENDING ".color.bfg"
+#define GFA_FILE_ENDING ".gfa.gz"
 
 //This function checks if the given unitig fulfills the given quorum and returns true in this case; false otherwise
 //ATTENTION: This function only works correctly if the given unitig only consists of 1 k-mer!
