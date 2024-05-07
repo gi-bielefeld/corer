@@ -7,6 +7,10 @@
 * Customized core definition
 * Low demands in run time and memory
 
+## Publication
+
+Schulz, T., Wittler, R., Stoye, J.: [Sequence-based pangenomic core detection](https://doi.org/10.1016/j.isci.2022.104413). iScience. (2022)
+
 ## Table of Contents
 
 * [Requirements](https://gitlab.ub.uni-bielefeld.de/gi/corer#requirements)
