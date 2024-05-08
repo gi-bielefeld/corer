@@ -81,7 +81,7 @@ Optional parameters without argument:
    You may want to get some toy data first to try out the program.
 
    ```
-   wget 'ftp://hgdownload.cse.ucsc.edu/goldenPath/eboVir3/bigZips/160sequences.tar.gz'
+   wget 'https://hgdownload.cse.ucsc.edu/goldenPath/eboVir3/bigZips/160sequences.tar.gz'
    tar xvzf 160sequences.tar.gz
    ```
 
