@@ -106,10 +106,10 @@ Optional parameters without argument:
    Once the graph has been built, Corer can predict its core. The command
 
    ```
-   Corer -i ebolaPangenome -o ebolaCore -q 144 -d 60
+   Corer -i ebolaPangenome -o ebolaCore -q 128 -d 60
    ```
 
-   predicts a core for the ebola pangenome, where a *core *k*-mer* needs to occur in at least 144 genomes and the maximum distance between two core
+   predicts a core for the ebola pangenome, where a *core *k*-mer* needs to occur in at least 128 genomes and the maximum distance between two core
    *k*-mers is 61.
 
 ## Test data
