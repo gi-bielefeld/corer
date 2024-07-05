@@ -2,7 +2,7 @@
 #include <bifrost/CompactedDBG.hpp>
 #include <bifrost/ColoredCDBG.hpp>
 
-#include "../Traversal.h"
+#include "Traversal.h"
 #include "TraversalTest.h"
 
 //Tests for function const bool prioShrtst(const Path&, const Path&)//

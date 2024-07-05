@@ -1,8 +1,16 @@
+#include <sys/stat.h>
+
 #include <bifrost/CompactedDBG.hpp>
 #include <bifrost/ColoredCDBG.hpp>
 
-#define COLOR_FILE_ENDING ".bfg_colors"
-#define GFA_FILE_ENDING ".gfa"
+#define COLOR_FILE_ENDING ".color.bfg"
+#define GFA_FILE_ENDING ".gfa.gz"
+
+inline bool fileExists(const string& name){
+	struct stat buffer;
+
+	return (stat(name.c_str(), &buffer) == 0); 
+}
 
 //This function checks if the given unitig fulfills the given quorum and returns true in this case; false otherwise
 //ATTENTION: This function only works correctly if the given unitig only consists of 1 k-mer!
@@ -71,8 +79,18 @@ int main(int argc, char **argv){
 
 	//Load graph
 	string graphFilePref = argv[1];
+	string igraph = graphFilePref + ".gfa.gz";
+
+	if(!fileExists(igraph)){
+		igraph = graphFilePref + ".gfa";
+
+		if(!fileExists(igraph)){
+			igraph = graphFilePref + ".bfi";
+		}
+	}
+
 	ColoredCDBG<> cdbg = ColoredCDBG<>();
-	if(!cdbg.read((graphFilePref + GFA_FILE_ENDING).c_str(), (graphFilePref + COLOR_FILE_ENDING).c_str())){
+	if(!cdbg.read((igraph).c_str(), (graphFilePref + COLOR_FILE_ENDING).c_str())){
 		cout << "ERROR: Graph could not be loaded" << endl;
 		return 1;
 	}

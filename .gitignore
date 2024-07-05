@@ -8,6 +8,9 @@ test/testCoreGraph.*
 Test*.fa
 bugRep*
 *.txt
+experiments/*/genomeSequences/*.fas*
+experiments/.snakemake
+experiments/scripts/CountCoreKmers
 long*
 small*
 test/makefile
