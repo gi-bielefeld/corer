@@ -2,8 +2,10 @@
 
 #include "IO.h"
 
-const bool prsArgs(int& nArgs, char** argList, string& inPref, string& outPref, uint32_t& qrm, uint32_t& dlt, size_t& nThrds, bool& oSnps){
-	bool iFlGvn = false, oFlGvn = false;
+//This function parses the program parameters. Returns false if given arguments are not valid
+const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, uint32_t& qrm, uint32_t& dlt, size_t& 
+	nThrds, bool& oSnps){
+	bool iFlGvn = false, cFlGvn = false, oFlGvn = false;
 	int option_index = 0, a;
 
 	//Check wheather arguments are given for anything at all
@@ -11,6 +13,7 @@ const bool prsArgs(int& nArgs, char** argList, string& inPref, string& outPref, 
 
 	static struct option long_options[] = {
         {"igraph",   required_argument,  0, 'i'},
+        {"cgraph",   required_argument,  0, 'c'},
         {"ograph",   required_argument,  0, 'o'},
         {"quorum",   required_argument,  0, 'q'},
         {"delta",    required_argument,  0, 'd'},
@@ -25,10 +28,16 @@ const bool prsArgs(int& nArgs, char** argList, string& inPref, string& outPref, 
 		//Assign parameter values
 		switch(a){
 			case 'i':
-				//Save input file prefix
-				inPref = optarg;
-				//Note that we have a file prefix for reading the input
+				//Save input graph sequences file
+				inGfl = optarg;
+				//Note that we have the name of a graph sequences file for reading the input
 				iFlGvn = true;
+				break;
+			case 'c':
+				//Save input graph colors file
+				inCfl = optarg;
+				//Note that we have the name of a graph colors file for reading the input
+				cFlGvn = true;
 				break;
 			case 'o':
 				//Save output file prefix
@@ -38,7 +47,7 @@ const bool prsArgs(int& nArgs, char** argList, string& inPref, string& outPref, 
 				break;
 			case 'q':
 				//A quorum has to be positive
-				if(atoi(optarg) <= 0 || atoi(optarg) > INT32_MAX){
+				if(atol(optarg) <= 0 || atol(optarg) > INT32_MAX){
 					cerr << "ERROR: Quorum value not applicable" << endl;
 					return false;
 				}
@@ -47,7 +56,7 @@ const bool prsArgs(int& nArgs, char** argList, string& inPref, string& outPref, 
 				break;
 			case 'd':
 				//Distance has to be non-negative
-				if(atoi(optarg) < 0 || atoi(optarg) > INT32_MAX){
+				if(atol(optarg) < 0 || atol(optarg) > INT32_MAX){
 					cerr << "ERROR: Distance value not applicable" << endl;
 					return false;
 				}
@@ -74,7 +83,7 @@ const bool prsArgs(int& nArgs, char** argList, string& inPref, string& outPref, 
 		}
 	}
 
-	return iFlGvn && oFlGvn;
+	return iFlGvn && cFlGvn && oFlGvn;
 }
 
 //This function iterates over the given graph and outputs all core and bridging parts as snippets
@@ -237,7 +246,7 @@ void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t
 	//Write graph to file//
 
 	//Try to write graph and throw an error if neccessary
-	if(!oGrph.write(oName, thrds)){
+	if(!oGrph.write(oName, thrds, BIFROST_VERBOSE_MODE)){
 		cerr << "ERROR: Output graph could not be written to file!" << endl;
 		exit(EXIT_FAILURE);
 	}

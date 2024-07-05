@@ -4,6 +4,9 @@
 #include "../src/Traversal.h"
 #include "CoreTest.h"
 
+#define GFA_FILE_ENDING ".gfa"
+#define COLOR_FILE_ENDING ".color.bfg"
+
 class PrsArgsTest : public ::testing::Test {
 
 	protected:
@@ -20,8 +23,10 @@ class PrsArgsTest : public ::testing::Test {
 		int nbArgs;
 		//Arrays with command line arguments
 		char** argv;
-		//Graph file prefix
-		string filePref;
+		//Graph sequence file 
+		string gSeqFile;
+		//Graph color file
+		string gColFile;
 		//Output file prefix
 		string oFilePref;
 		//The core quorum
