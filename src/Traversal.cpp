@@ -364,3 +364,27 @@ void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue, const uin
 		queue.pop();
 	}
 }
+
+//This function initializes a queue for the traversal
+TravTrackQueue initializeQueue(ColoredCDBG<CoreInfo>& cdbg){
+	CoreInfo* cI;
+	TravTrackQueue queue(prioShrtst);
+
+	//Iterate over the graph
+	for(ColoredCDBG<CoreInfo>::iterator u = cdbg.begin(); u != cdbg.end(); ++u){
+		//Get the core infos
+		cI = u->getData()->getData(*u);
+
+		if(!cI->coreList.empty()){
+			//If a unitig has no successors we do not need a traversal on them
+			if(u->getSuccessors().hasSuccessors())
+				queue.push(TravTrack(u->len - cI->coreList.back().second, Kmer(u->mappedSequenceToString().c_str()), true));
+	
+			//If a unitig has no predecessors we do not need a traversal on them
+			if(u->getPredecessors().hasPredecessors())
+				queue.push(TravTrack(cI->coreList.front().first + 1, Kmer(u->mappedSequenceToString().c_str()), false));
+		}
+	}
+
+	return queue;
+}

@@ -51,8 +51,8 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 	}
 }
 
-//This function traverses the graph marking all core k-mers and all bridging k-mers connecting core k-mers within the same unitig. It outputs a priority queue containing all unitigs
-//with core parts as TravTracks for a graph traversal.
+//This function traverses the graph marking all core k-mers and all bridging k-mers connecting core k-mers within the same unitig. 
+//It outputs a priority queue containing all unitigs with core parts as TravTracks for a graph traversal.
 TravTrackQueue detectCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& dlt){
 	uint32_t nBrd;
 	int32_t l, r = -1;
@@ -103,10 +103,12 @@ TravTrackQueue detectCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, cons
 
 		if(!uni.getData()->getData(uni)->coreList.empty()){
 			//If a unitig has no successors we do not need a traversal on them
-			if(uni.getSuccessors().hasSuccessors()) queue.push(TravTrack(i->len - r, Kmer(uni.mappedSequenceToString().c_str()), true));
+			if(uni.getSuccessors().hasSuccessors()) queue.push(TravTrack(i->len - r, Kmer(uni.mappedSequenceToString().c_str()), 
+				true));
 
 			//If a unitig has no predecessors we do not need a traversal on them
-			if(uni.getPredecessors().hasPredecessors()) queue.push(TravTrack(uni.getData()->getData(uni)->coreList.front().first + 1, Kmer(uni.mappedSequenceToString().c_str()), false));
+			if(uni.getPredecessors().hasPredecessors()) queue.push(TravTrack(uni.getData()->getData(uni)->coreList.front().first + 1
+				, Kmer(uni.mappedSequenceToString().c_str()), false));
 		}
 	}
 
@@ -164,4 +166,43 @@ const bool chkQrm(UnitigColorMap<CoreInfo> &u, const uint32_t& q){
 	}
 
 	return false;
+}
+
+//This function iterates over the given list of sequences, searches for all contained k-mers in the graph and marks them as core if 
+//present. Close core k-mers on the same unitig are also connected by bridging k-mers if possible.
+void markKmers(ColoredCDBG<CoreInfo>& cdbg, vector<string>& seqList, const uint32_t& dlt){
+	uint32_t i, refEnd;
+	UnitigColorMap<CoreInfo> uni;
+	TravTrackQueue queue(prioShrtst);
+
+	//Iterate over all sequences
+	for(vector<string>::const_iterator s = seqList.begin(); s != seqList.end(); ++s){
+		//We start searching from the first k-mer of a sequence
+		i = 0;
+
+		//Search for substrings of the current sequence up to the last k-mer
+		while(i <= s->length() - cdbg.getK()){
+			//Query graph for current k-mer
+			uni = cdbg.findUnitig(s->c_str(), i, s->length());
+
+			//Make sure some mapping could be found
+			if(!uni.isEmpty){
+				//Convert coordinates to reference strand if necessary
+				if(uni.strand){
+					//Mark matched k-mers and potentially bridging ones as core
+					uni.getData()->getData(uni)->updateCoreList(uni.dist, uni.dist + uni.len - 1, dlt);//TODO: This function still needs to be tested!
+				} else{
+					refEnd = uni.size - uni.dist - cdbg.getK();
+					//Mark matched k-mers and potentially bridging ones as core
+					uni.getData()->getData(uni)->updateCoreList(refEnd + 1 - uni.len, refEnd, dlt);
+				}
+
+				//Increase i; we can skip the first not matched k-mer of the sequence if the last matched k-mer was not the last on 
+				//the reference unitig
+				i += uni.len + (uni.dist + uni.len > uni.size - cdbg.getK());
+			} else{
+				i += 1;
+			}
+		}
+	}
 }

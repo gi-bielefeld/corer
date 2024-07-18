@@ -13,6 +13,7 @@ int main(int argc, char **argv){
 	size_t thrds = DEFAULT_NB_THREADS;
 	string iGFile, iCFile;
 	string oFilePref;
+	vector<string> seqList;
 	ColoredCDBG<CoreInfo> cdbg = ColoredCDBG<CoreInfo>();
 	TravTrackQueue queue;
 
@@ -35,8 +36,16 @@ int main(int argc, char **argv){
 		cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
 	}
 
+	// //Load search set sequences
+	// seqList = TODO...
+
 	//Detect all core k-mers
-	queue = detectCore(cdbg, qrm, dlt);
+	// queue = detectCore(cdbg, qrm, dlt);
+
+	//Mark all occurring k-mers as core
+	markKmers(cdbg, seqList, dlt);//TODO: This function still needs to be tested!
+	//Initialize queue for graph traversal
+	queue = initializeQueue(cdbg);//TODO: This function still needs to be tested!
 	//Annotate unitigs with distances to next core k-mers
 	annotateDists(cdbg, queue, dlt);
 

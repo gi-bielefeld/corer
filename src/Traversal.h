@@ -58,4 +58,7 @@ const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, l
 //processed node. 
 void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue, const uint32_t& dlt);
 
+//This function initializes a queue for the traversal
+TravTrackQueue initializeQueue(ColoredCDBG<CoreInfo>& cdbg);
+
 #endif

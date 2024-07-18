@@ -25,6 +25,10 @@ class CoreInfo : public CCDBG_Data_t<CoreInfo> {
 		//Increasingly ordered list of core k-mer intervals on a unitig
 		list<pair<uint32_t, uint32_t>> coreList;
 
+		//This function updates a unitig's coreList by incorporating a new core k-mer interval starting with the k-mer at position 
+		//start and ending with the k-mer at position end on the unitig sequence. Already existing core k-mer intervals are merged
+		//also by considering internal bridging k-mers during this procedure
+		void updateCoreList(uint32_t start, uint32_t end, const uint32_t& dlt);
 };
 
 #endif

@@ -10,6 +10,7 @@ bugRep*
 *.txt
 experiments/*/genomeSequences/*.fas*
 experiments/.snakemake
+experiments/arabidopsis/reads/*.fastq.gz
 experiments/scripts/CountCoreKmers
 long*
 small*
