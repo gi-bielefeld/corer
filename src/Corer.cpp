@@ -1,5 +1,6 @@
 #include <bifrost/CompactedDBG.hpp>
 #include <bifrost/ColoredCDBG.hpp>
+#include <htslib/sam.h>
 
 #include "Core.cpp"
 #include "Traversal.h"
@@ -36,8 +37,8 @@ int main(int argc, char **argv){
 		cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
 	}
 
-	// //Load search set sequences
-	// seqList = TODO...
+	//Load search set sequences
+	seqList = 
 
 	//Detect all core k-mers
 	// queue = detectCore(cdbg, qrm, dlt);
