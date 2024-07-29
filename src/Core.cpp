@@ -1,5 +1,6 @@
 #include "Core.h"
 #include "Traversal.h"
+#include "CoreInfo.cpp"
 
 //This function traverses the graph marking all core k-mers and all bridging k-mers connecting core k-mers within the same unitig
 void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& dlt){

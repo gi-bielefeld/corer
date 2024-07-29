@@ -1,7 +1,6 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
-#include "CoreInfo.cpp"
 #include "Traversal.h"
 
 #define DEFAULT_CORE_RATIO 0.9

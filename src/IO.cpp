@@ -3,8 +3,8 @@
 #include "IO.h"
 
 //This function parses the program parameters. Returns false if given arguments are not valid
-const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, uint32_t& qrm, uint32_t& dlt, size_t& 
-	nThrds, bool& oSnps){
+const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, string& iKfl, uint32_t& qrm, uint32_t&
+	 dlt, size_t& nThrds, bool& oSnps){
 	bool iFlGvn = false, cFlGvn = false, oFlGvn = false;
 	int option_index = 0, a;
 
@@ -12,15 +12,16 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
 	if(nArgs < MIN_PARAM_NB) return false;
 
 	static struct option long_options[] = {
-        {"igraph",   required_argument,  0, 'i'},
-        {"cgraph",   required_argument,  0, 'c'},
-        {"ograph",   required_argument,  0, 'o'},
-        {"quorum",   required_argument,  0, 'q'},
-        {"delta",    required_argument,  0, 'd'},
-        {"threads",  required_argument,  0, 't'},
-        {"snippets", no_argument,        0, 's'},
-        {"help",     no_argument,        0, 'h'},
-        {0,          0,                  0,  0 }
+        {"igraph",    required_argument,  0, 'i'},
+        {"cgraph",    required_argument,  0, 'c'},
+        {"ograph",    required_argument,  0, 'o'},
+        {"coreKmers", required_argument,  0, 'f'},
+        {"quorum",    required_argument,  0, 'q'},
+        {"delta",     required_argument,  0, 'd'},
+        {"threads",   required_argument,  0, 't'},
+        {"snippets",  no_argument,        0, 's'},
+        {"help",      no_argument,        0, 'h'},
+        {0,           0,                  0,  0 }
     };
 
     //Parse all parameters given
@@ -44,6 +45,10 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
 				outPref = optarg;
 				//Note that we have a file prefix for writing the output
 				oFlGvn = true;
+				break;
+			case 'f':
+				//Save core k-mer file
+				iKfl = optarg;
 				break;
 			case 'q':
 				//A quorum has to be positive
@@ -250,4 +255,79 @@ void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t
 		cerr << "ERROR: Output graph could not be written to file!" << endl;
 		exit(EXIT_FAILURE);
 	}
+}
+
+//This function reads in a FASTA file and returns whether successful. Sequences of read FASTA records are appended to vector seqs
+bool readFasta(const char *filename, vector<string>& seqs){
+	int c = 0;
+	string s;
+	samFile *infile = NULL;
+	sam_hdr_t *in_samhdr = NULL;
+	bam1_t *bamdata = NULL;
+
+	//Initialize sequence data structure
+	if(!(bamdata = bam_init1())){
+		cerr << "ERROR: Failed to initialize bamdata" << endl;
+
+		//Clean up data
+		cleanUpFASTAparser(in_samhdr, infile, bamdata);
+		
+		return false;
+	}
+
+	//Open given input file
+	if(!(infile = sam_open(filename, "r"))){
+		cerr << "ERROR: Could not open " << filename << endl;
+
+		//Clean up data
+		cleanUpFASTAparser(in_samhdr, infile, bamdata);
+
+		return false;
+	}
+
+	//Make sure file is in FASTA format
+	if(infile->format.format != fasta_format){
+		cerr << "ERROR: " << filename << " is not in FASTA format" << endl;
+
+		//Clean up data
+		cleanUpFASTAparser(in_samhdr, infile, bamdata);
+
+		return false;
+	}
+
+	//Read first header
+	if(!(in_samhdr = sam_hdr_read(infile))){
+		cerr << "ERROR: Failed to read FASTA header" << endl;
+
+		//Clean up data
+		cleanUpFASTAparser(in_samhdr, infile, bamdata);
+
+		return false;
+	}
+
+	//Read sequence data
+	while((c == sam_read1(infile, in_samhdr, bamdata)) >= 0){
+		s = "";
+
+		//Read sequence character by character
+		for(c = 0; c < bamdata->core.l_qseq; ++c) s += seq_nt16_str[bam_seqi(bam_get_seq(bamdata), c)];
+
+		//Store sequence in vector
+		seqs.push_back(s);
+	}
+
+	//Make sure end of file could be reached
+	if(c != -1){
+		cerr << "ERROR: Failed to read FASTA file" << endl;
+
+		//Clean up data
+		cleanUpFASTAparser(in_samhdr, infile, bamdata);
+
+		return false;
+	}
+
+	//Clean up data
+	cleanUpFASTAparser(in_samhdr, infile, bamdata);
+
+	return true;
 }

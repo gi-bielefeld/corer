@@ -1,11 +1,31 @@
 #ifndef IO_TEST_HPP
 #define IO_TEST_HPP
 
+// #include <htslib/sam.h>
+
 #include "../src/Traversal.h"
 #include "CoreTest.h"
 
 #define GFA_FILE_ENDING ".gfa"
 #define COLOR_FILE_ENDING ".color.bfg"
+
+// class CleanUpFASTAparserTest : public ::testing::Test {
+
+// 	protected:
+
+// 		CleanUpFASTAparserTest() {
+// 			sf = sam_open("Test.fa", "r");
+// 			sh = sam_hdr_read(sf);
+// 			b =  bam_init1();
+// 		}
+
+// 		//Some sam_hdr_t pointer
+// 		sam_hdr_t *sh;
+// 		//A pointer to some SAM file
+// 		samFile *sf;
+// 		//A pointer to some BAM data
+// 		bam1_t *b;
+// };
 
 class PrsArgsTest : public ::testing::Test {
 
@@ -27,6 +47,8 @@ class PrsArgsTest : public ::testing::Test {
 		string gSeqFile;
 		//Graph color file
 		string gColFile;
+		//Core k-mer file
+		string kmFile;
 		//Output file prefix
 		string oFilePref;
 		//The core quorum

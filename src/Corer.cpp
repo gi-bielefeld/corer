@@ -1,6 +1,5 @@
 #include <bifrost/CompactedDBG.hpp>
 #include <bifrost/ColoredCDBG.hpp>
-#include <htslib/sam.h>
 
 #include "Core.cpp"
 #include "Traversal.h"
@@ -12,14 +11,14 @@ int main(int argc, char **argv){
 	uint32_t qrm = 0;
 	uint32_t dlt = DEFAULT_DELTA;
 	size_t thrds = DEFAULT_NB_THREADS;
-	string iGFile, iCFile;
+	string iGFile, iCFile, iKFile;
 	string oFilePref;
 	vector<string> seqList;
 	ColoredCDBG<CoreInfo> cdbg = ColoredCDBG<CoreInfo>();
 	TravTrackQueue queue;
 
 	//Parse arguments
-	if(!prsArgs(argc, argv, iGFile, iCFile, oFilePref, qrm, dlt, thrds, oSnps)){
+	if(!prsArgs(argc, argv, iGFile, iCFile, oFilePref, iKFile, qrm, dlt, thrds, oSnps)){//TODO: This function still needs to be tested!
 		//Display help message
 		dspHlp();
 		return EXIT_FAILURE;
@@ -31,22 +30,25 @@ int main(int argc, char **argv){
 		return EXIT_FAILURE;
 	}
 
-	//Set quorum if not already done
-	if(qrm == 0){
-		qrm = max((uint32_t) MIN_QUORUM, (uint32_t) (cdbg.getNbColors() * DEFAULT_CORE_RATIO));
-		cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
+	//Check if a core k-mer file is given
+	if(!iKFile.empty()){
+		if(!readFasta(iKFile.c_str(), seqList)) return EXIT_FAILURE;//TODO: This function still needs to be tested!
+
+		//Mark all occurring k-mers as core
+		markKmers(cdbg, seqList, dlt);//TODO: This function still needs to be tested!
+		//Initialize queue for graph traversal
+		queue = initializeQueue(cdbg);//TODO: This function still needs to be tested!
+	} else{
+		//Set quorum if not already done
+		if(qrm == 0){
+			qrm = max((uint32_t) MIN_QUORUM, (uint32_t) (cdbg.getNbColors() * DEFAULT_CORE_RATIO));
+			cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
+		}
+
+		//Detect all core k-mers
+		queue = detectCore(cdbg, qrm, dlt);
 	}
 
-	//Load search set sequences
-	seqList = 
-
-	//Detect all core k-mers
-	// queue = detectCore(cdbg, qrm, dlt);
-
-	//Mark all occurring k-mers as core
-	markKmers(cdbg, seqList, dlt);//TODO: This function still needs to be tested!
-	//Initialize queue for graph traversal
-	queue = initializeQueue(cdbg);//TODO: This function still needs to be tested!
 	//Annotate unitigs with distances to next core k-mers
 	annotateDists(cdbg, queue, dlt);
 

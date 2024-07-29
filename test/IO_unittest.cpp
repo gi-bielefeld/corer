@@ -4,6 +4,46 @@
 #include "IOtest.h"
 #include "../src/Bridging.h"
 
+// //Tests for function inline void cleanUpFASTAparser(sam_hdr_t*&, samFile*&, bam1_t*&)//
+// //	1. Sam header pointer is (not) NULL 1/0
+// //	2. File pointer is (not) NULL 1/0
+// //	3. Bam data pointer is (not) NULL 1/0
+// //	4. Sam header pointer and file pointer are NULL and bam data pointer is (not) NULL(, too) 1/0
+// //	5. Sam header pointer is NULL, file pointer is not NULL and bam data pointer is (not) NULL(, too) 0/0
+// //	6. Sam header pointer is not NULL, file pointer is NULL and bam data pointer is (not) NULL(, too) 0/0
+// //	7. Sam header pointer and file pointer are not NULL and bam data pointer is (not) NULL(, too) 0/0
+
+// //Tests the function cleanUpFASTAparser under the following conditions
+// //	1. Sam header pointer is NULL
+// //	2. File pointer is NULL
+// //	3. Bam data pointer is NULL
+// //	4. Sam header pointer and file pointer are NULL and bam data pointer is NULL, too
+// TEST_F(CleanUpFASTAparserTest, AllNULL){
+// 	sh = NULL;
+// 	sf = NULL;
+// 	b = NULL;
+
+// 	cleanUpFASTAparser(sh, sf, b);
+
+// 	EXPECT_FALSE(sh);
+// 	EXPECT_FALSE(sf);
+// 	EXPECT_FALSE(b);
+// }
+
+// //Tests the function cleanUpFASTAparser under the following conditions
+// //	1. Sam header pointer is not NULL
+// TEST_F(CleanUpFASTAparserTest, HdrNnULL){
+// 	sf = NULL;
+// 	b = NULL;
+
+// 	cleanUpFASTAparser(sh, sf, b);
+
+// 	EXPECT_FALSE(sh);
+// 	EXPECT_FALSE(sf);
+// 	EXPECT_FALSE(b);
+// 	exit(0);
+// }
+
 //Tests for function const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, uint32_t& qrm, 
 //uint32_t& dlt, size_t& nThrds, bool& oSnps)//
 //	1. Input graph sequence file is (not) given DONE
@@ -23,7 +63,8 @@
 //	15. Input graph color file is (not) given DONE
 //	16. Input graph sequence file and output graph prefix are not set, and input graph color file is (not) set (as well) DONE
 //	17. Input graph color file and output graph prefix are set, and input graph sequence file is (not) set (as well) DONE
-//	18. Input graph files are given and output graph prefix is not set 0
+//	18. Input graph files are given and output graph prefix is not set DONE
+//	19. Core k-mer file is (not) given 0/1
 
 //Tests the function prsArgs with no parameters
 TEST_F(PrsArgsTest, NoParams){
@@ -31,11 +72,12 @@ TEST_F(PrsArgsTest, NoParams){
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[0] = strdup("Corer");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 1);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "");
+	EXPECT_EQ(kmFile, "");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
