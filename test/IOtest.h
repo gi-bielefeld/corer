@@ -1,7 +1,7 @@
 #ifndef IO_TEST_HPP
 #define IO_TEST_HPP
 
-// #include <htslib/sam.h>
+#include <htslib/sam.h>
 
 #include "../src/Traversal.h"
 #include "CoreTest.h"
@@ -89,6 +89,18 @@ class GenCoreGraphTest : public ::testing::Test {
 		vector<string> cNms;
 		//Number of threads
 		size_t thrds;
+};
+
+class ReadFastaTest : public ::testing::Test {
+
+	protected:
+
+		ReadFastaTest() {}
+
+		//A vector to store all read in strings
+		vector<string> s;
+		//An string vector iterator
+		vector<string>::iterator i;
 };
 
 #endif

@@ -867,3 +867,43 @@ TEST_F(GenCoreGraphTest, SmlDlt){
 //Expected output:
 //AAGGCAAAC
 //GGCAAACAC
+
+//Tests for function bool readFasta(const char*, vector<string>&)//
+//	1. Input file can(not) be opened DONE
+//	2. File format is (not) FASTA DONE
+
+//Tests the function readFasta under the following conditions
+//	1. Input file can be opened
+//	2. File format is FASTA
+TEST_F(ReadFastaTest, Suc){
+	EXPECT_TRUE(readFasta("Test.fa", s));
+	ASSERT_FALSE(s.empty());
+	ASSERT_EQ(s.size(), 6);
+	i = s.begin();
+	EXPECT_EQ(*i, "AAAGGCAAACACA");
+	++i;
+	EXPECT_EQ(*i, "AAAGGCAAACACA");
+	++i;
+	EXPECT_EQ(*i, "AAAGGCAAAGAC");
+	++i;
+	EXPECT_EQ(*i, "AAAGGCAAAGAC");
+	++i;
+	EXPECT_EQ(*i, "AAAGGCAAACACC");
+	++i;
+	EXPECT_EQ(*i, "AAAGGCAAACACC");
+}
+
+//Tests the function readFasta under the following conditions
+//	1. Input file cannot be opened
+TEST_F(ReadFastaTest, NoExtFl){
+	EXPECT_FALSE(readFasta("Text.fa", s));
+	EXPECT_TRUE(s.empty());
+}
+
+//Tests the function readFasta under the following conditions
+//	1. Input file can be opened
+//	2. File format is not FASTA
+TEST_F(ReadFastaTest, NotFa){
+	EXPECT_FALSE(readFasta("OutputSnippetsTestGraphSources1.txt", s));
+	EXPECT_TRUE(s.empty());
+}
