@@ -77,7 +77,7 @@ TEST_F(PrsArgsTest, NoParams){
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "");
-	EXPECT_EQ(kmFile, "");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -99,6 +99,7 @@ TEST_F(PrsArgsTest, NoParams){
 //	13. Input graph sequence file is set, input graph color file is not set and output graph prefix is set as well
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, NegQrm){
 	nbArgs = 9;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -112,11 +113,12 @@ TEST_F(PrsArgsTest, NegQrm){
 	argv[7] = strdup("-q");
 	argv[8] = strdup("-1");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 9);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, 1);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -136,6 +138,7 @@ TEST_F(PrsArgsTest, NegQrm){
 //	13. Input graph sequence file is set, input graph color file is not set and output graph prefix is set as well
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, TooLrgQrm){
 	nbArgs = 15;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -146,11 +149,12 @@ TEST_F(PrsArgsTest, TooLrgQrm){
 	argv[13] = strdup("-q");
 	argv[14] = strdup("2147483648");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 15);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -170,6 +174,7 @@ TEST_F(PrsArgsTest, TooLrgQrm){
 //	13. Input graph sequence file is set, input graph color file is not set and output graph prefix is set as well
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, NonPosDlt){
 	nbArgs = 21;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -180,11 +185,12 @@ TEST_F(PrsArgsTest, NonPosDlt){
 	argv[19] = strdup("-d");
 	argv[20] = strdup("-1");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 21);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -204,6 +210,7 @@ TEST_F(PrsArgsTest, NonPosDlt){
 //	13. Input graph sequence file is set, input graph color file is not set and output graph prefix is set as well
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, TooLrgDlt){
 	nbArgs = 27;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -214,11 +221,12 @@ TEST_F(PrsArgsTest, TooLrgDlt){
 	argv[25] = strdup("-d");
 	argv[26] = strdup("2147483648");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 27);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -236,6 +244,7 @@ TEST_F(PrsArgsTest, TooLrgDlt){
 //	13. Input graph sequence file is set, input graph color file is not set and output graph prefix is set as well
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, HlpFlgSet){
 	nbArgs = 32;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -245,11 +254,12 @@ TEST_F(PrsArgsTest, HlpFlgSet){
 	argv[30] = strdup("O");
 	argv[31] = strdup("-h");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 32);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -268,6 +278,7 @@ TEST_F(PrsArgsTest, HlpFlgSet){
 //	13. Input graph sequence file is set, input graph color file is not set and output graph prefix is set as well
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, PosNbThrds){
 	nbArgs = 38;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -278,11 +289,12 @@ TEST_F(PrsArgsTest, PosNbThrds){
 	argv[36] = strdup("-o");
 	argv[37] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 38);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, 2);
@@ -301,6 +313,7 @@ TEST_F(PrsArgsTest, PosNbThrds){
 //	13. Input graph sequence file is set, input graph color file is not set and output graph prefix is set as well
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, NonPosNbThrds){
 	nbArgs = 44;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -311,11 +324,12 @@ TEST_F(PrsArgsTest, NonPosNbThrds){
 	argv[42] = strdup("-t");
 	argv[43] = strdup("0");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 44);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -332,6 +346,7 @@ TEST_F(PrsArgsTest, NonPosNbThrds){
 //	12.	Unitig snippet output is requested
 //	13. Input graph sequence file is set, input graph color file is not set and output graph prefix is not set as well
 //	15. Input graph color file is not given
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, NoOut){
 	nbArgs = 47;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -339,11 +354,12 @@ TEST_F(PrsArgsTest, NoOut){
 	argv[45] = strdup("G");
 	argv[46] = strdup("-s");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 47);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -360,17 +376,19 @@ TEST_F(PrsArgsTest, NoOut){
 //	12.	Unitig snippet output is not requested
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is not set as well
 //	15. Input graph color file is not given
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, NoGph){
 	nbArgs = 49;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[47] = strdup("-o");
 	argv[48] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 49);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -387,17 +405,19 @@ TEST_F(PrsArgsTest, NoGph){
 //  12. Unitig snippet output is not requested
 //  15. Input graph color file is given
 //  16. Input graph sequence file and output graph prefix are not set, and input graph color file is set
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, CflGvn){
 	nbArgs = 51;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[49] = strdup("-c");
 	argv[50] = strdup("testColorFile.color.bfg");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 51);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
 	EXPECT_EQ(oFilePref, "");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -416,17 +436,19 @@ TEST_F(PrsArgsTest, CflGvn){
 //  12. Unitig snippet output is not requested
 //  15. Input graph color file is not given
 //	16. Input graph sequence file and output graph prefix are not set, and input graph color file is not set as well
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, NoInOut){
 	nbArgs = 53;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[51] = strdup("-q");
 	argv[52] = strdup("1");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 53);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "");
 	EXPECT_EQ(oFilePref, "");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 1);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -443,6 +465,7 @@ TEST_F(PrsArgsTest, NoInOut){
 //	12.	Unitig snippet output is not requested
 //	15. Input graph color file is given
 //	17. Input graph color file and output graph prefix are set, and input graph sequence file is set as well
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, AllInOut){
 	nbArgs = 59;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -453,11 +476,12 @@ TEST_F(PrsArgsTest, AllInOut){
 	argv[57] = strdup("-o");
 	argv[58] = strdup("O");
 
-	EXPECT_TRUE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_TRUE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 59);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -474,6 +498,7 @@ TEST_F(PrsArgsTest, AllInOut){
 //	12.	Unitig snippet output is not requested
 //	15. Input graph color file is given
 //	17. Input graph color file and output graph prefix are set, and input graph sequence file is not set
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, NoSeqG){
 	nbArgs = 63;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -482,11 +507,12 @@ TEST_F(PrsArgsTest, NoSeqG){
 	argv[61] = strdup("-o");
 	argv[62] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 63);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
 	EXPECT_EQ(oFilePref, "O");
+	EXPECT_TRUE(kmFile.empty());
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
@@ -503,6 +529,7 @@ TEST_F(PrsArgsTest, NoSeqG){
 //	12.	Unitig snippet output is not requested
 //	15. Input graph color file is given
 //	18. Input graph files are given and output graph prefix is not set
+//	19. Core k-mer file is not given
 TEST_F(PrsArgsTest, ClrInNoOut){
 	nbArgs = 67;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -511,11 +538,47 @@ TEST_F(PrsArgsTest, ClrInNoOut){
 	argv[65] = strdup("-i");
 	argv[66] = strdup("G");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
 	EXPECT_EQ(nbArgs, 67);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
 	EXPECT_EQ(oFilePref, "");
+	EXPECT_TRUE(kmFile.empty());
+	EXPECT_EQ(qrm, 0);
+	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+}
+
+//Tests the function prsArgs under the following conditions
+//	1. Input graph sequence file is given
+//	2. Quorum is not given
+//	5. Delta is not given
+//	8. Number of threads is not given
+//	10. Help flag is not set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is not requested
+//	15. Input graph color file is given
+//	17. Input graph color file and output graph prefix are set, and input graph sequence file is set as well
+//	19. Core k-mer file is given
+TEST_F(PrsArgsTest, CrFlGvn){
+	nbArgs = 75;
+	argv = (char**) malloc(nbArgs * sizeof(char*));
+	argv[67] = strdup("-c");
+	argv[68] = strdup("testColorFile.color.bfg");
+	argv[69] = strdup("-i");
+	argv[70] = strdup("G");
+	argv[71] = strdup("-o");
+	argv[72] = strdup("out");
+	argv[73] = strdup("-f");
+	argv[74] = strdup("kmerFile.fa");
+
+	EXPECT_TRUE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_EQ(nbArgs, 75);
+	EXPECT_EQ(gSeqFile, "G");
+	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
+	EXPECT_EQ(oFilePref, "out");
+	EXPECT_EQ(kmFile, "kmerFile.fa");
 	EXPECT_EQ(qrm, 0);
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);

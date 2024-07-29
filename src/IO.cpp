@@ -24,6 +24,9 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
         {0,           0,                  0,  0 }
     };
 
+    //Testing
+    bool qGvn = false, dGvn = false, nTgvn = false, hFlgSt = false, kfGvn = false;
+
     //Parse all parameters given
 	while ((a = getopt_long(nArgs, argList, OPTIONS, long_options, &option_index)) != -1){
 		//Assign parameter values
@@ -47,33 +50,170 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
 				oFlGvn = true;
 				break;
 			case 'f':
+				//Testing
+				kfGvn = true;
+
 				//Save core k-mer file
 				iKfl = optarg;
 				break;
 			case 'q':
+				//Testing
+				qGvn = true;
+
 				//A quorum has to be positive
 				if(atol(optarg) <= 0 || atol(optarg) > INT32_MAX){
+					//Testing
+					cout << "1 Option " << (iFlGvn? "1" : "2") << endl;
+					cout << "2 Option " << (qGvn? "1" : "2") << endl;
+					if(atol(optarg) <= 0){
+						cout << "3 Option 2" << endl;
+					} else{
+						cout << "3 Option 1" << endl;
+					}
+					if(atol(optarg) > INT32_MAX){
+						cout << "4 Option 1" << endl;
+					} else{
+						cout << "4 Option 2" << endl;
+					}
+					cout << "5 Option " << (dGvn? "1" : "2") << endl;
+					cout << "8 Option " << (nTgvn? "1" : "2") << endl;
+					cout << "10 Option " << (hFlgSt? "1" : "2") << endl;
+					cout << "11 Option " << (oFlGvn? "1" : "2") << endl;
+					cout << "12 Option " << (oSnps? "1" : "2") << endl;
+					if(iFlGvn){
+						if(cFlGvn){
+							if(oFlGvn){
+								cout << "17 Option 1" << endl;
+							} else{
+								cout << "18" << endl;
+							}
+						} else{
+							cout << "13 Option " << (oFlGvn? "1" : "2") << endl;
+						}
+					} else if(!oFlGvn){
+						cout << "16 Option " << (cFlGvn? "1" : "2") << endl;
+					}
+					if(oFlGvn){
+						if(!cFlGvn){
+							cout << "14 Option " << (iFlGvn? "1" : "2") << endl;
+						}
+
+						if(!iFlGvn && cFlGvn) cout << "17 Option 2" << endl;
+					}
+					cout << "15 Option " << (cFlGvn? "1" : "2") << endl;
+					cout << "19 Option " << (kfGvn? "1" : "2") << endl;
+
 					cerr << "ERROR: Quorum value not applicable" << endl;
 					return false;
 				}
 
+				//Testing
+				cout << "3 Option 1" << endl;
+				cout << "4 Option 2" << endl;
+
 				qrm = atoi(optarg);
 				break;
 			case 'd':
+				//Testing
+				dGvn = true;
+
 				//Distance has to be non-negative
 				if(atol(optarg) < 0 || atol(optarg) > INT32_MAX){
+					//Testing
+					cout << "1 Option " << (iFlGvn? "1" : "2") << endl;
+					cout << "2 Option " << (qGvn? "1" : "2") << endl;
+					cout << "5 Option " << (dGvn? "1" : "2") << endl;
+					if(atol(optarg) < 0){
+						cout << "6 Option 1" << endl;
+					} else{
+						cout << "6 Option 2" << endl;
+					}
+					if(atol(optarg) > INT32_MAX){
+						cout << "7 Option 1" << endl;
+					} else{
+						cout << "7 Option 2" << endl;
+					}
+					cout << "8 Option " << (nTgvn? "1" : "2") << endl;
+					cout << "10 Option 2" << endl;
+					cout << "11 Option " << (oFlGvn? "1" : "2") << endl;
+					cout << "12 Option " << (oSnps? "1" : "2") << endl;
+					if(iFlGvn){
+						if(cFlGvn){
+							if(oFlGvn){
+								cout << "17 Option 1" << endl;
+							} else{
+								cout << "18" << endl;
+							}
+						} else{
+							cout << "13 Option " << (oFlGvn? "1" : "2") << endl;
+						}
+					} else if(!oFlGvn){
+						cout << "16 Option " << (cFlGvn? "1" : "2") << endl;
+					}
+					if(oFlGvn){
+						if(!cFlGvn){
+							cout << "14 Option " << (iFlGvn? "1" : "2") << endl;
+						}
+
+						if(!iFlGvn && cFlGvn) cout << "17 Option 2" << endl;
+					}
+					cout << "15 Option " << (cFlGvn? "1" : "2") << endl;
+					cout << "19 Option " << (kfGvn? "1" : "2") << endl;
+
 					cerr << "ERROR: Distance value not applicable" << endl;
 					return false;
 				}
 
+				//Testing
+				cout << "6 Option 1" << endl;
+				cout << "7 Option 2" << endl;
+
 				dlt = atoi(optarg);
 				break;
 			case 't':
+				//Testing
+				nTgvn = true;
+
 				//Number of threads needs to be a positive number
 				if(atoi(optarg) < 1){
+					//Testing
+					cout << "1 Option " << (iFlGvn? "1" : "2") << endl;
+					cout << "2 Option " << (qGvn? "1" : "2") << endl;
+					cout << "5 Option " << (dGvn? "1" : "2") << endl;
+					cout << "8 Option " << (nTgvn? "1" : "2") << endl;
+					cout << "9 Option 2" << endl;
+					cout << "10 Option 2" << endl;
+					cout << "11 Option " << (oFlGvn? "1" : "2") << endl;
+					cout << "12 Option " << (oSnps? "1" : "2") << endl;
+					if(iFlGvn){
+						if(cFlGvn){
+							if(oFlGvn){
+								cout << "17 Option 1" << endl;
+							} else{
+								cout << "18" << endl;
+							}
+						} else{
+							cout << "13 Option " << (oFlGvn? "1" : "2") << endl;
+						}
+					} else if(!oFlGvn){
+						cout << "16 Option " << (cFlGvn? "1" : "2") << endl;
+					}
+					if(oFlGvn){
+						if(!cFlGvn){
+							cout << "14 Option " << (iFlGvn? "1" : "2") << endl;
+						}
+
+						if(!iFlGvn && cFlGvn) cout << "17 Option 2" << endl;
+					}
+					cout << "15 Option " << (cFlGvn? "1" : "2") << endl;
+					cout << "19 Option " << (kfGvn? "1" : "2") << endl;
+
 					cerr << "ERROR: Number of threads not applicable" << endl;
 					return false;
 				}
+
+				//Testing
+				cout << "9 Option 1" << endl;
 
 				nThrds = atoi(optarg);
 				break;
@@ -82,11 +222,77 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
 				oSnps = true;
 				break;
 			case 'h':
+				//Testing
+				cout << "1 Option " << (iFlGvn? "1" : "2") << endl;
+				cout << "2 Option " << (qGvn? "1" : "2") << endl;
+				cout << "5 Option " << (dGvn? "1" : "2") << endl;
+				cout << "8 Option " << (nTgvn? "1" : "2") << endl;
+				// cout << "9 Option 2" << endl;
+				cout << "10 Option 1" << endl;
+				hFlgSt = true;
+				cout << "11 Option " << (oFlGvn? "1" : "2") << endl;
+				cout << "12 Option " << (oSnps? "1" : "2") << endl;
+				if(iFlGvn){
+					if(cFlGvn){
+						if(oFlGvn){
+							cout << "17 Option 1" << endl;
+						} else{
+							cout << "18" << endl;
+						}
+					} else{
+						cout << "13 Option " << (oFlGvn? "1" : "2") << endl;
+					}
+				} else if(!oFlGvn){
+					cout << "16 Option " << (cFlGvn? "1" : "2") << endl;
+				}
+				if(oFlGvn){
+					if(!cFlGvn){
+						cout << "14 Option " << (iFlGvn? "1" : "2") << endl;
+					}
+
+					if(!iFlGvn && cFlGvn) cout << "17 Option 2" << endl;
+				}
+				cout << "15 Option " << (cFlGvn? "1" : "2") << endl;
+				cout << "19 Option " << (kfGvn? "1" : "2") << endl;
+
 				return false;
 			default:
 				break;
 		}
 	}
+
+	//Testing
+	cout << "1 Option " << (iFlGvn? "1" : "2") << endl;
+	cout << "2 Option " << (qGvn? "1" : "2") << endl;
+	cout << "5 Option " << (dGvn? "1" : "2") << endl;
+	cout << "8 Option " << (nTgvn? "1" : "2") << endl;
+	cout << "10 Option 2" << endl;
+	cout << "11 Option " << (oFlGvn? "1" : "2") << endl;
+	cout << "12 Option " << (oSnps? "1" : "2") << endl;
+	if(iFlGvn){
+		if(!cFlGvn){
+			cout << "13 Option " << (oFlGvn? "1" : "2") << endl;
+		}
+		
+		if(cFlGvn){
+			if(oFlGvn){
+				cout << "17 Option 1" << endl;
+			} else{
+				cout << "18" << endl;
+			}
+		}
+	} else if(!oFlGvn){
+		cout << "16 Option " << (cFlGvn? "1" : "2") << endl;
+	}
+	if(oFlGvn){
+		if(!cFlGvn){
+			cout << "14 Option " << (iFlGvn? "1" : "2") << endl;
+		}
+
+		if(!iFlGvn && cFlGvn) cout << "17 Option 2" << endl;
+	}
+	cout << "15 Option " << (cFlGvn? "1" : "2") << endl;
+	cout << "19 Option " << (kfGvn? "1" : "2") << endl;
 
 	return iFlGvn && cFlGvn && oFlGvn;
 }
