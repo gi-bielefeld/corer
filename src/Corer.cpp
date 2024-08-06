@@ -32,7 +32,7 @@ int main(int argc, char **argv){
 
 	//Check if a core k-mer file is given
 	if(!iKFile.empty()){
-		if(!readFasta(iKFile.c_str(), seqList)) return EXIT_FAILURE;//TODO: This function still needs to be tested!
+		if(!readFasta(iKFile.c_str(), seqList)) return EXIT_FAILURE;
 
 		//Mark all occurring k-mers as core
 		markKmers(cdbg, seqList, dlt);//TODO: This function still needs to be tested!

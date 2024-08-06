@@ -277,9 +277,6 @@ bool readFasta(const char *filename, vector<string>& seqs){
 
 	//Open given input file
 	if(!(infile = sam_open(filename, "r"))){
-		//Testing
-		cout << "1 Option 2" << endl;
-
 		cerr << "ERROR: Could not open " << filename << endl;
 
 		//Clean up data
@@ -288,14 +285,8 @@ bool readFasta(const char *filename, vector<string>& seqs){
 		return false;
 	}
 
-	//Testing
-	cout << "1 Option 1" << endl;
-
 	//Make sure file is in FASTA format
 	if(infile->format.format != fasta_format){
-		//Testing
-		cout << "2 Option 2" << endl;
-
 		cerr << "ERROR: " << filename << " is not in FASTA format" << endl;
 
 		//Clean up data
@@ -303,9 +294,6 @@ bool readFasta(const char *filename, vector<string>& seqs){
 
 		return false;
 	}
-
-	//Testing
-	cout << "2 Option 1" << endl;
 
 	//Read first header
 	if(!(in_samhdr = sam_hdr_read(infile))){

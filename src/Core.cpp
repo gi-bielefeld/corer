@@ -191,7 +191,7 @@ void markKmers(ColoredCDBG<CoreInfo>& cdbg, vector<string>& seqList, const uint3
 				//Convert coordinates to reference strand if necessary
 				if(uni.strand){
 					//Mark matched k-mers and potentially bridging ones as core
-					uni.getData()->getData(uni)->updateCoreList(uni.dist, uni.dist + uni.len - 1, dlt);//TODO: This function still needs to be tested!
+					uni.getData()->getData(uni)->updateCoreList(uni.dist, uni.dist + uni.len - 1, dlt);
 				} else{
 					refEnd = uni.size - uni.dist - cdbg.getK();
 					//Mark matched k-mers and potentially bridging ones as core
