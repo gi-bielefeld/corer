@@ -14,4 +14,5 @@ experiments/arabidopsis/reads/*.fastq.gz
 experiments/scripts/CountCoreKmers
 long*
 small*
+src/searchSequenceTest*
 test/makefile

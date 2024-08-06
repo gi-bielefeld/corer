@@ -873,3 +873,65 @@ TEST_F(DetectCoreTest, TwoInts){
 	EXPECT_FALSE(queue.top().isSucTrav);
 	queue.pop();
 }
+
+//Tests for function void markKmers(ColoredCDBG<CoreInfo>&, vector<string>&, const uint32_t&)//
+//	1. A sequence is (not) shorter than k DONE
+//	2. A sequence contains only one/multiple k-mers DONE
+//	3. A k-mer can(not) be found in the graph DONE
+//	4. A k-mer is (not) found on the reference strand DONE
+//	5. The first not matched character of the sequence can(not) be skipped DONE
+
+//Tests the function markKmers under the following conditions
+//	1. A sequence is (not) shorter than k
+//	2. A sequence contains only one/multiple k-mers
+//	3. A k-mer can(not) be found in the graph
+//	4. A k-mer is (not) found on the reference strand
+TEST_F(MarkKmersTest, UltTst){
+	sl = {"", "ACTTTTCAA", "AAGGCAAACAC", "GTCTTTGCCT"};
+	markKmers(cdbg, sl, 42);
+
+	i = cdbg.begin();
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.size(), 1);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().first, 0);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().second, 2);
+	++i;
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.size(), 1);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().first, 1);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().second, 2);
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+}
+
+//Tests the function markKmers under the following conditions
+//	1. A sequence is not shorter than k
+//	2. A sequence contains only multiple k-mers
+//	3. A k-mer can(not) be found in the graph
+//	4. A k-mer is found on the reference strand
+//	5. The first not matched character of the sequence can(not) be skipped
+TEST_F(MarkKmersTest, SkpNxt){
+	sl = {"AAGGCAAAGGCAAA"};
+	markKmers(cdbg, sl, 42);
+
+	i = cdbg.begin();
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.size(), 1);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().first, 0);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().second, 0);
+	++i;
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.size(), 1);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().first, 0);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().second, 0);
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+}
