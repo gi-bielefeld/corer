@@ -37,7 +37,7 @@ int main(int argc, char **argv){
 		//Mark all occurring k-mers as core
 		markKmers(cdbg, seqList, dlt);
 		//Initialize queue for graph traversal
-		queue = initializeQueue(cdbg);//TODO: This function still needs to be tested!
+		queue = initializeQueue(cdbg);
 	} else{
 		//Set quorum if not already done
 		if(qrm == 0){

@@ -1450,3 +1450,30 @@ TEST_F(AnnotateDistsTest, LngPth){
 	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->predCoreDist);
 	EXPECT_EQ(UINT32_MAX, i->getData()->getData(*i)->sucCoreDist);
 }
+
+//Tests for function TravTrackQueue initializeQueue(ColoredCDBG<CoreInfo>&)//
+//	1. A unitig's core list is (not) empty DONE
+//	2. A unitig with a non-empty core list has (no) successor DONE
+//	3. A unitig with a non-empty core list has (no) predecessors DONE
+
+//Tests the function annotateDists under the following conditions
+//	1. A unitig's core list is (not) empty
+//	2. A unitig with a non-empty core list has (no) successor
+//	3. A unitig with a non-empty core list has (no) predecessors
+TEST_F(InitializeQueueTest, SmplTst){
+	i = ++(cdbg.begin());
+	i->getData()->getData(*i)->coreList.push_back(make_pair(0, 0));
+	++i;
+	i->getData()->getData(*i)->coreList.push_back(make_pair(0, 0));
+
+	q = initializeQueue(cdbg);
+	ASSERT_FALSE(q.empty());
+	EXPECT_EQ(q.size(), 2);
+	EXPECT_FALSE(q.top().isSucTrav);
+	EXPECT_EQ(q.top().cDist, 1);
+	EXPECT_EQ(q.top().track.toString(), "AAGGCAAAG");
+	q.pop();
+	EXPECT_TRUE(q.top().isSucTrav);
+	EXPECT_EQ(q.top().cDist, 1);
+	EXPECT_EQ(q.top().track.toString(), "AAAGGCAAA");
+}

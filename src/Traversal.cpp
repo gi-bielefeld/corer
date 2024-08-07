@@ -376,13 +376,32 @@ TravTrackQueue initializeQueue(ColoredCDBG<CoreInfo>& cdbg){
 		cI = u->getData()->getData(*u);
 
 		if(!cI->coreList.empty()){
+			//Testing
+			cout << "1 Option 1" << endl;
+
 			//If a unitig has no successors we do not need a traversal on them
-			if(u->getSuccessors().hasSuccessors())
+			if(u->getSuccessors().hasSuccessors()){
+				//Testing
+				cout << "2 Option 1" << endl;
+
 				queue.push(TravTrack(u->len - cI->coreList.back().second, Kmer(u->mappedSequenceToString().c_str()), true));
+			} else{
+				//Testing
+				cout << "2 Option 2" << endl;
+			}
 	
 			//If a unitig has no predecessors we do not need a traversal on them
-			if(u->getPredecessors().hasPredecessors())
+			if(u->getPredecessors().hasPredecessors()){
+				//Testing
+				cout << "3 Option 1" << endl;
+
 				queue.push(TravTrack(cI->coreList.front().first + 1, Kmer(u->mappedSequenceToString().c_str()), false));
+			} else{
+				//Testing
+				cout << "3 Option 2" << endl;
+			}
+		} else{
+			cout << "1 Option 2" << endl;
 		}
 	}
 

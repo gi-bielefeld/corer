@@ -177,16 +177,8 @@ void markKmers(ColoredCDBG<CoreInfo>& cdbg, vector<string>& seqList, const uint3
 
 	//Iterate over all sequences
 	for(vector<string>::const_iterator s = seqList.begin(); s != seqList.end(); ++s){
-		//Testing
-		cout << "1 Option " << (s->length() < cdbg.getK()? "1" : "2") << endl;
-		if(s->length() - cdbg.getK() == 0) cout << "2 Option 1" << endl;
-		if(s->length() > cdbg.getK() && s->length() - cdbg.getK() > 0) cout << "2 Option 2" << endl;
-
 		//We start searching from the first k-mer of a sequence
 		i = 0;
-
-		//Testing
-		cout << "markKmers: s->length() - cdbg.getK(): " << s->length() - cdbg.getK() << endl;
 
 		//Search for substrings of the current sequence up to the last k-mer
 		while(s->length() >= cdbg.getK() && i <= s->length() - cdbg.getK()){
@@ -195,41 +187,22 @@ void markKmers(ColoredCDBG<CoreInfo>& cdbg, vector<string>& seqList, const uint3
 
 			//Make sure some mapping could be found
 			if(!uni.isEmpty){
-				//Testing
-				cout << "3 Option 1" << endl;
-
 				// //Convert coordinates to reference strand if necessary
 				// if(uni.strand){
-
-				//Testing
-				cout << "4 Option " << (uni.strand? "1" : "2") << endl;
 
 				//Mark matched k-mers and potentially bridging ones as core
 				uni.getData()->getData(uni)->updateCoreList(uni.dist, uni.dist + uni.len - 1, dlt);
 
 				// } else{
-				// 	//Testing
-				// 	cout << "4 Option 2" << endl;
-				// 	cout << "uni.size: " << uni.size << endl;
-				// 	cout << "uni.dist: " << uni.dist << endl;
-				// 	cout << "cdbg.getK(): " << cdbg.getK() << endl;
-
 				// 	refEnd = uni.size - uni.dist - cdbg.getK();
 				// 	//Mark matched k-mers and potentially bridging ones as core
 				// 	uni.getData()->getData(uni)->updateCoreList(refEnd + 1 - uni.len, refEnd, dlt);
 				// }
 
-				//Testing
-				cout << "5 Option " << (uni.dist + uni.len <= uni.size - cdbg.getK()? "1" : "2") << endl;
-
 				//Increase i; we can skip the first not matched k-mer of the sequence if the last matched k-mer was not the last on 
 				//the reference unitig
 				i += uni.len + (uni.dist + uni.len <= uni.size - cdbg.getK());
 			} else{
-				//Testing
-				cout << "3 Option 2" << endl;
-				// exit(0);
-
 				i += 1;
 			}
 		}
