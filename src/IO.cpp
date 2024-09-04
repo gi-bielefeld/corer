@@ -4,7 +4,7 @@
 
 //This function parses the program parameters. Returns false if given arguments are not valid
 const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, string& iKfl, uint32_t& qrm, uint32_t&
-	 dlt, size_t& nThrds, bool& oSnps){
+	 dlt, size_t& nThrds, bool& oSnps, bool& apprxSrch){
 	bool iFlGvn = false, cFlGvn = false, oFlGvn = false;
 	int option_index = 0, a;
 
@@ -20,6 +20,7 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
         {"delta",     required_argument,  0, 'd'},
         {"threads",   required_argument,  0, 't'},
         {"snippets",  no_argument,        0, 's'},
+        {"approx",    no_argument,        0, 'a'},
         {"help",      no_argument,        0, 'h'},
         {0,           0,                  0,  0 }
     };
@@ -80,6 +81,10 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
 			case 's':
 				//Note that we will have to output the core as snippets
 				oSnps = true;
+				break;
+			case 'a':
+				//Note that approximate core k-mer matches should be considered
+				apprxSrch = true;
 				break;
 			case 'h':
 				return false;

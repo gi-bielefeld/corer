@@ -8,7 +8,7 @@
 
 #include "CoreInfo.h"
 
-#define OPTIONS "i:c:o:f:q:d:t:sh"
+#define OPTIONS "i:c:o:f:q:d:t:sah"
 //Minimum required parameters are the graph files (sequences and colors), and the output prefix
 #define MIN_PARAM_NB 3
 #define BIFROST_VERBOSE_MODE false
@@ -17,7 +17,8 @@
 
 //This function prints usage infos
 inline void dspHlp(){
-	cerr << "Corer [-hs] [-q QUORUM] [-d DELTA] [-i Graph_File] [-c Graph_Color_File] [-o Output_File_Prefix] [-t Nb_Threads]" << 
+	cerr << "Corer [-hsa] [-q QUORUM] [-d DELTA] [-i Graph_File] [-c Graph_Color_File] [-o Output_File_Prefix] [-f Core_K-mer_F" <<\
+	"ile] [-t Nb_Threads]" << 
 	endl << endl;
 	cerr << "Extracting a pangenome's core." << endl << endl;
 	cerr << "Required parameters:" << endl;
@@ -31,74 +32,23 @@ inline void dspHlp(){
 	endl;
 	cerr << "   -t   --threads    Number of threads (default is 1)" << endl << endl;
 	cerr << "Optional parameters without argument:" << endl;
+	cerr << "   -a   --approx    Search for inexact core k-mers (only active if core k-mer file (-f) given)" << endl;
 	cerr << "   -s   --snippets  Output unitig core snippets to stdout" << endl;
 	cerr << "   -h   --help      Display this help message" << endl;
 }
 
 //This function cleans up all temporary data structures created for reading in a FASTA file
 inline void cleanUpFASTAparser(sam_hdr_t *&samhdr, samFile *&file, bam1_t *&bamdata){
-	//Testing
-	// if(samhdr == NULL){
-	// 	cout << "1 Option 1" << endl;
-	// } else{
-	// 	cout << "1 Option 2" << endl;
-	// }
-
 	if(samhdr) sam_hdr_destroy(samhdr);
-
-	//Testing
-	// if(file == NULL){
-	// 	cout << "2 Option 1" << endl;
-	// } else{
-	// 	cout << "2 Option 2" << endl;
-	// }
 
 	if(file) sam_close(file);
 
-	//Testing
-	// if(bamdata == NULL){
-	// 	cout << "3 Option 1" << endl;
-	// } else{
-	// 	cout << "3 Option 2" << endl;
-	// }
-
 	if(bamdata) bam_destroy1(bamdata);
-
-	//Testing
-	// if(samhdr == NULL){
-	// 	if(file == NULL){
-	// 		if(bamdata == NULL){
-	// 			cout << "4 Option 1" << endl;
-	// 		} else{
-	// 			cout << "4 Option 2" << endl;
-	// 		}
-	// 	} else{
-	// 		if(bamdata == NULL){
-	// 			cout << "5 Option 1" << endl;
-	// 		} else{
-	// 			cout << "5 Option 2" << endl;
-	// 		}
-	// 	}
-	// } else{
-	// 	if(file == NULL){
-	// 		if(bamdata == NULL){
-	// 			cout << "6 Option 1" << endl;
-	// 		} else{
-	// 			cout << "6 Option 2" << endl;
-	// 		}
-	// 	} else{
-	// 		if(bamdata == NULL){
-	// 			cout << "7 Option 1" << endl;
-	// 		} else{
-	// 			cout << "7 Option 2" << endl;
-	// 		}
-	// 	}
-	// }
 }
 
 //This function parses the program parameters. Returns false if given arguments are not valid
 const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, string& iKfl, uint32_t& qrm, uint32_t&
-	 dlt, size_t& nThrds, bool& oSnps);
+	 dlt, size_t& nThrds, bool& oSnps, bool& apprxSrch);
 
 //This function iterates over the given graph and outputs all core and bridging parts as snippets
 void outputSnippets(const ColoredCDBG<CoreInfo>& cdbg);

@@ -7,7 +7,7 @@
 #include "Bridging.cpp"
 
 int main(int argc, char **argv){
-	bool oSnps = OUTPUT_CORE_SNIPPETS_DEFAULT;
+	bool oSnps = OUTPUT_CORE_SNIPPETS_DEFAULT, apprxSrch = APPROXIMATE_KMER_SEARCH_DEFAULT;
 	uint32_t qrm = 0;
 	uint32_t dlt = DEFAULT_DELTA;
 	size_t thrds = DEFAULT_NB_THREADS;
@@ -18,7 +18,7 @@ int main(int argc, char **argv){
 	TravTrackQueue queue;
 
 	//Parse arguments
-	if(!prsArgs(argc, argv, iGFile, iCFile, oFilePref, iKFile, qrm, dlt, thrds, oSnps)){
+	if(!prsArgs(argc, argv, iGFile, iCFile, oFilePref, iKFile, qrm, dlt, thrds, oSnps, apprxSrch)){//TODO: This function still needs to be tested!
 		//Display help message
 		dspHlp();
 		return EXIT_FAILURE;
@@ -35,7 +35,7 @@ int main(int argc, char **argv){
 		if(!readFasta(iKFile.c_str(), seqList)) return EXIT_FAILURE;
 
 		//Mark all occurring k-mers as core
-		markKmers(cdbg, seqList, dlt);
+		markKmers(cdbg, seqList, apprxSrch, dlt);//TODO: This function still needs to be tested!
 		//Initialize queue for graph traversal
 		queue = initializeQueue(cdbg);
 	} else{

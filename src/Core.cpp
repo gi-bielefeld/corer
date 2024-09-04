@@ -169,42 +169,44 @@ const bool chkQrm(UnitigColorMap<CoreInfo> &u, const uint32_t& q){
 	return false;
 }
 
-//This function iterates over the given list of sequences, searches for all contained k-mers in the graph and marks them as core if 
+//This function iterates over the given list of sequences, searches for all k-mer matches in the graph and marks them as core if 
 //present. Close core k-mers on the same unitig are also connected by bridging k-mers if possible.
-void markKmers(ColoredCDBG<CoreInfo>& cdbg, vector<string>& seqList, const uint32_t& dlt){
-	uint32_t i, refEnd;
-	UnitigColorMap<CoreInfo> uni;
+void markKmers(ColoredCDBG<CoreInfo>& cdbg, vector<string>& seqList, const bool& inexact, const uint32_t& dlt){
+	// uint32_t i, refEnd;
+
+	vector<pair<size_t, UnitigColorMap<CoreInfo>>> foundKmers;
+
+	// UnitigColorMap<CoreInfo> uni;
 
 	//Iterate over all sequences
 	for(vector<string>::const_iterator s = seqList.begin(); s != seqList.end(); ++s){
-		//We start searching from the first k-mer of a sequence
-		i = 0;
+		//Search for sequence matches
+		foundKmers = cdbg.searchSequence(*s, true, inexact, inexact, inexact, true);
 
-		//Search for substrings of the current sequence up to the last k-mer
-		while(s->length() >= cdbg.getK() && i <= s->length() - cdbg.getK()){
-			//Query graph for current k-mer
-			uni = cdbg.findUnitig(s->c_str(), i, s->length());
-
-			//Make sure some mapping could be found
-			if(!uni.isEmpty){
-				// //Convert coordinates to reference strand if necessary
-				// if(uni.strand){
-
-				//Mark matched k-mers and potentially bridging ones as core
-				uni.getData()->getData(uni)->updateCoreList(uni.dist, uni.dist + uni.len - 1, dlt);
-
-				// } else{
-				// 	refEnd = uni.size - uni.dist - cdbg.getK();
-				// 	//Mark matched k-mers and potentially bridging ones as core
-				// 	uni.getData()->getData(uni)->updateCoreList(refEnd + 1 - uni.len, refEnd, dlt);
-				// }
-
-				//Increase i; we can skip the first not matched k-mer of the sequence if the last matched k-mer was not the last on 
-				//the reference unitig
-				i += uni.len + (uni.dist + uni.len <= uni.size - cdbg.getK());
-			} else{
-				i += 1;
-			}
+		//Iterate over findings
+		for(vector<pair<size_t, UnitigColorMap<CoreInfo>>>::const_iterator m = foundKmers.begin(); m != foundKmers.end(); ++m){
+			//Mark matched k-mer and potentially bridging ones as core
+			m->second.getData()->getData(m->second)->updateCoreList(m->second.dist, m->second.dist + m->second.len - 1, dlt);
 		}
+
+		// //We start searching from the first k-mer of a sequence
+		// i = 0;
+
+		// //Search for substrings of the current sequence up to the last k-mer
+		// while(s->length() >= cdbg.getK() && i <= s->length() - cdbg.getK()){
+		// 	//Query graph for current k-mer
+		// 	uni = cdbg.findUnitig(s->c_str(), i, s->length());
+
+		// 	//Make sure some mapping could be found
+		// 	if(!uni.isEmpty){
+		// 		//Mark matched k-mers and potentially bridging ones as core
+		// 		uni.getData()->getData(uni)->updateCoreList(uni.dist, uni.dist + uni.len - 1, dlt);
+		// 		//Increase i; we can skip the first not matched k-mer of the sequence if the last matched k-mer was not the last on 
+		// 		//the reference unitig
+		// 		i += uni.len + (uni.dist + uni.len <= uni.size - cdbg.getK());
+		// 	} else{
+		// 		i += 1;
+		// 	}
+		// }
 	}
 }
