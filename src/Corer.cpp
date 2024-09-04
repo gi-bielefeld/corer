@@ -18,7 +18,7 @@ int main(int argc, char **argv){
 	TravTrackQueue queue;
 
 	//Parse arguments
-	if(!prsArgs(argc, argv, iGFile, iCFile, oFilePref, iKFile, qrm, dlt, thrds, oSnps, apprxSrch)){//TODO: This function still needs to be tested!
+	if(!prsArgs(argc, argv, iGFile, iCFile, oFilePref, iKFile, qrm, dlt, thrds, oSnps, apprxSrch)){
 		//Display help message
 		dspHlp();
 		return EXIT_FAILURE;

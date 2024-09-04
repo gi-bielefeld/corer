@@ -172,21 +172,10 @@ const bool chkQrm(UnitigColorMap<CoreInfo> &u, const uint32_t& q){
 //This function iterates over the given list of sequences, searches for all k-mer matches in the graph and marks them as core if 
 //present. Close core k-mers on the same unitig are also connected by bridging k-mers if possible.
 void markKmers(ColoredCDBG<CoreInfo>& cdbg, vector<string>& seqList, const bool& inexact, const uint32_t& dlt){
-	//Testing
-	uint32_t i, refEnd;
-
 	vector<pair<size_t, UnitigColorMap<CoreInfo>>> foundKmers;
-
-	//Testing
-	UnitigColorMap<CoreInfo> uni;
 
 	//Iterate over all sequences
 	for(vector<string>::const_iterator s = seqList.begin(); s != seqList.end(); ++s){
-		//Testing
-		cout << "1 Option " << (s->length() < cdbg.getK()? "1" : "2") << endl;
-		if(s->length() - cdbg.getK() == 0) cout << "2 Option 1" << endl;
-		if(s->length() > cdbg.getK() && s->length() - cdbg.getK() > 0) cout << "2 Option 2" << endl;
-
 		//Search for sequence matches
 		foundKmers = cdbg.searchSequence(*s, true, inexact, inexact, inexact, true);
 
@@ -195,22 +184,5 @@ void markKmers(ColoredCDBG<CoreInfo>& cdbg, vector<string>& seqList, const bool&
 			//Mark matched k-mer and potentially bridging ones as core
 			m->second.getData()->getData(m->second)->updateCoreList(m->second.dist, m->second.dist + m->second.len - 1, dlt);
 		}
-
-		//Testing
-		i = 0;
-		while(s->length() >= cdbg.getK() && i <= s->length() - cdbg.getK()){
-			uni = cdbg.findUnitig(s->c_str(), i, s->length());
-			if(!uni.isEmpty){
-				cout << "3 Option 1" << endl;
-				cout << "4 Option " << (uni.strand? "1" : "2") << endl;
-				i += uni.len + (uni.dist + uni.len <= uni.size - cdbg.getK());
-			} else{
-				cout << "3 Option 2" << endl;
-				i += 1;
-			}
-		}
 	}
-
-	//Testing
-	cout << "5 Option " << (inexact ? "1" : "2") << endl;
 }
