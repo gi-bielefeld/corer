@@ -31,7 +31,8 @@ class PrsArgsTest : public ::testing::Test {
 
 	protected:
 
-		PrsArgsTest(): nbArgs(0), qrm(0), dlt(DEFAULT_DELTA), thrds(DEFAULT_NB_THREADS), oSnps(OUTPUT_CORE_SNIPPETS_DEFAULT) {}
+		PrsArgsTest(): nbArgs(0), qrm(0), dlt(DEFAULT_DELTA), thrds(DEFAULT_NB_THREADS), oSnps(OUTPUT_CORE_SNIPPETS_DEFAULT), 
+		apprxSrc(APPROXIMATE_KMER_SEARCH_DEFAULT) {}
 
 		// void TearDown() override {
 		// 	for(uint16_t i = 0; i < nbArgs; ++i) free(&argv[i]);
@@ -39,6 +40,8 @@ class PrsArgsTest : public ::testing::Test {
 
 		//Unitig snippet output flag
 		bool oSnps;
+		//Approximate core k-mer search flag
+		bool apprxSrc;
 		//Number of command line arguments
 		int nbArgs;
 		//Arrays with command line arguments

@@ -888,7 +888,7 @@ TEST_F(DetectCoreTest, TwoInts){
 //	4. A k-mer is (not) found on the reference strand
 TEST_F(MarkKmersTest, UltTst){
 	sl = {"", "ACTTTTCAA", "AAGGCAAACAC", "GTCTTTGCCT"};
-	markKmers(cdbg, sl, 42);
+	markKmers(cdbg, sl, false, 42);
 
 	i = cdbg.begin();
 	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
@@ -916,7 +916,7 @@ TEST_F(MarkKmersTest, UltTst){
 //	5. The first not matched character of the sequence can(not) be skipped
 TEST_F(MarkKmersTest, SkpNxt){
 	sl = {"AAGGCAAAGGCAAA"};
-	markKmers(cdbg, sl, 42);
+	markKmers(cdbg, sl, false, 42);
 
 	i = cdbg.begin();
 	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());

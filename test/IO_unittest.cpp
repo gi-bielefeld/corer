@@ -44,8 +44,8 @@
 // 	exit(0);
 // }
 
-//Tests for function const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, uint32_t& qrm, 
-//uint32_t& dlt, size_t& nThrds, bool& oSnps)//
+//Tests for function const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, string& iKfl, uin
+//	t32_t& qrm, uint32_t& dlt, size_t& nThrds, bool& oSnps, bool& apprxSrch)//
 //	1. Input graph sequence file is (not) given DONE
 //	2. Quorum is (not) given DONE
 //	3. Given quorum is (not) positive DONE
@@ -64,7 +64,8 @@
 //	16. Input graph sequence file and output graph prefix are not set, and input graph color file is (not) set (as well) DONE
 //	17. Input graph color file and output graph prefix are set, and input graph sequence file is (not) set (as well) DONE
 //	18. Input graph files are given and output graph prefix is not set DONE
-//	19. Core k-mer file is (not) given 0/1
+//	19. Core k-mer file is (not) given DONE
+//	20. Approximate core k-mer search is (not) enabled DONE
 
 //Tests the function prsArgs with no parameters
 TEST_F(PrsArgsTest, NoParams){
@@ -72,7 +73,7 @@ TEST_F(PrsArgsTest, NoParams){
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[0] = strdup("Corer");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 1);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "");
@@ -82,6 +83,7 @@ TEST_F(PrsArgsTest, NoParams){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -100,6 +102,7 @@ TEST_F(PrsArgsTest, NoParams){
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, NegQrm){
 	nbArgs = 9;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -113,7 +116,7 @@ TEST_F(PrsArgsTest, NegQrm){
 	argv[7] = strdup("-q");
 	argv[8] = strdup("-1");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 9);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
@@ -123,6 +126,7 @@ TEST_F(PrsArgsTest, NegQrm){
 	EXPECT_EQ(dlt, 1);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -139,6 +143,7 @@ TEST_F(PrsArgsTest, NegQrm){
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, TooLrgQrm){
 	nbArgs = 15;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -149,7 +154,7 @@ TEST_F(PrsArgsTest, TooLrgQrm){
 	argv[13] = strdup("-q");
 	argv[14] = strdup("2147483648");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 15);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
@@ -159,13 +164,14 @@ TEST_F(PrsArgsTest, TooLrgQrm){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
 //	1. Input graph sequence file is given
 //	2. Quorum is not given
 //	5. Delta is given
-//	6. Given delta is not positive
+//	6. Given delta is negative
 //  7. Given delta is not larger than INT32_MAX
 //	8. Number of threads is not given
 //	10. Help flag is not set
@@ -175,6 +181,7 @@ TEST_F(PrsArgsTest, TooLrgQrm){
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, NonPosDlt){
 	nbArgs = 21;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -185,7 +192,7 @@ TEST_F(PrsArgsTest, NonPosDlt){
 	argv[19] = strdup("-d");
 	argv[20] = strdup("-1");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 21);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
@@ -195,6 +202,7 @@ TEST_F(PrsArgsTest, NonPosDlt){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -211,6 +219,7 @@ TEST_F(PrsArgsTest, NonPosDlt){
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, TooLrgDlt){
 	nbArgs = 27;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -221,7 +230,7 @@ TEST_F(PrsArgsTest, TooLrgDlt){
 	argv[25] = strdup("-d");
 	argv[26] = strdup("2147483648");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 27);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
@@ -231,6 +240,7 @@ TEST_F(PrsArgsTest, TooLrgDlt){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -245,6 +255,7 @@ TEST_F(PrsArgsTest, TooLrgDlt){
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, HlpFlgSet){
 	nbArgs = 32;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -254,7 +265,7 @@ TEST_F(PrsArgsTest, HlpFlgSet){
 	argv[30] = strdup("O");
 	argv[31] = strdup("-h");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 32);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
@@ -264,6 +275,7 @@ TEST_F(PrsArgsTest, HlpFlgSet){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -279,6 +291,7 @@ TEST_F(PrsArgsTest, HlpFlgSet){
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, PosNbThrds){
 	nbArgs = 38;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -289,7 +302,7 @@ TEST_F(PrsArgsTest, PosNbThrds){
 	argv[36] = strdup("-o");
 	argv[37] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 38);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
@@ -299,6 +312,7 @@ TEST_F(PrsArgsTest, PosNbThrds){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, 2);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -314,6 +328,7 @@ TEST_F(PrsArgsTest, PosNbThrds){
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is set as well
 //	15. Input graph color file is not given
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, NonPosNbThrds){
 	nbArgs = 44;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -324,7 +339,7 @@ TEST_F(PrsArgsTest, NonPosNbThrds){
 	argv[42] = strdup("-t");
 	argv[43] = strdup("0");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 44);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
@@ -334,6 +349,7 @@ TEST_F(PrsArgsTest, NonPosNbThrds){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -347,6 +363,7 @@ TEST_F(PrsArgsTest, NonPosNbThrds){
 //	13. Input graph sequence file is set, input graph color file is not set and output graph prefix is not set as well
 //	15. Input graph color file is not given
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, NoOut){
 	nbArgs = 47;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -354,7 +371,7 @@ TEST_F(PrsArgsTest, NoOut){
 	argv[45] = strdup("G");
 	argv[46] = strdup("-s");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 47);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "");
@@ -364,6 +381,7 @@ TEST_F(PrsArgsTest, NoOut){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(!OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -377,13 +395,14 @@ TEST_F(PrsArgsTest, NoOut){
 //	14. Output graph prefix is set, input graph color file is not set and input graph sequence file is not set as well
 //	15. Input graph color file is not given
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, NoGph){
 	nbArgs = 49;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[47] = strdup("-o");
 	argv[48] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 49);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "");
@@ -393,6 +412,7 @@ TEST_F(PrsArgsTest, NoGph){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -406,13 +426,14 @@ TEST_F(PrsArgsTest, NoGph){
 //  15. Input graph color file is given
 //  16. Input graph sequence file and output graph prefix are not set, and input graph color file is set
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, CflGvn){
 	nbArgs = 51;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[49] = strdup("-c");
 	argv[50] = strdup("testColorFile.color.bfg");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 51);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
@@ -422,6 +443,7 @@ TEST_F(PrsArgsTest, CflGvn){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -437,13 +459,14 @@ TEST_F(PrsArgsTest, CflGvn){
 //  15. Input graph color file is not given
 //	16. Input graph sequence file and output graph prefix are not set, and input graph color file is not set as well
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, NoInOut){
 	nbArgs = 53;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
 	argv[51] = strdup("-q");
 	argv[52] = strdup("1");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 53);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "");
@@ -453,6 +476,7 @@ TEST_F(PrsArgsTest, NoInOut){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -466,6 +490,7 @@ TEST_F(PrsArgsTest, NoInOut){
 //	15. Input graph color file is given
 //	17. Input graph color file and output graph prefix are set, and input graph sequence file is set as well
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, AllInOut){
 	nbArgs = 59;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -476,7 +501,7 @@ TEST_F(PrsArgsTest, AllInOut){
 	argv[57] = strdup("-o");
 	argv[58] = strdup("O");
 
-	EXPECT_TRUE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_TRUE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 59);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
@@ -486,6 +511,7 @@ TEST_F(PrsArgsTest, AllInOut){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -499,6 +525,7 @@ TEST_F(PrsArgsTest, AllInOut){
 //	15. Input graph color file is given
 //	17. Input graph color file and output graph prefix are set, and input graph sequence file is not set
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, NoSeqG){
 	nbArgs = 63;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -507,7 +534,7 @@ TEST_F(PrsArgsTest, NoSeqG){
 	argv[61] = strdup("-o");
 	argv[62] = strdup("O");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 63);
 	EXPECT_EQ(gSeqFile, "");
 	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
@@ -517,6 +544,7 @@ TEST_F(PrsArgsTest, NoSeqG){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -530,6 +558,7 @@ TEST_F(PrsArgsTest, NoSeqG){
 //	15. Input graph color file is given
 //	18. Input graph files are given and output graph prefix is not set
 //	19. Core k-mer file is not given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, ClrInNoOut){
 	nbArgs = 67;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -538,7 +567,7 @@ TEST_F(PrsArgsTest, ClrInNoOut){
 	argv[65] = strdup("-i");
 	argv[66] = strdup("G");
 
-	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_FALSE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 67);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
@@ -548,6 +577,7 @@ TEST_F(PrsArgsTest, ClrInNoOut){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests the function prsArgs under the following conditions
@@ -561,6 +591,7 @@ TEST_F(PrsArgsTest, ClrInNoOut){
 //	15. Input graph color file is given
 //	17. Input graph color file and output graph prefix are set, and input graph sequence file is set as well
 //	19. Core k-mer file is given
+//	20. Approximate core k-mer search is not enabled
 TEST_F(PrsArgsTest, CrFlGvn){
 	nbArgs = 75;
 	argv = (char**) malloc(nbArgs * sizeof(char*));
@@ -573,7 +604,7 @@ TEST_F(PrsArgsTest, CrFlGvn){
 	argv[73] = strdup("-f");
 	argv[74] = strdup("kmerFile.fa");
 
-	EXPECT_TRUE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps));
+	EXPECT_TRUE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
 	EXPECT_EQ(nbArgs, 75);
 	EXPECT_EQ(gSeqFile, "G");
 	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
@@ -583,6 +614,44 @@ TEST_F(PrsArgsTest, CrFlGvn){
 	EXPECT_EQ(dlt, DEFAULT_DELTA);
 	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
 	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
+}
+
+//Tests the function prsArgs under the following conditions
+//	1. Input graph sequence file is given
+//	2. Quorum is not given
+//	5. Delta is not given
+//	8. Number of threads is not given
+//	10. Help flag is not set
+//	11. Output graph prefix is given
+//	12.	Unitig snippet output is not requested
+//	17. Input graph color file and output graph prefix are set, and input graph sequence file is set as well
+//	19. Core k-mer file is given
+//	20. Approximate core k-mer search is enabled
+TEST_F(PrsArgsTest, ApprxSrch){
+	nbArgs = 84;
+	argv = (char**) malloc(nbArgs * sizeof(char*));
+	argv[75] = strdup("-c");
+	argv[76] = strdup("testColorFile.color.bfg");
+	argv[77] = strdup("-i");
+	argv[78] = strdup("G");
+	argv[79] = strdup("-o");
+	argv[80] = strdup("out");
+	argv[81] = strdup("-f");
+	argv[82] = strdup("kmerFile.fa");
+	argv[83] = strdup("-a");
+
+	EXPECT_TRUE(prsArgs(nbArgs, argv, gSeqFile, gColFile, oFilePref, kmFile, qrm, dlt, thrds, oSnps, apprxSrc));
+	EXPECT_EQ(nbArgs, 84);
+	EXPECT_EQ(gSeqFile, "G");
+	EXPECT_EQ(gColFile, "testColorFile.color.bfg");
+	EXPECT_EQ(oFilePref, "out");
+	EXPECT_EQ(kmFile, "kmerFile.fa");
+	EXPECT_EQ(qrm, 0);
+	EXPECT_EQ(dlt, DEFAULT_DELTA);
+	EXPECT_EQ(thrds, DEFAULT_NB_THREADS);
+	EXPECT_EQ(OUTPUT_CORE_SNIPPETS_DEFAULT, oSnps);
+	EXPECT_EQ(!APPROXIMATE_KMER_SEARCH_DEFAULT, apprxSrc);
 }
 
 //Tests for function void genCoreGraph(ColoredCDBG<CoreInfo>&, const string&, const size_t&)//
