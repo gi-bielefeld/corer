@@ -874,18 +874,19 @@ TEST_F(DetectCoreTest, TwoInts){
 	queue.pop();
 }
 
-//Tests for function void markKmers(ColoredCDBG<CoreInfo>&, vector<string>&, const uint32_t&)//
+//Tests for function void markKmers(ColoredCDBG<CoreInfo>&, vector<string>&, const bool&, const uint32_t&)//
 //	1. A sequence is (not) shorter than k DONE
 //	2. A sequence contains only one/multiple k-mers DONE
-//	3. A k-mer can(not) be found in the graph DONE
-//	4. A k-mer is (not) found on the reference strand DONE
-//	5. The first not matched character of the sequence can(not) be skipped DONE
+//	3. An exact k-mer match can(not) be found in the graph DONE
+//	4. An exact k-mer match is (not) found on the reference strand DONE
+//	5. Approximate k-mer search is (not) enabled 0/1
 
 //Tests the function markKmers under the following conditions
 //	1. A sequence is (not) shorter than k
 //	2. A sequence contains only one/multiple k-mers
-//	3. A k-mer can(not) be found in the graph
-//	4. A k-mer is (not) found on the reference strand
+//	3. An exact k-mer match can(not) be found in the graph
+//	4. An exact k-mer match is (not) found on the reference strand
+//	5. Approximate k-mer search is not enabled
 TEST_F(MarkKmersTest, UltTst){
 	sl = {"", "ACTTTTCAA", "AAGGCAAACAC", "GTCTTTGCCT"};
 	markKmers(cdbg, sl, false, 42);
@@ -911,9 +912,9 @@ TEST_F(MarkKmersTest, UltTst){
 //Tests the function markKmers under the following conditions
 //	1. A sequence is not shorter than k
 //	2. A sequence contains only multiple k-mers
-//	3. A k-mer can(not) be found in the graph
-//	4. A k-mer is found on the reference strand
-//	5. The first not matched character of the sequence can(not) be skipped
+//	3. An exact k-mer match can(not) be found in the graph
+//	4. An exact k-mer match is found on the reference strand
+//	5. Approximate k-mer search is not enabled
 TEST_F(MarkKmersTest, SkpNxt){
 	sl = {"AAGGCAAAGGCAAA"};
 	markKmers(cdbg, sl, false, 42);
@@ -934,4 +935,38 @@ TEST_F(MarkKmersTest, SkpNxt){
 	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
 	++i;
 	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+}
+
+//Tests the function markKmers under the following conditions
+//	1. A sequence is not shorter than k
+//	2. A sequence contains only one/multiple k-mers
+//	3. An exact k-mer match can(not) be found in the graph
+//	4. An exact k-mer match is found on the reference strand
+//	5. Approximate k-mer search is enabled
+TEST_F(MarkKmersTest, Inexact){
+	sl = {"CAAGGCAAA", "GGCAAACAC", "GCAACACAA", "GCAAAACACC"};
+	markKmers(cdbg, sl, true, 42);
+
+	i = cdbg.begin();
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.size(), 1);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().first, 2);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().second, 2);
+	++i;
+	EXPECT_TRUE(i->getData()->getData(*i)->coreList.empty());
+	++i;
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.size(), 1);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().first, 0);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().second, 0);
+	++i;
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.size(), 1);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().first, 0);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().second, 0);
+	++i;
+	ASSERT_FALSE(i->getData()->getData(*i)->coreList.empty());
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.size(), 1);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().first, 0);
+	EXPECT_EQ(i->getData()->getData(*i)->coreList.front().second, 0);
 }

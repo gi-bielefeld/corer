@@ -35,7 +35,7 @@ int main(int argc, char **argv){
 		if(!readFasta(iKFile.c_str(), seqList)) return EXIT_FAILURE;
 
 		//Mark all occurring k-mers as core
-		markKmers(cdbg, seqList, apprxSrch, dlt);//TODO: This function still needs to be tested!
+		markKmers(cdbg, seqList, apprxSrch, dlt);
 		//Initialize queue for graph traversal
 		queue = initializeQueue(cdbg);
 	} else{
