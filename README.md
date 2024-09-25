@@ -13,14 +13,14 @@ Schulz, T., Wittler, R., Stoye, J.: [Sequence-based pangenomic core detection](h
 
 ## Table of Contents
 
-* [Requirements](https://gitlab.ub.uni-bielefeld.de/gi/corer#requirements)
-* [Compilation](https://gitlab.ub.uni-bielefeld.de/gi/corer#compilation)
-* [Usage](https://gitlab.ub.uni-bielefeld.de/gi/corer#usage)
-* [Test data](https://gitlab.ub.uni-bielefeld.de/gi/corer#test-data)
-* [Evaluation workflow](https://gitlab.ub.uni-bielefeld.de/gi/corer#tool-comparison)
-* [FAQ](https://gitlab.ub.uni-bielefeld.de/gi/corer#faq)
-* [Contact](https://gitlab.ub.uni-bielefeld.de/gi/corer#contact)
-* [Licenses](https://gitlab.ub.uni-bielefeld.de/gi/corer#license)
+* [Requirements](https://github.com/gi-bielefeld/corer#requirements)
+* [Compilation](https://github.com/gi-bielefeld/corer#compilation)
+* [Usage](https://github.com/gi-bielefeld/corer#usage)
+* [Test data](https://github.com/gi-bielefeld/corer#test-data)
+* [Evaluation workflow](https://github.com/gi-bielefeld/corer#Evaluation-workflow)
+* [FAQ](https://github.com/gi-bielefeld/corer#faq)
+* [Contact](https://github.com/gi-bielefeld/corer#contact)
+* [Licenses](https://github.com/gi-bielefeld/corer#Licenses)
 
 ## Requirements
 
