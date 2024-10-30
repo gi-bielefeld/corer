@@ -185,7 +185,9 @@ We recommend to have a look at the [FAQs of Bifrost](https://github.com/pmelsted
 
 ## Contact
 
-For any question, feedback or problem, please feel free to file an issue on [GitHub](https://github.com/gi-bielefeld/corer) or [contact](mailto:pangenomics-service@cebitec.uni-bielefeld.de) the developers via email and we will get back to you as soon as possible.
+For any question, feedback or problem, please feel free to file an issue on [GitHub](https://github.com/gi-bielefeld/corer) or [contact](mailto:pangenomics-service@cebitec.uni-bielefeld.de) the developers and we will get back to you as soon as possible.
+
+Corer is provided as a service of the [German Network for Bioinformatics Infrastructure (de.NBI)](https://www.denbi.de/). We would appriciate if you would participate in the evaluation of Corer by completing this [very short survey](https://www.surveymonkey.de/r/denbi-service?sc=bigi&tool=corer).
 
 ## Licenses
 
