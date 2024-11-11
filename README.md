@@ -207,7 +207,7 @@ Corer is provided as a service of the [German Network for Bioinformatics Infrast
 
 * Corer is GNU GPLv3 licensed [LICENSE](https://gitlab.ub.uni-bielefeld.de/gi/plast/blob/master/LICENSE)
 
-##
+## Privacy
 
 We use the open source software Matomo for web analysis in order to collect anonymized usage statistics for this repository. Please refer to our [Privacy Notice](/PrivacyNotice.pdf) for details.
 
