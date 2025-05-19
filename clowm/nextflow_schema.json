@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/gi-bielefeld/corer/master/clowm/nextflow_schema.json",
+  "title": "Nextflow pipeline parameters",
+  "description": "Corer identifies the core of a given pangenome represented as a compacted, colored de Bruijn graph using the API of Bifrost. The JSON Schema was built using the nf-core pipeline schema builder.",
+  "type": "object",
+  "$defs": {
+    "general": {
+      "title": "General",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "fa_icon": "fas fa-file-import",
+          "description": "Either: Input directory containing all fasta or fastq files\nOr: zip or tar.gz file containing all fasta or fastq files (no folders)"
+        },
+        "dataset_name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
+          "maxLength": 64,
+          "minLength": 3,
+          "description": "Name of dataset. Is used in filenames for output.",
+          "default": "pangenome"
+        },
+        "bifrost_graph": {
+          "type": "string",
+          "format": "file-path",
+          "fa_icon": "fas fa-diagram-project",
+          "description": "Bifrost graph from previous run. Expects the colored graph and index file in the same directory. Ignores the `--dataset_name`",
+          "pattern": "^.*.gfa.gz$"
+        },
+        "outdir": {
+          "type": "string",
+          "fa_icon": "fas fa-file-export",
+          "format": "directory-path",
+          "description": "Output directory where output is written to"
+        }
+      },
+      "required": ["outdir"],
+      "oneOf": [
+        {
+          "required": ["input", "dataset_name"]
+        },
+        {
+          "required": ["bifrost_graph"]
+        }
+      ]
+    },
+    "bifrost": {
+      "title": "Bifrost",
+      "type": "object",
+      "description": "Parameters for bifrost graph generation. These are only used when the input are fasta files and not a bifrost graph",
+      "default": "",
+      "fa_icon": "fas fa-diagram-project",
+      "properties": {
+        "kmer_length": {
+          "type": "integer",
+          "minimum": 9,
+          "maximum": 63,
+          "default": 31,
+          "fa_icon": "fas fa-chart-gantt",
+          "description": "Length of k-mers"
+        },
+        "bloom_bits": {
+          "type": "integer",
+          "default": 14,
+          "minimum": 5,
+          "maximum": 30,
+          "description": "Number of Bloom filter bits per k-mer",
+          "hidden": true
+        },
+        "clip_tips": {
+          "type": "boolean",
+          "description": "Clip tips shorter than k k-mers in length",
+          "default": false,
+          "hidden": true
+        },
+        "del_isolated": {
+          "type": "boolean",
+          "description": "Delete isolated contigs shorter than k k-mers in length",
+          "default": false,
+          "hidden": true
+        }
+      }
+    },
+    "corer": {
+      "title": "Corer",
+      "type": "object",
+      "description": "Parameters for Corer",
+      "fa_icon": "fas fa-circle-dot",
+      "default": "",
+      "properties": {
+        "quorum": {
+          "type": "integer",
+          "description": "Absolute quorum defining the core (default is 90% of pangenome size)",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "distance": {
+          "type": "integer",
+          "description": "Maximum distance between core k-mers",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/general"
+    },
+    {
+      "$ref": "#/$defs/bifrost"
+    },
+    {
+      "$ref": "#/$defs/corer"
+    }
+  ]
+}
