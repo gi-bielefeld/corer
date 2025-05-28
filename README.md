@@ -25,7 +25,7 @@ Schulz, T., Wittler, R., Stoye, J.: [Sequence-based pangenomic core detection](h
 
 ## Requirements
 
-Corer identifies the core of a given pangenome represented as a **compacted, colored de Bruijn graph** using the API of [Bifrost](https://github.com/pmelsted/bifrost) (version 1.2.1 or higher). Apart from the requirements of Bifrost (c++ and cmake), there are no further strict dependencies.
+Corer identifies the core of a given pangenome represented as a **compacted, colored de Bruijn graph** using the API of [Bifrost](https://github.com/pmelsted/bifrost) (version 1.2.1). Apart from the requirements of Bifrost (c++ and cmake), there are no further strict dependencies.
 
 A provided evaluation workflow requires [snakemake](https://snakemake.readthedocs.io/en/stable/), and the packages
 [Biopython](https://biopython.org) and [matplotlib](https://matplotlib.org) to be installed on your system.
@@ -83,7 +83,7 @@ Optional parameters without argument:
 
    ```
    wget 'https://hgdownload.cse.ucsc.edu/goldenPath/eboVir3/bigZips/160sequences.tar.gz'
-   tar xvzf 160sequences.tar.gz
+   tar -xvzf 160sequences.tar.gz
    ```
 
    These commands let you download and unpack a small dataset of 160 individual samples of different Ebola virus subspecies.
@@ -107,7 +107,7 @@ Optional parameters without argument:
    Once the graph has been built, Corer can predict its core. The command
 
    ```
-   Corer -i ebolaPangenome -o ebolaCore -q 128 -d 60
+   Corer -i ebolaPangenome.gfa.gz -c ebolaPangenome.color.bfg -o ebolaCore -q 128 -d 60
    ```
 
    predicts a core for the ebola pangenome, where a *core *k*-mer* needs to occur in at least 128 genomes and the maximum distance between two core
