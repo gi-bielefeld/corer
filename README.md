@@ -46,8 +46,15 @@ Please note the installation instructions regarding the default maximum *k*-mer 
 E.g., if your Bifrost libraries have been compiled to support a *k*-mer length of up to 63, change Corer's 
 makefile accordingly (add `-DMAX_KMER_SIZE=64` to CFLAGS).
 
-If during the compilation, the Bifrost library files are not found, make sure that the corresponding folder is found as include path by the C++ compiler. You may have to add
+If **during** the compilation, the Bifrost library files are not found, make sure that the corresponding folder is found as include path by the C++ compiler. You may have to add
 `-I/usr/local/include` (with the corresponding folder) to CFLAGS in the makefile.
+
+If **after** compilation Corer cannot find Bifrost's libraries, environment variables need to be set correctly. Assuming Bifrost libraries have been installed to `/usr/local/lib`, set the variables as follows:
+
+```
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/lib
+```
 
 ## Usage:
 
@@ -57,12 +64,13 @@ Corer
 
 displays the command line interface:
 ```
-Corer [-hs] [-q QUORUM] [-d DELTA] [-i Graph_File_Prefix] [-o Output_File_Prefix] [-t Nb_Threads]
+Corer [-hs] [-q QUORUM] [-d DELTA] [-i Graph_File] [-c Graph_Color_File] [-o Output_File_Prefix] [-t Nb_Threads]
 
 Extracting a pangenome's core.
 
 Required parameters:
-   -i   --igraph  Input graph file prefix
+   -i   --igraph  Input graph file in gfa(.gz) or bfg format
+   -c   --cgraph  Input graph color file in color.bfg format
    -o   --ograph  Output graph file prefix
 
 Optional parameters with required argument:
