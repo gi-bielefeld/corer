@@ -13,18 +13,18 @@ Schulz, T., Wittler, R., Stoye, J.: [Sequence-based pangenomic core detection](h
 
 ## Table of Contents
 
-* [Requirements](https://gitlab.ub.uni-bielefeld.de/gi/corer#requirements)
-* [Compilation](https://gitlab.ub.uni-bielefeld.de/gi/corer#compilation)
-* [Usage](https://gitlab.ub.uni-bielefeld.de/gi/corer#usage)
-* [Test data](https://gitlab.ub.uni-bielefeld.de/gi/corer#test-data)
-* [Evaluation workflow](https://gitlab.ub.uni-bielefeld.de/gi/corer#tool-comparison)
-* [FAQ](https://gitlab.ub.uni-bielefeld.de/gi/corer#faq)
-* [Contact](https://gitlab.ub.uni-bielefeld.de/gi/corer#contact)
-* [Licenses](https://gitlab.ub.uni-bielefeld.de/gi/corer#license)
+* [Requirements](#requirements)
+* [Compilation](#compilation)
+* [Usage](#usage)
+* [Test data](#test-data)
+* [Evaluation workflow](#evaluation-workflow)
+* [FAQ](#faq)
+* [Contact](#contact)
+* [Licenses](#licenses)
 
 ## Requirements
 
-Corer identifies the core of a given pangenome represented as a **compacted, colored de Bruijn graph** using the API of [Bifrost](https://github.com/pmelsted/bifrost) (version 1.2.1 or higher). Apart from the requirements of Bifrost (c++ and cmake), there are no further strict dependencies.
+Corer identifies the core of a given pangenome represented as a **compacted, colored de Bruijn graph** using the API of [Bifrost](https://github.com/pmelsted/bifrost) (version 1.2.1 or higher). Apart from the requirements of Bifrost (c++ and cmake), [HTSlib](https://github.com/samtools/htslib) is needed to be installed on the system.
 
 A provided evaluation workflow requires [snakemake](https://snakemake.readthedocs.io/en/stable/), and the packages
 [Biopython](https://biopython.org) and [matplotlib](https://matplotlib.org) to be installed on your system.
@@ -201,5 +201,7 @@ For any question, feedback or problem, please feel free to file an issue or cont
 * The CRoaring library is Apache 2.0 licensed (https://github.com/RoaringBitmap/CRoaring)
 
 * Bifrost is BSD-2 licensed (https://github.com/pmelsted/bifrost)
+
+* HTSlib is MIT/Expat licensed (https://github.com/samtools/htslib)
 
 * Corer is GNU GPLv3 licensed [LICENSE](https://gitlab.ub.uni-bielefeld.de/gi/plast/blob/master/LICENSE)
