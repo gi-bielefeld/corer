@@ -1,12 +1,13 @@
 #include "Traversal.h"
 
 //This function iterates over all paths of the given path list and adds distance information to all unitigs involved representing the distance to the core k-mer at the end of each corresponding path
-void addDists(const list<Path>& pthLst, const bool& isSucPth){
+void addDists(const std::list<Path>& pthLst, const bool& isSucPth){
 	uint32_t lstDst;
-	list<UnitigColorMap<CoreInfo>>::const_reverse_iterator j;
+	std::list<UnitigColorMap<CoreInfo>>::const_reverse_iterator j;
 
 	//Iterate over all paths
-	for(list<Path>::const_iterator i = pthLst.begin(); i != pthLst.end(); ++i){
+	for(std::list<Path>::const_iterator i = pthLst.begin(); i != pthLst.end(); 
+		++i){
 		//Get reverse iterator for path
 		j = i->second.rbegin();
 
@@ -34,17 +35,19 @@ void addDists(const list<Path>& pthLst, const bool& isSucPth){
 			//Check which distance we have to set
 			if(isSucPth ^ j->strand){
 				//Set distance
-				j->getData()->getData(*j)->predCoreDist = min(j->getData()->getData(*j)->predCoreDist, lstDst);
+				j->getData()->getData(*j)->predCoreDist = std::min(j->getData()->getData(*j)->predCoreDist, lstDst);
 			} else{
 				//Set distance
-				j->getData()->getData(*j)->sucCoreDist = min(j->getData()->getData(*j)->sucCoreDist, lstDst);
+				j->getData()->getData(*j)->sucCoreDist = std::min(j->getData()->getData(*j)->sucCoreDist, lstDst);
 			}
 		}
 	}
 }
 
 //This function extends the top priority path of the given priority queue on successive unitigs. If it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Otherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
-void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, list<Path>& res){
+void expSucPths(std::priority_queue<Path, std::vector<Path>, 
+	const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, 
+	std::list<Path>& res){
 	//Distance to next core k-mer
 	uint32_t coreDist;
 	//Get iterator of last unitig in top priority path
@@ -96,7 +99,9 @@ void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, c
 }
 
 //This function extends the top priority path of the given priority queue on predecessive unitigs. It it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Qtherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
-void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, list<Path>& res){
+void expPredPths(std::priority_queue<Path, std::vector<Path>, 
+	const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, 
+	std::list<Path>& res){
 	//Distance to next core k-mer
 	uint32_t coreDist;
 	//Get iterator of last unitig in top priority path
@@ -147,17 +152,19 @@ void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, 
 }
 
 //This function performs a BFS of the given depths on all successors of the given unitig. It returns true if a core k-mer could be reached by any path.
-const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, list<Path>& resPths){
+const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, 
+	std::list<Path>& resPths){
 	//Distance to next core k-mer
 	uint32_t coreDist;
 	//Some neighbor iterator
 	neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> suc;
 	//A list to store the first path
-	list<UnitigColorMap<CoreInfo>> uniLst;
+	std::list<UnitigColorMap<CoreInfo>> uniLst;
 	//Variable to store an extended path
 	Path extPth;
 	//Priority queue to store explored paths
-	priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)> queue(prioShrtst);
+	std::priority_queue<Path, std::vector<Path>, 
+	const bool (*)(const Path&, const Path&)> queue(prioShrtst);
 
 	//Add first unitig to list
 	uniLst.push_back(orig);
@@ -220,17 +227,19 @@ const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, li
 }
 
 //This function performs a BFS of the given depths on all predecessors of the given unitig. It returns true if a core k-mer could be reached by any path.
-const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, list<Path>& resPths){
+const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, 
+	std::list<Path>& resPths){
 	//Distance to next core k-mer
 	uint32_t coreDist;
 	//Some neighbor iterator
 	neighborIterator<DataAccessor<CoreInfo>, DataStorage<CoreInfo>, false> pred;
 	//A list to store the first path
-	list<UnitigColorMap<CoreInfo>> uniLst;
+	std::list<UnitigColorMap<CoreInfo>> uniLst;
 	//Variable to store an extended path
 	Path extPth;
 	//Priority queue to store explored paths
-	priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)> queue(prioShrtst);
+	std::priority_queue<Path, std::vector<Path>, 
+	const bool (*)(const Path&, const Path&)> queue(prioShrtst);
 
 	//Add first unitig to list
 	uniLst.push_back(orig);

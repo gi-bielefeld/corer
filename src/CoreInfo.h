@@ -23,7 +23,7 @@ class CoreInfo : public CCDBG_Data_t<CoreInfo> {
 		//Distance to next core k-mer on this or predecessive unitigs measured from unitig's end (reference strand orientation; 0 if unknown)
 		uint32_t predCoreDist;
 		//Increasingly ordered list of core k-mer intervals on a unitig
-		list<pair<uint32_t, uint32_t>> coreList;
+		std::list<std::pair<uint32_t, uint32_t>> coreList;
 
 };
 

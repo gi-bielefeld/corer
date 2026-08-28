@@ -37,7 +37,8 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 				//Check if increased path length exceeds delta and an interval has already started
 				if(++nBrd >= dlt && l > -1){
 					//Add interval
-					uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
+					uni.getData()->getData(uni)->coreList.push_back(
+						std::make_pair(l, r));
 					//Reset left interval borders
 					l = -1;
 					//Reset path length
@@ -47,7 +48,8 @@ void markCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, const uint32_t& 
 		}
 
 		//Check if there exists an open interval which was not yet added and add it
-		if(l > -1) uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
+		if(l > -1) uni.getData()->getData(uni)->coreList.push_back(
+			std::make_pair(l, r));
 	}
 }
 
@@ -89,7 +91,8 @@ TravTrackQueue detectCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, cons
 				//Check if increased path length exceeds delta and an interval has already started
 				if(++nBrd >= dlt && l > -1){
 					//Add interval
-					uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
+					uni.getData()->getData(uni)->coreList.push_back(
+						std::make_pair(l, r));
 					//Reset left interval borders
 					l = -1;
 					//Reset path length
@@ -99,7 +102,8 @@ TravTrackQueue detectCore(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& qrm, cons
 		}
 
 		//If there remains an interval not added yet add it
-		if(l > -1) uni.getData()->getData(uni)->coreList.push_back(make_pair(l, r));
+		if(l > -1) uni.getData()->getData(uni)->coreList.push_back(
+			std::make_pair(l, r));
 
 		if(!uni.getData()->getData(uni)->coreList.empty()){
 			//If a unitig has no successors we do not need a traversal on them

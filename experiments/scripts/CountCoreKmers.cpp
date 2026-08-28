@@ -6,7 +6,7 @@
 #define COLOR_FILE_ENDING ".color.bfg"
 #define GFA_FILE_ENDING ".gfa.gz"
 
-inline bool fileExists(const string& name){
+inline bool fileExists(const std::string& name){
 	struct stat buffer;
 
 	return (stat(name.c_str(), &buffer) == 0); 
@@ -73,13 +73,14 @@ int main(int argc, char **argv){
 
 	//Check if there are enough input parameters
 	if(argc < 3){
-		cerr << "ERROR: Not enough input parameters given\nWe need the graph file prefix and a quorum" << endl;
+		std::cerr << "ERROR: Not enough input parameters given" << std::endl <<
+		"We need the graph file prefix and a quorum" << std::endl;
 		return 1;
 	}
 
 	//Load graph
-	string graphFilePref = argv[1];
-	string igraph = graphFilePref + ".gfa.gz";
+	std::string graphFilePref = argv[1];
+	std::string igraph = graphFilePref + ".gfa.gz";
 
 	if(!fileExists(igraph)){
 		igraph = graphFilePref + ".gfa";
@@ -91,14 +92,14 @@ int main(int argc, char **argv){
 
 	ColoredCDBG<> cdbg = ColoredCDBG<>();
 	if(!cdbg.read((igraph).c_str(), (graphFilePref + COLOR_FILE_ENDING).c_str())){
-		cout << "ERROR: Graph could not be loaded" << endl;
+		std::cout << "ERROR: Graph could not be loaded" << std::endl;
 		return 1;
 	}
 
 	//Load quorum
 	//A quorum has to be positive
 	if(atoi(argv[2]) <= 0 || atoi(argv[2]) > INT32_MAX){
-		cerr << "ERROR: Quorum value not applicable" << endl;
+		std::cerr << "ERROR: Quorum value not applicable" << std::endl;
 		return 1;
 	}
 	qrm = atoi(argv[2]);
@@ -121,7 +122,9 @@ int main(int argc, char **argv){
 		}
 	}
 
-	cout << "Number of core " << cdbg.getK() << "-mers in this graph is " << nbCoreKmers << " of " << nbKmers << " " << cdbg.getK() << "-mers in total" << endl;
+	std::cout << "Number of core " << cdbg.getK() << "-mers in this graph is" <<
+	" " << nbCoreKmers << " of " << nbKmers << " " << cdbg.getK() << "-mers " <<
+	"in total" << std::endl;
 
 	return 0;
 }

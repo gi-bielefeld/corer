@@ -3,8 +3,9 @@
 #include "IO.h"
 
 //This function parses the program parameters. Returns false if given arguments are not valid
-const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, uint32_t& qrm, uint32_t& dlt, size_t& 
-	nThrds, bool& oSnps){
+const bool prsArgs(int& nArgs, char** argList, std::string& inGfl, 
+	std::string& inCfl, std::string& outPref, uint32_t& qrm, uint32_t& dlt, 
+	size_t& nThrds, bool& oSnps){
 	bool iFlGvn = false, cFlGvn = false, oFlGvn = false;
 	int option_index = 0, a;
 
@@ -48,7 +49,8 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
 			case 'q':
 				//A quorum has to be positive
 				if(atol(optarg) <= 0 || atol(optarg) > INT32_MAX){
-					cerr << "ERROR: Quorum value not applicable" << endl;
+					std::cerr << "ERROR: Quorum value not applicable" << 
+					std::endl;
 					return false;
 				}
 
@@ -57,7 +59,8 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
 			case 'd':
 				//Distance has to be non-negative
 				if(atol(optarg) < 0 || atol(optarg) > INT32_MAX){
-					cerr << "ERROR: Distance value not applicable" << endl;
+					std::cerr << "ERROR: Distance value not applicable" << 
+					std::endl;
 					return false;
 				}
 
@@ -66,7 +69,8 @@ const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, str
 			case 't':
 				//Number of threads needs to be a positive number
 				if(atoi(optarg) < 1){
-					cerr << "ERROR: Number of threads not applicable" << endl;
+					std::cerr << "ERROR: Number of threads not applicable" << 
+					std::endl;
 					return false;
 				}
 
@@ -91,7 +95,7 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 	//Start and end positions of intervals to extract
 	size_t start, end;
 	//Core interval list iterator
-	list<pair<uint32_t, uint32_t>>::const_iterator intvl;
+	std::list<std::pair<uint32_t, uint32_t>>::const_iterator intvl;
 
 	//Iterate over all unitigs
 	for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
@@ -100,7 +104,7 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 			//Check if unitig's sequence is marked as bridging
 			if(i->getData()->getData(*i)->preBrdg || i->getData()->getData(*i)->sufBrdg){
 				//Output the complete sequence
-				cout << i->mappedSequenceToString() << endl;
+				std::cout << i->mappedSequenceToString() << std::endl;
 			}
 		} else{
 			//Get interval list iterator
@@ -123,7 +127,8 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 			//Keep outputting substings as long as intervals are left
 			while(intvl != i->getData()->getData(*i)->coreList.end()){
 				//Output last substring
-				cout << i->mappedSequenceToString().substr(start, end - start + cdbg.getK()) << endl;
+				std::cout << i->mappedSequenceToString().substr(start, 
+					end - start + cdbg.getK()) << std::endl;
 				//The next substring starts at the current interval
 				start = intvl->first;
 				//We assume it ends with the current interval
@@ -135,23 +140,26 @@ void outputSnippets(ColoredCDBG<CoreInfo>& cdbg){
 			//Check if unitig's suffix is marked as bridging
 			if(i->getData()->getData(*i)->sufBrdg){
 				//Output last substring reaching to sequence's end
-				cout << i->mappedSequenceToString().substr(start) << endl;
+				std::cout << i->mappedSequenceToString().substr(start) << 
+				std::endl;
 			} else{
 				//Output last substring reaching to interval's end
-				cout << i->mappedSequenceToString().substr(start, end - start + cdbg.getK()) << endl;
+				std::cout << i->mappedSequenceToString().substr(start, 
+					end - start + cdbg.getK()) << std::endl;
 			}
 		}
 	}
 }
 
 //This function constructs a graph only consisting of a detected core and writes it to the specified output file
-void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t& thrds){
+void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const std::string& oName, 
+	const size_t& thrds){
 	size_t start, end;
 	UnitigColorMap<void> ogUni;
 	UnitigColorMap<CoreInfo> igUni;
 	CCDBG_Build_opt oGBO;
 	ColoredCDBG<> oGrph(cdbg.getK(), cdbg.getG());
-	list<pair<uint32_t, uint32_t>>::const_iterator intvl;
+	std::list<std::pair<uint32_t, uint32_t>>::const_iterator intvl;
 
 	//Add sequences to the graph//
 	
@@ -212,7 +220,8 @@ void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t
 
 	//Try to initialize color matrices and throw an error if neccessary
 	if(!oGrph.buildColors(oGBO)){
-		cerr << "ERROR: Color matrices of output graph could not be initialized!" << endl;
+		std::cerr << "ERROR: Color matrices of output graph could not be " <<
+		"initialized!" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -232,7 +241,9 @@ void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t
 
 			//Check if we could not find the k-mer
 			if(igUni.isEmpty){
-				cerr << "ERROR: K-mer " << ogUni.mappedSequenceToString() << " not found in input graph!" << endl;
+				std::cerr << "ERROR: K-mer " << 
+				ogUni.mappedSequenceToString() << 
+				" not found in input graph!" << std::endl;
 				exit(EXIT_FAILURE);
 			}
 
@@ -247,7 +258,8 @@ void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t
 
 	//Try to write graph and throw an error if neccessary
 	if(!oGrph.write(oName, thrds, BIFROST_VERBOSE_MODE)){
-		cerr << "ERROR: Output graph could not be written to file!" << endl;
+		std::cerr << "ERROR: Output graph could not be written to file!" << 
+		std::endl;
 		exit(EXIT_FAILURE);
 	}
 }

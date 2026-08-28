@@ -2,27 +2,33 @@
 #include "Traversal.cpp"
 
 //This function checks if the distance from the end of a unitig to either its closest core k-mer or its beginning is already delta or more
-const bool lCrTooFar(const size_t& ulen, const list<pair<uint32_t, uint32_t>>& coreList, const uint32_t& dlt){
+const bool lCrTooFar(const size_t& ulen, 
+	const std::list<std::pair<uint32_t, uint32_t>>& coreList, 
+	const uint32_t& dlt){
 	if(!coreList.empty()) return ulen - coreList.back().second > dlt;
 
 	return ulen >= dlt;
 }
 
 //This function checks if the distance from the beginning of a unitig to either its closest core k-mer or its end is already delta or more
-const bool rCrTooFar(const size_t& ulen, const list<pair<uint32_t, uint32_t>>& coreList, const uint32_t& dlt){
+const bool rCrTooFar(const size_t& ulen, 
+	const std::list<std::pair<uint32_t, uint32_t>>& coreList, 
+	const uint32_t& dlt){
 	if(!coreList.empty()) return coreList.front().first >= dlt;
 
 	return ulen >= dlt;
 }
 
 //This function takes a list of paths obtained by a BFS and a flag indicating whether paths are successive, and marks all involved non-core k-mers as bridging
-void markBrdg(const list<Path>& pths, const bool& sucPths, const uint32_t& maxPthLen){
+void markBrdg(const std::list<Path>& pths, const bool& sucPths, 
+	const uint32_t& maxPthLen){
 	//Iterate over paths
-	for(list<Path>::const_iterator p = pths.begin(); p != pths.end(); ++p){
+	for(std::list<Path>::const_iterator p = pths.begin(); p != pths.end(); ++p){
 		if(maxPthLen < p->first) continue;
 
 		//The first unitig of a successor's path potenially has a bridging suffix and vice versa
-		list<UnitigColorMap<CoreInfo>>::const_iterator u = p->second.begin();
+		std::list<UnitigColorMap<CoreInfo>>::const_iterator u = 
+		p->second.begin();
 
 		if(sucPths){
 			u->getData()->getData(*u)->sufBrdg = true;
@@ -76,9 +82,9 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 	//Pointer to current unitig's CoreInfo object
 	CoreInfo* cInfo;
 	//List of paths leading to reachable core k-mers on successive unitigs
-	list<Path> sucPaths;
+	std::list<Path> sucPaths;
 	//List of paths leading to reachable core k-mers on predecessive unitigs
-	list<Path> predPaths;
+	std::list<Path> predPaths;
 
 	//Iterate over unitigs
 	for(ColoredCDBG<CoreInfo>::iterator i = cdbg.begin(); i != cdbg.end(); ++i){
@@ -107,7 +113,8 @@ void detectBrdg(ColoredCDBG<CoreInfo>& cdbg, const uint32_t& dlt){
 		//Check if first k-mer on unitig is neither marked as bridging nor core and ensure that the distance we have to bridge to the right side (i.e. the distance to the closest core kmer on this unitig or the unitig's end) is not already too large
 		if((cInfo->coreList.empty() || (cInfo->coreList.front().first > 0 && !cInfo->preBrdg)) && !rCrTooFar(i->len, cInfo->coreList, dlt)){
 			//Do BFS on predecessive unitigs and mark all bridging k-mers if necessary
-			doPredBFS(*i, min((dlt + 1) / 2, (uint32_t) (dlt - exstPthLen)), predPaths);
+			doPredBFS(*i, std::min((dlt + 1) / 2, 
+				(uint32_t) (dlt - exstPthLen)), predPaths);
 		}
 
 		if(cInfo->coreList.empty() && !predPaths.empty() && !sucPaths.empty()){

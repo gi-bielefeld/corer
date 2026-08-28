@@ -10,10 +10,11 @@
 #define DEFAULT_DELTA 50
 
 //A path through the graph is a list of unitigs
-using Path = pair<uint32_t, list<UnitigColorMap<CoreInfo>>>;
+using Path = std::pair<uint32_t, std::list<UnitigColorMap<CoreInfo>>>;
 
 //A priority queue for TravTrack elements
-using TravTrackQueue = priority_queue<TravTrack, vector<TravTrack>, const bool (*)(const TravTrack&, const TravTrack&)>;
+using TravTrackQueue = std::priority_queue<TravTrack, std::vector<TravTrack>, 
+const bool (*)(const TravTrack&, const TravTrack&)>;
 
 //A compare function to prioritize shortest paths
 inline const bool prioShrtst(const Path& left, const Path& right){ return left.first > right.first; }
@@ -30,32 +31,40 @@ inline const uint32_t getCoreDist(const neighborIterator<DataAccessor<CoreInfo>,
 }
 
 //This function returns the minium path length from a given list of paths. If list is empty UINT32_MAX is returned.
-inline const uint32_t findMinPthLen(const list<Path>& pths){
+inline const uint32_t findMinPthLen(const std::list<Path>& pths){
 	uint32_t mini = UINT32_MAX;
 
 	//Iterate over paths and update minimum
-	for(list<Path>::const_iterator i = pths.begin(); i != pths.end(); ++i) mini = min(mini, i->first);
+	for(std::list<Path>::const_iterator i = pths.begin(); i != pths.end(); ++i) 
+		mini = std::min(mini, i->first);
 
 	return mini;
 }
 
 //This function iterates over all paths of the given path list and adds distance information to all unitigs involved representing the distance to the core k-mer at the end of each corresponding path
-void addDists(const list<Path>& pthLst, const bool& isSucPth);
+void addDists(const std::list<Path>& pthLst, const bool& isSucPth);
 
 //This function extends the top priority path of the given priority queue on successive unitigs. If it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Otherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
-void expSucPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, list<Path>& res);
+void expSucPths(std::priority_queue<Path, std::vector<Path>, 
+	const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, 
+	std::list<Path>& res);
 
 //This function extends the top priority path of the given priority queue on predecessive unitigs. It it reaches a core k-mer within an exceptable distance, the corresponding path is added to the result list. Qtherwise, it is discarded (if the path exceeds the given limit) or is reinserted into the queue. The function calls itself recursively until the queue is empty. Initially, the priority queue must not be empty
-void expPredPths(priority_queue<Path, vector<Path>, const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, list<Path>& res);
+void expPredPths(std::priority_queue<Path, std::vector<Path>, 
+	const bool (*)(const Path&, const Path&)>& queue, const uint32_t& dpth, 
+	std::list<Path>& res);
 
 //This function performs a BFS of the given depths on all successors of the given unitig. It returns true if a core k-mer could be reached.
-const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, list<Path>& resPths);
+const bool doSucBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, 
+	std::list<Path>& resPths);
 
 //This function performs a BFS of the given depths on all predecessors of the given unitig. It returns true if a core k-mer could be reached by any path.
-const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, list<Path>& resPths);
+const bool doPredBFS(const UnitigColorMap<CoreInfo> orig, const uint32_t dpth, 
+	std::list<Path>& resPths);
 
 //This function traverses the given graph according to the order dictated by the given priority queue while adding distance information about the closest core k-mers to each
 //processed node. 
-void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue, const uint32_t& dlt);
+void annotateDists(ColoredCDBG<CoreInfo>& cdbg, TravTrackQueue& queue, 
+	const uint32_t& dlt);
 
 #endif
