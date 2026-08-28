@@ -15,30 +15,39 @@
 
 //This function prints usage infos
 inline void dspHlp(){
-	cerr << "Corer [-hs] [-q QUORUM] [-d DELTA] [-i Graph_File] [-c Graph_Color_File] [-o Output_File_Prefix] [-t Nb_Threads]" << 
-	endl << endl;
-	cerr << "Extracting a pangenome's core." << endl << endl;
-	cerr << "Required parameters:" << endl;
-	cerr << "   -i   --igraph  Input graph file in gfa(.gz) or bfg format" << endl;
-	cerr << "   -c   --cgraph  Input graph color file in color.bfg format" << endl;
-	cerr << "   -o   --ograph  Output graph file prefix" << endl << endl;
-	cerr << "Optional parameters with required argument:" << endl;
-	cerr << "   -q   --quorum   Absolute quorum defining the core (default is 90\% of pangenome size)" << endl;
-	cerr << "   -d   --delta    Maximum distance between core k-mers (default is 50)" << endl;
-	cerr << "   -t   --threads  Number of threads (default is 1)" << endl << endl;
-	cerr << "Optional parameters without argument:" << endl;
-	cerr << "   -s   --snippets  Output unitig core snippets to stdout" << endl;
-	cerr << "   -h   --help      Display this help message" << endl;
+	std::cerr << "Corer [-hs] [-q QUORUM] [-d DELTA] [-i Graph_File] " <<
+	"[-c Graph_Color_File] [-o Output_File_Prefix] [-t Nb_Threads]" << 
+	std::endl << std::endl;
+	std::cerr << "Extracting a pangenome's core." << std::endl << std::endl;
+	std::cerr << "Required parameters:" << std::endl;
+	std::cerr << "   -i   --igraph  Input graph file in gfa(.gz) or bfg " <<
+	"format" << std::endl;
+	std::cerr << "   -c   --cgraph  Input graph color file in color.bfg " <<
+	"format" << std::endl;
+	std::cerr << "   -o   --ograph  Output graph file prefix" << std::endl << 
+	std::endl;
+	std::cerr << "Optional parameters with required argument:" << std::endl;
+	std::cerr << "   -q   --quorum   Absolute quorum defining the core " <<
+	"(default is 90\% of pangenome size)" << std::endl;
+	std::cerr << "   -d   --delta    Maximum distance between core k-mers (default is 50)" << std::endl;
+	std::cerr << "   -t   --threads  Number of threads (default is 1)" << 
+	std::endl << std::endl;
+	std::cerr << "Optional parameters without argument:" << std::endl;
+	std::cerr << "   -s   --snippets  Output unitig core snippets to stdout" << 
+	std::endl;
+	std::cerr << "   -h   --help      Display this help message" << std::endl;
 }
 
 //This function parses the program parameters. Returns false if given arguments are not valid
-const bool prsArgs(int& nArgs, char** argList, string& inGfl, string& inCfl, string& outPref, uint32_t& qrm, uint32_t& dlt, size_t& 
-	nThrds, bool& oSnps);
+const bool prsArgs(int& nArgs, char** argList, std::string& inGfl, 
+	std::string& inCfl, std::string& outPref, uint32_t& qrm, uint32_t& dlt, 
+	size_t& nThrds, bool& oSnps);
 
 //This function iterates over the given graph and outputs all core and bridging parts as snippets
 void outputSnippets(const ColoredCDBG<CoreInfo>& cdbg);
 
 //This function constructs a graph only consisting of a detected core and writes it to the specified output file
-void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const string& oName, const size_t& thrds);
+void genCoreGraph(ColoredCDBG<CoreInfo>& cdbg, const std::string& oName, 
+	const size_t& thrds);
 
 #endif

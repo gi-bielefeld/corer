@@ -11,8 +11,8 @@ int main(int argc, char **argv){
 	uint32_t qrm = 0;
 	uint32_t dlt = DEFAULT_DELTA;
 	size_t thrds = DEFAULT_NB_THREADS;
-	string iGFile, iCFile;
-	string oFilePref;
+	std::string iGFile, iCFile;
+	std::string oFilePref;
 	ColoredCDBG<CoreInfo> cdbg = ColoredCDBG<CoreInfo>();
 	TravTrackQueue queue;
 
@@ -25,14 +25,16 @@ int main(int argc, char **argv){
 
 	//Load graph
 	if(!cdbg.read(iGFile, iCFile, thrds, BIFROST_VERBOSE_MODE)){
-		cerr << "ERROR: Graph could not be loaded" << endl;
+		std::cerr << "ERROR: Graph could not be loaded" << std::endl;
 		return EXIT_FAILURE;
 	}
 
 	//Set quorum if not already done
 	if(qrm == 0){
-		qrm = max((uint32_t) MIN_QUORUM, (uint32_t) (cdbg.getNbColors() * DEFAULT_CORE_RATIO));
-		cerr << "NOTE: No quorum value given; quorum is set to " << qrm << endl;
+		qrm = std::max((uint32_t) MIN_QUORUM, 
+			(uint32_t) (cdbg.getNbColors() * DEFAULT_CORE_RATIO));
+		std::cerr << "NOTE: No quorum value given; quorum is set to " << qrm << 
+		std::endl;
 	}
 
 	//Detect all core k-mers
